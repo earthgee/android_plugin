@@ -5,8 +5,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.text.TextUtils;
 
 import com.earthgee.library.utils.Constants;
+import com.earthgee.library.utils.SoLibManager;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -31,6 +33,11 @@ public class PluginManager {
 
     private final HashMap<String,PluginPackage> mPackageHolder=
             new HashMap<>();
+
+    public static final int START_RESULT_SUCCESS=0;
+    public static final int START_RESULT_NO_PKG=1;
+    public static final int START_RESULT_NO_CLASS=2;
+    public static final int START_REULT_TYPE_ERROR=3;
 
     private PluginManager(Context context){
         mContext=context;
@@ -82,6 +89,7 @@ public class PluginManager {
 
         pluginPackage=new PluginPackage(dexClassLoader,resources,packageInfo);
         mPackageHolder.put(packageInfo.packageName,pluginPackage);
+        return pluginPackage;
     }
 
     private String dexOutputPath;
@@ -118,6 +126,56 @@ public class PluginManager {
         return resources;
     }
 
+    public PluginPackage getPackage(String packageName){
+        return mPackageHolder.get(packageName);
+    }
+
+    private void copySoLib(String dexPath){
+        SoLibManager.getSoLoader().copyPluginSoLib(mContext,dexPath,mNativeLibDir);
+    }
+
+    public int startPluginActivity(Context context,PluginIntent pluginIntent){
+        return startPluginActivityForResult(context,pluginIntent,-1);
+    }
+
+    public int startPluginActivityForResult(Context context,PluginIntent pluginIntent,int requestCode){
+        if(mFrom==Constants.FROM_INTERNAL){
+            pluginIntent.setClassName(context,pluginIntent.getPluginClass());
+            performStartActivityForResult(context,pluginIntent,requestCode);
+            return START_RESULT_SUCCESS;
+        }
+
+        String packageName=pluginIntent.getPluginPackage();
+
+        PluginPackage pluginPackage=mPackageHolder.get(packageName);
+        if(pluginPackage==null){
+            return START_RESULT_NO_PKG;
+        }
+
+        String className=getPluginActivityFullPath(pluginIntent,pluginPackage);
+        Class<?> clazz=loadPluginClass(pluginPackage.classLoader,className);
+    }
+
+    private String getPluginActivityFullPath(PluginIntent pluginIntent,PluginPackage pluginPackage){
+        String className=pluginIntent.getPluginClass();
+        className=(className==null?pluginPackage.defaultActivity:className);
+        if(className.startsWith(".")){
+            className=pluginIntent.getPluginPackage()+className;
+        }
+        return className;
+    }
+
+    private Class<?> loadPluginClass(ClassLoader classLoader,String className){
+        Class<?> clazz=null;
+        try {
+            clazz=Class.forName(className,true,classLoader);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return clazz;
+    }
+    
 }
 
 
