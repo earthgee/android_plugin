@@ -163,7 +163,11 @@ public class PluginManager {
             return START_REULT_TYPE_ERROR;
         }
 
-
+        pluginIntent.putExtra(Constants.EXTRA_CLASS,className);
+        pluginIntent.putExtra(Constants.EXTRA_PACKAGE,packageName);
+        pluginIntent.setClass(mContext,activityClass);
+        performStartActivityForResult(context,pluginIntent,requestCode);
+        return START_RESULT_SUCCESS;
     }
 
     private String getPluginActivityFullPath(PluginIntent pluginIntent,PluginPackage pluginPackage){
@@ -189,7 +193,18 @@ public class PluginManager {
     private Class<? extends Activity> getProxyActivityClass(Class<?> clazz){
         Class<? extends Activity> activityClass=null;
         if(BasePluginActivity.class.isAssignableFrom(clazz)){
-            activityClass=
+            activityClass=PluginProxyActivity.class;
+        }
+
+        return activityClass;
+    }
+
+    private void performStartActivityForResult(Context context,PluginIntent pluginIntent
+            ,int requestCode){
+        if(context instanceof Activity){
+            ((Activity)context).startActivityForResult(pluginIntent,requestCode);
+        }else{
+            context.startActivity(pluginIntent);
         }
     }
 
