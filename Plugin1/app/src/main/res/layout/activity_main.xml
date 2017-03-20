@@ -10,19 +10,10 @@
     android:orientation="vertical"
     tools:context="com.earthgee.plugin1.MainActivity">
 
-    <Button
-        android:id="@+id/button1"
+    <ListView
+        android:id="@+id/plugin_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="启动插件activity"
-        />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="启动插件service"
-        />
+        android:layout_height="match_parent"></ListView>
 
 
 </LinearLayout>
