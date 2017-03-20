@@ -1,5 +1,6 @@
 package com.earthgee.library;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -146,7 +147,6 @@ public class PluginManager {
         }
 
         String packageName=pluginIntent.getPluginPackage();
-
         PluginPackage pluginPackage=mPackageHolder.get(packageName);
         if(pluginPackage==null){
             return START_RESULT_NO_PKG;
@@ -154,6 +154,16 @@ public class PluginManager {
 
         String className=getPluginActivityFullPath(pluginIntent,pluginPackage);
         Class<?> clazz=loadPluginClass(pluginPackage.classLoader,className);
+        if(clazz==null){
+            return START_RESULT_NO_CLASS;
+        }
+
+        Class<? extends Activity> activityClass=getProxyActivityClass(clazz);
+        if(activityClass==null){
+            return START_REULT_TYPE_ERROR;
+        }
+
+
     }
 
     private String getPluginActivityFullPath(PluginIntent pluginIntent,PluginPackage pluginPackage){
@@ -175,7 +185,14 @@ public class PluginManager {
 
         return clazz;
     }
-    
+
+    private Class<? extends Activity> getProxyActivityClass(Class<?> clazz){
+        Class<? extends Activity> activityClass=null;
+        if(BasePluginActivity.class.isAssignableFrom(clazz)){
+            activityClass=
+        }
+    }
+
 }
 
 

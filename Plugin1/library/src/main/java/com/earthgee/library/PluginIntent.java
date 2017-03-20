@@ -40,8 +40,8 @@ public class PluginIntent extends Intent{
         return mPluginPackage;
     }
 
-    public void setPluginPackage(){
-        this.mPluginPackage=mPluginPackage;
+    public void setPluginPackage(String pluginPackage){
+        this.mPluginPackage=pluginPackage;
     }
 
     public String getPluginClass(){
