@@ -116,9 +116,9 @@ public class PluginManager {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
-        }finally {
-            return null;
         }
+
+        return null;
     }
 
     private Resources createResources(AssetManager assetManager){

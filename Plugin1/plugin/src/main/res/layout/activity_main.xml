@@ -20,13 +20,13 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="插件内启动fragment"
+        android:text="插件内start service"
         />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="插件内启动service"
+        android:text="插件内bind service"
         />
 
 </LinearLayout>
