@@ -1,6 +1,7 @@
 package com.earthgee.library;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -208,6 +209,77 @@ public class PluginManager {
         }else{
             context.startActivity(pluginIntent);
         }
+    }
+
+    public int startPluginService(final Context context,final PluginIntent pluginIntent){
+        if(mFrom==Constants.FROM_INTERNAL){
+            pluginIntent.setClassName(context,pluginIntent.getPluginClass());
+            context.startService(pluginIntent);
+            return START_RESULT_SUCCESS;
+        }
+
+        String packageName=pluginIntent.getPluginPackage();
+        PluginPackage pluginPackage=mPackageHolder.get(packageName);
+        if(pluginPackage==null){
+            return START_RESULT_NO_PKG;
+        }
+
+        String className=pluginIntent.getPluginClass();
+        Class<?> clazz=loadPluginClass(pluginPackage.classLoader,className);
+        if(clazz==null){
+            return START_RESULT_NO_CLASS;
+        }
+
+        Class<? extends Service> proxyServiceClass=getProxyServiceClass(clazz);
+        if(proxyServiceClass==null){
+            return START_REULT_TYPE_ERROR;
+        }
+
+        pluginIntent.putExtra(Constants.EXTRA_CLASS,className);
+        pluginIntent.putExtra(Constants.EXTRA_PACKAGE,packageName);
+        pluginIntent.setClass(context,proxyServiceClass);
+        context.startService(pluginIntent);
+        return START_RESULT_SUCCESS;
+    }
+
+    private Class<? extends Service> getProxyServiceClass(Class<?> clazz){
+        Class<? extends Service> proxyServiceClass=null;
+        if(BasePluginService.class.isAssignableFrom(clazz)){
+            proxyServiceClass=PluginProxyService.class;
+        }
+
+        return proxyServiceClass;
+    }
+
+    public int stopPluginService(final Context context,final PluginIntent pluginIntent){
+        if(mFrom==Constants.FROM_INTERNAL){
+            pluginIntent.setClassName(context,pluginIntent.getPluginClass());
+            context.stopService(pluginIntent);
+            return START_RESULT_SUCCESS;
+        }
+
+        String packageName=pluginIntent.getPluginPackage();
+        PluginPackage pluginPackage=mPackageHolder.get(packageName);
+        if(pluginPackage==null){
+            return START_RESULT_NO_PKG;
+        }
+
+        String className=pluginIntent.getPluginClass();
+        Class<?> clazz=loadPluginClass(pluginPackage.classLoader,className);
+        if(clazz==null){
+            return START_RESULT_NO_CLASS;
+        }
+
+        Class<? extends Service> proxyServiceClass=getProxyServiceClass(clazz);
+        if(proxyServiceClass==null){
+            return START_REULT_TYPE_ERROR;
+        }
+
+        pluginIntent.putExtra(Constants.EXTRA_CLASS,className);
+        pluginIntent.putExtra(Constants.EXTRA_PACKAGE,packageName);
+        pluginIntent.setClass(context,proxyServiceClass);
+        context.stopService(pluginIntent);
+        return START_RESULT_SUCCESS;
     }
 
 }

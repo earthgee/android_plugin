@@ -16,6 +16,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".PluginActivity"></activity>
+        <service android:name=".PluginService"></service>
     </application>
 
 </manifest>

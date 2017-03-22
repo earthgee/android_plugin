@@ -20,6 +20,7 @@
         </activity>
         <activity android:name="com.earthgee.library.PluginProxyActivity"></activity>
         <activity android:name="com.earthgee.library.PluginProxyFragmentActivity"></activity>
+        <service android:name="com.earthgee.library.PluginProxyService"></service>
     </application>
 
 </manifest>

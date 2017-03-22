@@ -317,6 +317,23 @@ public class BasePluginActivity extends Activity implements PluginInterface{
         return pluginManager.startPluginActivityForResult(that,pluginIntent,requestCode);
     }
 
+    public int startPluginService(PluginIntent pluginIntent){
+        if(mFrom==Constants.FROM_EXTERNAL){
+            if(pluginIntent.getPluginPackage()==null){
+                pluginIntent.setPluginPackage(mPluginPackage.packageName);
+            }
+        }
+        return pluginManager.startPluginService(that,pluginIntent);
+    }
+
+    public int stopPluginService(PluginIntent pluginIntent){
+        if(mFrom==Constants.FROM_EXTERNAL){
+            if(pluginIntent.getPluginPackage()==null){
+                pluginIntent.setPluginPackage(mPluginPackage.packageName);
+            }
+        }
+        return pluginManager.stopPluginService(that,pluginIntent);
+    }
 
 
 }
