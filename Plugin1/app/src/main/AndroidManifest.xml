@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.earthgee.library.PluginProxyActivity"></activity>
+        <activity android:name="com.earthgee.library.PluginProxyFragmentActivity"></activity>
     </application>
 
 </manifest>

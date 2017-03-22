@@ -194,6 +194,8 @@ public class PluginManager {
         Class<? extends Activity> activityClass=null;
         if(BasePluginActivity.class.isAssignableFrom(clazz)){
             activityClass=PluginProxyActivity.class;
+        }else if(BasePluginFragmentActivity.class.isAssignableFrom(clazz)){
+            activityClass=PluginProxyFragmentActivity.class;
         }
 
         return activityClass;
