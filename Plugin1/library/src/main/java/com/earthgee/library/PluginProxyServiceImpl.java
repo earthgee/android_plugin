@@ -2,6 +2,8 @@ package com.earthgee.library;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import com.earthgee.library.utils.Config;
@@ -14,6 +16,9 @@ public class PluginProxyServiceImpl {
 
     private Service mProxyService;
     private PluginServiceInterface mRemoteService;
+    private AssetManager mAssetManager;
+    private Resources mResources;
+    private PluginPackage mPluginPackage;
 
     public PluginProxyServiceImpl(Service service){
         mProxyService=service;
@@ -26,14 +31,16 @@ public class PluginProxyServiceImpl {
         String clazz=intent.getStringExtra(Constants.EXTRA_CLASS);
 
         PluginManager pluginManager=PluginManager.getInstance(mProxyService);
-        PluginPackage pluginPackage=pluginManager.getPackage(packageName);
+        mPluginPackage=pluginManager.getPackage(packageName);
+        mAssetManager=mPluginPackage.assetManager;
+        mResources=mPluginPackage.resources;
 
         try {
-            Class<?> localClass=pluginPackage.classLoader.loadClass(clazz);
+            Class<?> localClass=mPluginPackage.classLoader.loadClass(clazz);
             Object instance=localClass.newInstance();
             mRemoteService= (PluginServiceInterface) instance;
             ((PluginServiceAttachable)mProxyService).attach(mRemoteService);
-            mRemoteService.attach(mProxyService,pluginPackage);
+            mRemoteService.attach(mProxyService,mPluginPackage);
 
             mRemoteService.onCreate();
         } catch (ClassNotFoundException e) {
@@ -43,6 +50,19 @@ public class PluginProxyServiceImpl {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    public Resources getResources() {
+        return mResources;
+    }
+
+    public AssetManager getAssetManager() {
+        return mAssetManager;
+    }
+
+    public ClassLoader getClassLoader(){
+        if(mPluginPackage==null) return null;
+        return mPluginPackage.classLoader;
     }
 
 }

@@ -2,7 +2,9 @@ package com.earthgee.library;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -85,6 +87,20 @@ public class PluginProxyService extends Service implements PluginServiceAttachab
         super.onTaskRemoved(rootIntent);
     }
 
+    @Override
+    public AssetManager getAssets() {
+        return mImpl.getAssetManager()==null?super.getAssets():mImpl.getAssetManager();
+    }
+
+    @Override
+    public Resources getResources() {
+        return mImpl.getResources()==null?super.getResources():mImpl.getResources();
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+        return mImpl.getClassLoader()==null?super.getClassLoader():mImpl.getClassLoader();
+    }
 }
 
 

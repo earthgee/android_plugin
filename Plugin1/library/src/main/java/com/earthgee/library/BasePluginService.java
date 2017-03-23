@@ -2,7 +2,9 @@ package com.earthgee.library;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.IBinder;
 
 import com.earthgee.library.utils.Constants;
@@ -79,4 +81,52 @@ public class BasePluginService extends Service implements PluginServiceInterface
         return mFrom==Constants.FROM_INTERNAL;
     }
 
+    @Override
+    public Resources getResources() {
+        if(mFrom==Constants.FROM_INTERNAL){
+            return super.getResources();
+        }
+        return mProxyService.getResources();
+    }
+
+    @Override
+    public AssetManager getAssets() {
+        if(mFrom==Constants.FROM_INTERNAL){
+            return super.getAssets();
+        }
+        return mProxyService.getAssets();
+    }
+
+    @Override
+    public Object getSystemService(String name) {
+        if(mFrom==Constants.FROM_INTERNAL){
+            return super.getSystemService(name);
+        }
+        return mProxyService.getSystemService(name);
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+        if(mFrom==Constants.FROM_INTERNAL){
+            return super.getClassLoader();
+        }
+        return mProxyService.getClassLoader();
+    }
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
