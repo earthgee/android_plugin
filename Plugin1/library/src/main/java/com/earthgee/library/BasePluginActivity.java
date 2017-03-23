@@ -3,6 +3,7 @@ package com.earthgee.library;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -335,6 +336,23 @@ public class BasePluginActivity extends Activity implements PluginInterface{
         return pluginManager.stopPluginService(that,pluginIntent);
     }
 
+    public int bindPluginService(PluginIntent pluginIntent, ServiceConnection conn,int flags){
+        if(mFrom==Constants.FROM_EXTERNAL){
+            if(pluginIntent.getPluginPackage()==null){
+                pluginIntent.setPluginPackage(mPluginPackage.packageName);
+            }
+        }
+        return pluginManager.bindPluginService(that,pluginIntent,conn,flags);
+    }
+
+    public int unBindPluginService(PluginIntent pluginIntent,ServiceConnection conn){
+        if(mFrom==Constants.FROM_EXTERNAL){
+            if(pluginIntent.getPluginPackage()==null){
+                pluginIntent.setPluginPackage(mPluginPackage.packageName);
+            }
+        }
+        return pluginManager.unBindPluginService(that,pluginIntent,conn);
+    }
 
 }
 

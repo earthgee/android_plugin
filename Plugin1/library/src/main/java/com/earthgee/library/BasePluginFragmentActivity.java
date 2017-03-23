@@ -3,6 +3,7 @@ package com.earthgee.library;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -334,4 +335,41 @@ public class BasePluginFragmentActivity extends FragmentActivity implements Plug
         }
         return mProxyActivity.getSupportLoaderManager();
     }
+
+    public int startPluginService(PluginIntent pluginIntent){
+        if(mFrom==Constants.FROM_EXTERNAL){
+            if(pluginIntent.getPluginPackage()==null){
+                pluginIntent.setPluginPackage(mPluginPackage.packageName);
+            }
+        }
+        return mPluginManager.startPluginService(that,pluginIntent);
+    }
+
+    public int stopPluginService(PluginIntent pluginIntent){
+        if(mFrom==Constants.FROM_EXTERNAL){
+            if(pluginIntent.getPluginPackage()==null){
+                pluginIntent.setPluginPackage(mPluginPackage.packageName);
+            }
+        }
+        return mPluginManager.stopPluginService(that,pluginIntent);
+    }
+
+    public int bindPluginService(PluginIntent pluginIntent, ServiceConnection conn, int flags){
+        if(mFrom==Constants.FROM_EXTERNAL){
+            if(pluginIntent.getPluginPackage()==null){
+                pluginIntent.setPluginPackage(mPluginPackage.packageName);
+            }
+        }
+        return mPluginManager.bindPluginService(that,pluginIntent,conn,flags);
+    }
+
+    public int unBindPluginService(PluginIntent pluginIntent,ServiceConnection conn){
+        if(mFrom==Constants.FROM_EXTERNAL){
+            if(pluginIntent.getPluginPackage()==null){
+                pluginIntent.setPluginPackage(mPluginPackage.packageName);
+            }
+        }
+        return mPluginManager.unBindPluginService(that,pluginIntent,conn);
+    }
+
 }
