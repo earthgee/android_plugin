@@ -1,5 +1,10 @@
 package com.earthgee.library.reflect;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+
 /**
  * Created by zhaoruixuan on 2017/4/6.
  */
@@ -42,6 +47,30 @@ public class Utils {
             return EMPTY_OBJECT_ARRAY;
         }
         return array;
+    }
+
+    public static List<Class<?>> getAllInterfaces(final Class<?> cls){
+        if(cls==null){
+            return null;
+        }
+
+        final LinkedHashSet<Class<?>> interfacesFound=new LinkedHashSet<>();
+        getAllInterfaces(cls,interfacesFound);
+        return new ArrayList<>(interfacesFound);
+    }
+
+    private static void getAllInterfaces(Class<?> cls, final HashSet<Class<?>> interfacesFound){
+        while(cls!=null){
+            final Class<?>[] interfaces=cls.getInterfaces();
+
+            for(final Class<?> i:interfaces){
+                if(interfacesFound.add(i)){
+                    getAllInterfaces(i,interfacesFound);
+                }
+            }
+
+            cls=cls.getSuperclass();
+        }
     }
 
 }

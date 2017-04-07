@@ -1,5 +1,7 @@
 package com.earthgee.library.util;
 
+import com.earthgee.library.reflect.MethodUtils;
+
 /**
  * Created by zhaoruixuan on 2017/4/6.
  */
@@ -16,7 +18,7 @@ public class SystemPropertiesCompat {
 
     private static String getInner(String key,String defaultValue) throws Exception{
         Class clazz=getMyClass();
-        return
+        return (String)MethodUtils.invokeStaticMethod(clazz,"get",key,defaultValue);
     }
 
     public static String get(String key,String defaultValue){

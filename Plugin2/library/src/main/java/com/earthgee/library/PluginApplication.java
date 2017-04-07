@@ -20,4 +20,5 @@ public class PluginApplication extends Application{
         super.onCreate();
         PluginHelper.getInstance().applicationOnCreate(getBaseContext());
     }
+
 }

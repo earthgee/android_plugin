@@ -7,6 +7,8 @@ import android.content.pm.PackageInfo;
 import android.content.res.Resources;
 import android.os.Environment;
 
+import com.earthgee.library.util.SystemPropertiesCompat;
+
 import java.io.File;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
