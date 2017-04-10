@@ -105,8 +105,26 @@ public class FieldUtils {
 
     public static void writeField(final Object target,final String fieldName,
                                   final Object value,final boolean forceAccess) throws Exception{
+        Validate.isTrue(target!=null,"target object must not be null");
+        final Class<?> cls=target.getClass();
+        final Field field=getField(cls,fieldName,true);
+        Validate.isTrue(field!=null,"Cannot locate declared field %s.%s",cls.getName(),fieldName);;
+        writeField(field,target,value,forceAccess);
+    }
 
+    public static void writeField(final Field field,final Object target,final Object value) throws Exception{
+        writeField(field, target, value,true);
+    }
 
+    public static void writeField(final Field field,final Object target,
+                                  final Object value,final boolean forceAccess) throws Exception{
+        Validate.isTrue(field!=null,"The field must not be null");
+        if(forceAccess&&!field.isAccessible()){
+            field.setAccessible(true);
+        }else{
+            MemberUtils.setAccessibleWorkaround(field);
+        }
+        field.set(target,value);
     }
 
 

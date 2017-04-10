@@ -65,7 +65,8 @@ public class PluginHelper {
             }
         }
 
-        Object
+        Object currentActivityThread=ActivityThreadCompat.currentActivityThread();
+        Object mPackages=FieldUtils
     }
 
 }
