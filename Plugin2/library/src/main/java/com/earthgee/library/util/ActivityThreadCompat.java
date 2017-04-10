@@ -65,7 +65,7 @@ public class ActivityThreadCompat {
 
     public static Instrumentation getInstrumentation() throws Exception{
         Object obj=currentActivityThread();
-        return MethodUtils.invokeMethod(obj,"getInstrumentation");
+        return (Instrumentation) MethodUtils.invokeMethod(obj,"getInstrumentation");
     }
 
 }

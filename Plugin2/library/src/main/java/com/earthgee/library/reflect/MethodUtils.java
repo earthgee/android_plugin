@@ -202,7 +202,24 @@ public class MethodUtils {
         return bestMatch;
     }
 
-    
+    public static Object invokeMethod(final Object object,
+                                      final String methodName,Object... args) throws Exception{
+        args=Utils.nullToEmpty(args);
+        final Class<?>[] parameterTypes=Utils.toClass(args);
+        return invokeMethod(object,methodName,args,parameterTypes);
+    }
+
+    public static Object invokeMethod(final Object object,final String methodName,
+                                      Object[] args,Class<?>[] parameterTypes) throws Exception{
+        parameterTypes=Utils.nullToEmpty(parameterTypes);
+        args=Utils.nullToEmpty(args);
+        final Method method=getMatchingAccessibleMethod(object.getClass(),methodName,parameterTypes);
+        if(method==null){
+            throw new NoSuchMethodException("No such accessible method: "+
+                methodName+"() on object: "+object.getClass().getName());
+        }
+        return method.invoke(object,args);
+    }
 
 }
 

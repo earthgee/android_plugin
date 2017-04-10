@@ -1,10 +1,14 @@
 package com.earthgee.library;
 
 import android.content.Context;
+import android.os.Looper;
+import android.os.Message;
+import android.os.MessageQueue;
 import android.util.Log;
 
 import com.earthgee.library.reflect.FieldUtils;
 import com.earthgee.library.reflect.MethodUtils;
+import com.earthgee.library.util.ActivityThreadCompat;
 
 import java.util.HashMap;
 
@@ -65,8 +69,49 @@ public class PluginHelper {
             }
         }
 
-        Object currentActivityThread=ActivityThreadCompat.currentActivityThread();
-        Object mPackages=FieldUtils
+        Object currentActivityThread= ActivityThreadCompat.currentActivityThread();
+        Object mPackages=FieldUtils.readField(currentActivityThread,"mPackages",true);
+        if(mPackages instanceof HashMap){
+            HashMap oldValue= (HashMap) mPackages;
+            if("com.lbe.security.client.ClientContainer$MonitoredPackageMap".
+                    equals(mPackages.getClass().getName())){
+                HashMap value=new HashMap();
+                value.putAll(oldValue);
+                FieldUtils.writeField(currentActivityThread,"mPackages",value,true);
+            }
+        }
+
+        if(Looper.getMainLooper()==Looper.myLooper()){
+            final MessageQueue queue=Looper.myQueue();
+            try{
+                Object mMessages=FieldUtils.readField(queue,"mMessages",true);
+                if(mMessages instanceof Message){
+                    findLbeMessageAndRemoveIt((Message)mMessages);
+                }
+            }catch (Exception e){
+
+            }
+        }
+    }
+
+    private void findLbeMessageAndRemoveIt(Message message){
+        if(message==null) return;
+
+        Runnable callback=message.getCallback();
+        if(message.what==0&&callback!=null){
+            if(callback.getClass().getName().indexOf("com.lbe.security.client")>=0){
+                message.getTarget().removeCallbacks(callback);
+            }
+        }
+
+        try{
+            Object nextObj=FieldUtils.readField(message,"next",true);
+            if(nextObj!=null){
+                Message next= (Message) nextObj;
+                findLbeMessageAndRemoveIt(next);
+            }
+        }catch (Exception e){
+        }
     }
 
 }
