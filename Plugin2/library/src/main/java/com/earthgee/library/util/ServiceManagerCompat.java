@@ -2,6 +2,8 @@ package com.earthgee.library.util;
 
 import android.os.IBinder;
 
+import com.earthgee.library.reflect.MethodUtils;
+
 /**
  * Created by zhaoruixuan on 2017/4/11.
  */
@@ -16,8 +18,8 @@ public class ServiceManagerCompat {
         return sClass;
     }
 
-    public static IBinder getService(String name) throws ClassNotFoundException{
-        return 
+    public static IBinder getService(String name) throws Exception{
+        return (IBinder) MethodUtils.invokeStaticMethod(Class(),"getService",name);
     }
 
 }

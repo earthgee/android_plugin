@@ -14,6 +14,11 @@ public class IClipboardBinderHook extends BinderHook{
     }
 
     @Override
+    public String getServiceName() {
+        return null;
+    }
+
+    @Override
     protected BaseHookHandle createHookHandle() {
         return null;
     }

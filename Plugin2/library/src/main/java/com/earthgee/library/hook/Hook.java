@@ -20,6 +20,10 @@ public abstract class Hook {
         setEnable(enable,false);
     }
 
+    public boolean isEnable(){
+        return mEnable;
+    }
+
     protected Hook(Context hostContext){
         mHostContext=hostContext;
         mHookHandles=createHookHandle();
