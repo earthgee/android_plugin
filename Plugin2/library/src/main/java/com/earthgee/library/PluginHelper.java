@@ -6,6 +6,7 @@ import android.os.Message;
 import android.os.MessageQueue;
 import android.util.Log;
 
+import com.earthgee.library.core.PluginProcessManager;
 import com.earthgee.library.reflect.FieldUtils;
 import com.earthgee.library.reflect.MethodUtils;
 import com.earthgee.library.util.ActivityThreadCompat;
@@ -51,8 +52,15 @@ public class PluginHelper {
         try{
             fixMiuiLbeSecurity();
         }catch (Throwable e){
-
         }
+
+        try{
+            PluginPatchManager.getInstance().init(baseContext);
+            PluginProcessManager.installHook(baseContext);
+        }catch (Throwable e){
+        }
+
+
     }
 
     private void fixMiuiLbeSecurity() throws Exception{
