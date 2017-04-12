@@ -3,6 +3,7 @@ package com.earthgee.library.hook;
 import android.content.Context;
 
 import com.earthgee.library.hook.binder.IClipboardBinderHook;
+import com.earthgee.library.hook.binder.ISearchManagerBinderHook;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,14 @@ public class HookFactory {
 
     private List<Hook> mHookList=new ArrayList<>(3);
 
+    public void setHookEnable(boolean enable){
+        synchronized (mHookList){
+            for(Hook hook:mHookList){
+                hook.setEnable(enable);
+            }
+        }
+    }
+
     public void installHook(Hook hook,ClassLoader cl){
         try{
             hook.onInstall(cl);
@@ -39,6 +48,7 @@ public class HookFactory {
     public final void installHook(Context context,
                                   ClassLoader classLoader) throws Exception{
         installHook(new IClipboardBinderHook(context),classLoader);
+        installHook(new ISearchManagerBinderHook(context),classLoader);
 
     }
 

@@ -60,14 +60,17 @@ public class PluginHelper {
         }catch (Throwable e){
         }
 
-        try{
-            if(PluginProcessManager.isPluginProcess(baseContext)){
-                PluginProcessManager.setHookEnable(true);
-            }else {
-                PluginProcessManager.setHookEnable(false);
-            }
-        }catch (Throwable e){
-        }
+//        try{
+//            if(PluginProcessManager.isPluginProcess(baseContext)){
+//                PluginProcessManager.setHookEnable(true);
+//            }else {
+//                PluginProcessManager.setHookEnable(false);
+//            }
+//        }catch (Throwable e){
+//        }
+
+        PluginProcessManager.setHookEnable(true);
+
     }
 
     private void fixMiuiLbeSecurity() throws Exception{

@@ -11,7 +11,13 @@ android {
         versionName "1.0"
     }
     buildTypes {
+        debug{
+            buildConfigField("String","AUTHORITY_NAME","\"com.earthgee.plugin2\"")
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         release {
+            buildConfigField("String","AUTHORITY_NAME","\"com.earthgee.plugin2\"")
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
