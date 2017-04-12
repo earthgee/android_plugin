@@ -9,6 +9,11 @@ import com.earthgee.library.hook.HookFactory;
  */
 public class PluginProcessManager {
 
+    public static final boolean isPluginProcess(Context context){
+        String currentPorcessName=getCurrentProcessName(context);
+
+    }
+
     public static void installHook(Context hostContext) throws Throwable{
         HookFactory.getInstance().installHook(hostContext,null);
     }

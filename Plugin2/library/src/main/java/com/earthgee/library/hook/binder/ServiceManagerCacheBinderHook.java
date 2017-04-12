@@ -23,13 +23,13 @@ import java.util.Map;
 /**
  * Created by zhaoruixuan on 2017/4/11.
  */
-public class ServiceManagerCacheBinderHook extends Hook implements InvocationHandler{
+public class ServiceManagerCacheBinderHook extends Hook implements InvocationHandler {
 
     private String mServiceName;
 
-    protected ServiceManagerCacheBinderHook(Context hostContext,String servicename) {
+    protected ServiceManagerCacheBinderHook(Context hostContext, String servicename) {
         super(hostContext);
-        mServiceName=servicename;
+        mServiceName = servicename;
         setEnable(true);
     }
 
@@ -40,61 +40,59 @@ public class ServiceManagerCacheBinderHook extends Hook implements InvocationHan
 
     @Override
     protected void onInstall(ClassLoader classLoader) throws Throwable {
-        Object sCacheObj= FieldUtils.readStaticField(ServiceManagerCompat.Class(),"sCache");
-        if(sCacheObj instanceof Map){
-            Map sCache= (Map) sCacheObj;
-            Object obj=sCache.get(mServiceName);
-            if(obj!=null){
-                sCache.remove(mServiceName);
-                IBinder mServiceIBinder=ServiceManagerCompat.getService(mServiceName);
-                if(mServiceIBinder==null){
-                    if(obj!=null&&obj instanceof IBinder&& !Proxy.isProxyClass(obj.getClass())){
-                        mServiceIBinder= (IBinder) obj;
-                    }
+        Object sCacheObj = FieldUtils.readStaticField(ServiceManagerCompat.Class(), "sCache");
+        if (sCacheObj instanceof Map) {
+            Map sCache = (Map) sCacheObj;
+            Object obj = sCache.get(mServiceName);
+            sCache.remove(mServiceName);
+            IBinder mServiceIBinder = ServiceManagerCompat.getService(mServiceName);
+            if (mServiceIBinder == null) {
+                if (obj != null && obj instanceof IBinder && !Proxy.isProxyClass(obj.getClass())) {
+                    mServiceIBinder = (IBinder) obj;
                 }
-                if(mServiceIBinder!=null){
-                    MyServiceManager.addOriginService(mServiceName,mServiceIBinder);
-                    Class clazz=mServiceIBinder.getClass();
-                    List<Class<?>> interfaces= Utils.getAllInterfaces(clazz);
-                    Class[] ifs=interfaces!=null&&interfaces.size()>0?
-                            interfaces.toArray(new Class[interfaces.size()]):new Class[0];
-                    IBinder mProxyServiceIBinder= (IBinder) MyProxy.newProxyInstance(clazz.getClassLoader(),ifs,this);
-                    sCache.put(mServiceName,mProxyServiceIBinder);
-                    MyServiceManager.addProxiedServiceCache(mServiceName,mProxyServiceIBinder);
-                }
+            }
+            if (mServiceIBinder != null) {
+                MyServiceManager.addOriginService(mServiceName, mServiceIBinder);
+                Class clazz = mServiceIBinder.getClass();
+                List<Class<?>> interfaces = Utils.getAllInterfaces(clazz);
+                Class[] ifs = interfaces != null && interfaces.size() > 0 ?
+                        interfaces.toArray(new Class[interfaces.size()]) : new Class[0];
+                IBinder mProxyServiceIBinder = (IBinder) MyProxy.newProxyInstance(clazz.getClassLoader(), ifs, this);
+                sCache.put(mServiceName, mProxyServiceIBinder);
+                MyServiceManager.addProxiedServiceCache(mServiceName, mProxyServiceIBinder);
             }
         }
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        try{
-            IBinder originService=MyServiceManager.getOriginService(mServiceName);
-            if(!isEnable()){
-                return method.invoke(originService,args);
+        try {
+            IBinder originService = MyServiceManager.getOriginService(mServiceName);
+            if (!isEnable()) {
+                return method.invoke(originService, args);
             }
-            HookedMethodHandler hookedMethodHandler=mHookHandles.getHookedMethodHandler(method);
-            if(hookedMethodHandler!=null){
-                return hookedMethodHandler.doHookInner(originService,method,args);
-            }else{
-                return method.invoke(originService,args);
+            HookedMethodHandler hookedMethodHandler = mHookHandles.getHookedMethodHandler(method);
+            if (hookedMethodHandler != null) {
+                return hookedMethodHandler.doHookInner(originService, method, args);
+            } else {
+                return method.invoke(originService, args);
             }
-        }catch (InvocationTargetException e){
-            Throwable cause=e.getTargetException();
-            if(cause!=null&&MyProxy.isMethodDeclaredThrowable(method,cause)){
+        } catch (InvocationTargetException e) {
+            Throwable cause = e.getTargetException();
+            if (cause != null && MyProxy.isMethodDeclaredThrowable(method, cause)) {
                 throw cause;
-            }else if(cause!=null){
-                RuntimeException runtimeException=
+            } else if (cause != null) {
+                RuntimeException runtimeException =
                         !TextUtils.isEmpty(cause.getMessage())
                                 ? new RuntimeException(cause.getMessage()) : new RuntimeException();
                 runtimeException.initCause(e);
                 throw runtimeException;
-            }else {
+            } else {
                 RuntimeException runtimeException = !TextUtils.isEmpty(e.getMessage()) ? new RuntimeException(e.getMessage()) : new RuntimeException();
                 runtimeException.initCause(e);
                 throw runtimeException;
             }
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             try {
                 StringBuilder sb = new StringBuilder();
                 sb.append(" DROIDPLUGIN{");
@@ -115,7 +113,7 @@ public class ServiceManagerCacheBinderHook extends Hook implements InvocationHan
             } catch (Throwable e1) {
                 throw e;
             }
-        }catch (Throwable e) {
+        } catch (Throwable e) {
             if (MyProxy.isMethodDeclaredThrowable(method, e)) {
                 throw e;
             } else {
@@ -126,17 +124,17 @@ public class ServiceManagerCacheBinderHook extends Hook implements InvocationHan
         }
     }
 
-    private class ServiceManagerHookHandle extends BaseHookHandle{
+    private class ServiceManagerHookHandle extends BaseHookHandle {
         public ServiceManagerHookHandle(Context hostContext) {
             super(hostContext);
         }
 
         @Override
         protected void init() {
-            sHookedMethodHandlers.put("queryLocalInterface",new QueryLocalInterface(mHostContext));
+            sHookedMethodHandlers.put("queryLocalInterface", new QueryLocalInterface(mHostContext));
         }
 
-        class QueryLocalInterface extends HookedMethodHandler{
+        class QueryLocalInterface extends HookedMethodHandler {
 
             public QueryLocalInterface(Context hostContext) {
                 super(hostContext);
@@ -144,9 +142,9 @@ public class ServiceManagerCacheBinderHook extends Hook implements InvocationHan
 
             @Override
             protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
-                Object localInterface=invokeResult;
-                Object proxiedObj=MyServiceManager.getProxiedObj(mServiceName);
-                if(localInterface==null&&proxiedObj!=null){
+                Object localInterface = invokeResult;
+                Object proxiedObj = MyServiceManager.getProxiedObj(mServiceName);
+                if (localInterface == null && proxiedObj != null) {
                     setFakeResult(proxiedObj);
                 }
             }
