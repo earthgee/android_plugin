@@ -3,6 +3,7 @@ package com.earthgee.library.hook;
 import android.content.Context;
 
 import com.earthgee.library.hook.binder.IClipboardBinderHook;
+import com.earthgee.library.hook.binder.INotificationManagerBinderHook;
 import com.earthgee.library.hook.binder.ISearchManagerBinderHook;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class HookFactory {
                                   ClassLoader classLoader) throws Exception{
         installHook(new IClipboardBinderHook(context),classLoader);
         installHook(new ISearchManagerBinderHook(context),classLoader);
-        installHook(new INotificationManagerBinderHook(context,classLoader));
+        installHook(new INotificationManagerBinderHook(context),classLoader);
     }
 
 }

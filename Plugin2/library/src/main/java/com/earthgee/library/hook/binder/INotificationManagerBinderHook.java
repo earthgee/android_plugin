@@ -31,6 +31,6 @@ public class INotificationManagerBinderHook extends BinderHook{
 
     @Override
     protected BaseHookHandle createHookHandle() {
-        return new INotificationManagerHookHandle();
+        return null;
     }
 }

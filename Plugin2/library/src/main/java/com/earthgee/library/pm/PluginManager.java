@@ -22,12 +22,20 @@ public class PluginManager {
         return instance;
     }
 
-    public ActivityInfo getActivityInfo(ComponentName className,int flags) throws Exception{
-            if(className==null){
-                return null;
-            }
-
-            return null;
-    }
+//    private IPluginManager mPluginManager;
+//
+//    public ActivityInfo getActivityInfo(ComponentName className,int flags) throws Exception{
+//        try{
+//            if(className==null){
+//                return null;
+//            }
+//
+//            if(mPluginManager!=null&&className!=null){
+//                return mPluginManager.getActivityInfo(className,flags);
+//            }
+//        }
+//
+//        return null;
+//    }
 
 }

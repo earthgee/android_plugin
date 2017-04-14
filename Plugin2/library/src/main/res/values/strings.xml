@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Library</string>
+    <string name="service_name_plugin_manager_service">插件管理服务</string>
 </resources>

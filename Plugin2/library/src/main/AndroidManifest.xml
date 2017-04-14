@@ -6,6 +6,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
 
+        <service
+            android:name=".PluginManagerService"
+            android:label="@string/service_name_plugin_manager_service">
+        </service>
+
     </application>
 
 </manifest>

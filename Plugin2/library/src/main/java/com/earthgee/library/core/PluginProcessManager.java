@@ -44,7 +44,6 @@ public class PluginProcessManager {
 
         synchronized (sGetCurrentProcessNameLock){
             if(sCurrentProcessName==null){
-                //?
                 ActivityManager activityManager=
                         (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
                 List<ActivityManager.RunningAppProcessInfo> infos=
