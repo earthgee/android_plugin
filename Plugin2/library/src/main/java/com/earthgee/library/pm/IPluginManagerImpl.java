@@ -1,0 +1,317 @@
+package com.earthgee.library.pm;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PermissionGroupInfo;
+import android.content.pm.PermissionInfo;
+import android.content.pm.ProviderInfo;
+import android.content.pm.ResolveInfo;
+import android.content.pm.ServiceInfo;
+import android.os.RemoteException;
+
+import com.earthgee.library.IApplicationCallback;
+import com.earthgee.library.IPackageDataObserver;
+import com.earthgee.library.IPluginManager;
+import com.earthgee.library.am.BaseActivityManagerService;
+import com.earthgee.library.am.MyActivityManagerService;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by zhaoruixuan on 2017/4/14.
+ */
+public class IPluginManagerImpl extends IPluginManager.Stub{
+
+    private Context mContext;
+    private BaseActivityManagerService mActivityManagerService;
+
+    private final Object mLock=new Object();
+
+    public IPluginManagerImpl(Context context){
+        mContext=context;
+        mActivityManagerService=new MyActivityManagerService(mContext);
+    }
+
+    public void onCreate(){
+        new Thread(){
+            @Override
+            public void run() {
+                onCreateInner();
+            }
+        }.start();
+    }
+
+    private void onCreateInner(){
+        loadAllPlugin(mContext);
+        loadHostRequestPermission();
+        try{
+            mHasLoadedOk.set(true);
+            synchronized (mLock){
+                mLock.notifyAll();
+            }
+        }catch (Exception e){
+        }
+    }
+
+    private void loadAllPlugin(Context context){
+        long b=System.currentTimeMillis();
+        ArrayList<File> apkFiles=null;
+        try{
+            apkFiles=new ArrayList<>();
+            File baseDir=new File(PluginDirHelper.getBaseDir(context));
+        }catch (Exception e){
+        }
+    }
+
+    @Override
+    public boolean waitForReady() throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public PackageInfo getPackageInfo(String packageName, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public boolean isPluginPackage(String packageName) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public ActivityInfo getActivityInfo(ComponentName className, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public ActivityInfo getReceiverInfo(ComponentName className, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public ServiceInfo getServiceInfo(ComponentName className, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public ProviderInfo getProviderInfo(ComponentName className, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public ResolveInfo resolveIntent(Intent intent, String resolveType, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public List<ResolveInfo> queryIntentActivities(Intent intent, String resolvedType, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public List<ResolveInfo> queryIntentReceivers(Intent intent, String resolvedType, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public ResolveInfo resolveService(Intent intent, String resolvedType, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public List<ResolveInfo> queryIntentServices(Intent intent, String resolvedType, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public List<ResolveInfo> queryIntentContentProviders(Intent intent, String resolvedType, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public List<PackageInfo> getInstallPackages(int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public List<ApplicationInfo> getInstalledApplications(int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public PermissionInfo getPermissionInfo(String name, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public List<PermissionInfo> queryPermissionsByGroup(String group, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public PermissionGroupInfo getPermissionGroupInfo(String name, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public List<PermissionGroupInfo> getAllPermissionGroups(int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public ProviderInfo resolveContentProvider(String name, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public void deleteApplicationCacheFiles(String packageName, IPackageDataObserver observer) throws RemoteException {
+
+    }
+
+    @Override
+    public void clearApplicationUserData(String packageName, IPackageDataObserver observer) throws RemoteException {
+
+    }
+
+    @Override
+    public ApplicationInfo getApplicationInfo(String packageName, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public int installPackage(String filepath, int flags) throws RemoteException {
+        return 0;
+    }
+
+    @Override
+    public int deletePackage(String packageName, int flags) throws RemoteException {
+        return 0;
+    }
+
+    @Override
+    public List<ActivityInfo> getReceivers(String packageName, int flags) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public List<IntentFilter> getReceiverIntentFilter(ActivityInfo info) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public int checkSignatures(String pkg1, String pkg2) throws RemoteException {
+        return 0;
+    }
+
+    @Override
+    public ActivityInfo selectStubActivityInfo(ActivityInfo targetInfo) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public ActivityInfo selectStubActivityInfoByIntent(Intent targetIntent) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public ServiceInfo selectStubServiceInfo(ServiceInfo targetInfo) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public ServiceInfo selectStubServiceInfoByIntent(Intent targetIntent) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public ServiceInfo getTargetServiceInfo(ServiceInfo stubInfo) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public ProviderInfo selectStubProviderInfo(String name) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public List<String> getPackageNameByPid(int pid) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public String getProcessNameByPid(int pid) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public boolean killBackgroundProcesses(String packageName) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public boolean killApplicationProcess(String pluginPackageName) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public boolean forceStopPackage(String pluginPackageName) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public boolean registerApplicationCallback(IApplicationCallback callback) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public boolean unregisterApplicationCallback(IApplicationCallback callback) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public void onActivityCreated(ActivityInfo stubInfo, ActivityInfo targetInfo) throws RemoteException {
+
+    }
+
+    @Override
+    public void onActivityDestroy(ActivityInfo stubInfo, ActivityInfo targetInfo) throws RemoteException {
+
+    }
+
+    @Override
+    public void onServiceCreated(ServiceInfo stubInfo, ServiceInfo targetInfo) throws RemoteException {
+
+    }
+
+    @Override
+    public void onServiceDestroy(ServiceInfo stubInfo, ServiceInfo targetInfo) throws RemoteException {
+
+    }
+
+    @Override
+    public void onProviderCreated(ProviderInfo stubInfo, ProviderInfo targetInfo) throws RemoteException {
+
+    }
+
+    @Override
+    public void reportMyProcessName(String stubProcessName, String targetProcessName, String targetPkg) throws RemoteException {
+
+    }
+
+    @Override
+    public void onActivityOnNewIntent(ActivityInfo stubInfo, ActivityInfo targetInfo, Intent intent) throws RemoteException {
+
+    }
+
+    @Override
+    public int getMyPid() throws RemoteException {
+        return 0;
+    }
+}

@@ -1,12 +1,16 @@
 package com.earthgee.library;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.MessageQueue;
 import android.util.Log;
 
 import com.earthgee.library.core.PluginProcessManager;
+import com.earthgee.library.pm.PluginManager;
 import com.earthgee.library.reflect.FieldUtils;
 import com.earthgee.library.reflect.MethodUtils;
 import com.earthgee.library.util.ActivityThreadCompat;
@@ -16,7 +20,7 @@ import java.util.HashMap;
 /**
  * Created by zhaoruixuan on 2017/4/6.
  */
-public class PluginHelper {
+public class PluginHelper implements ServiceConnection{
 
     private static final String TAG=PluginHelper.class.getSimpleName();
 
@@ -48,6 +52,7 @@ public class PluginHelper {
      * @param baseContext
      */
     private void initPlugin(Context baseContext){
+        //日志记录时间消耗 暂且不用
         long b=System.currentTimeMillis();
         try{
             fixMiuiLbeSecurity();
@@ -69,8 +74,14 @@ public class PluginHelper {
 //        }catch (Throwable e){
 //        }
 
+        //权益之计
         PluginProcessManager.setHookEnable(true);
 
+        try{
+            PluginManager.getInstance().addServiceConnection(PluginHelper.this);
+            PluginManager.getInstance().init(baseContext);
+        }catch (Throwable e){
+        }
     }
 
     private void fixMiuiLbeSecurity() throws Exception{
@@ -132,6 +143,15 @@ public class PluginHelper {
         }
     }
 
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+
+    }
 }
 
 

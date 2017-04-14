@@ -34,7 +34,10 @@ public class ISearchManagerHookHandle extends BaseHookHandle{
         protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
             if(args!=null&&args.length>0&&args[args.length-1] instanceof ComponentName){
                 ComponentName cpn= (ComponentName) args[args.length-1];
-                //todo
+                ActivityInfo info=PluginManager.getInstance().getActivityInfo(cpn,0);
+                if(info!=null){
+
+                }
             }
             return super.beforeInvoke(receiver, method, args);
         }

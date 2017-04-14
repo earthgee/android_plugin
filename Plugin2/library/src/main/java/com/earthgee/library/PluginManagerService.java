@@ -6,17 +6,22 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.earthgee.library.pm.IPluginManagerImpl;
+
 /**
  * Created by zhaoruixuan on 2017/4/13.
  * 插件管理服务
  */
 public class PluginManagerService extends Service{
 
+    private IPluginManagerImpl mPluginPackageManager;
+
     @Override
     public void onCreate() {
         super.onCreate();
         keepAlive();
-
+        mPluginPackageManager=new IPluginManagerImpl(this);
+        mPluginPackageManager.onCreate();
     }
 
     private void keepAlive(){
@@ -29,9 +34,46 @@ public class PluginManagerService extends Service{
         }
     }
 
+    @Override
+    public void onDestroy() {
+        try{
+            mPluginPackageManager.onDestroy();
+        }catch (Exception e){
+
+        }
+        super.onDestroy();
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mPluginPackageManager;
     }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        IActivityManagerHookHandle.getIntentSender.handlePendingIntent(this,intent);
+        return super.onStartCommand(intent, flags, startId);
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
