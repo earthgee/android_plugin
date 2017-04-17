@@ -19,6 +19,8 @@ import com.earthgee.library.IPackageDataObserver;
 import com.earthgee.library.IPluginManager;
 import com.earthgee.library.am.BaseActivityManagerService;
 import com.earthgee.library.am.MyActivityManagerService;
+import com.earthgee.library.core.PluginDirHelper;
+import com.earthgee.library.pm.parser.PluginPackageParser;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -61,12 +63,30 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
     }
 
     private void loadAllPlugin(Context context){
-        long b=System.currentTimeMillis();
         ArrayList<File> apkFiles=null;
         try{
             apkFiles=new ArrayList<>();
             File baseDir=new File(PluginDirHelper.getBaseDir(context));
+            File[] dirs=baseDir.listFiles();
+            for(File dir:dirs){
+                if(dir.isDirectory()){
+                    File file=new File(dir,"apk/base-1.apk");
+                    if(file.exists()){
+                        apkFiles.add(file);
+                    }
+                }
+            }
         }catch (Exception e){
+        }
+
+        if(apkFiles!=null&&apkFiles.size()>0){
+            for(File pluginFile:apkFiles){
+                try{
+                    PluginPackageParser pluginPackageParser=new PluginPackageParser(mContext,pluginFile);
+                }catch (Throwable e){
+                }finally {
+                }
+            }
         }
     }
 
