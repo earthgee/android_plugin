@@ -9,5 +9,5 @@ android组件化，插件化，热发布学习
 ## plugin2  
 此插件参考https://github.com/DroidPluginTeam/DroidPlugin  
 原理:原理较为复杂,大致分为几部分  
-1.binder hook.通过反射获取到系统service binder的proxy,并进行动态代理,拦截关键方法使得插件可以使用系统服务
-
+1.binder hook.通过反射获取到系统service binder的proxy,并进行动态代理,拦截关键方法使得插件可以使用系统服务  
+2.通过一个service来加载已经安装到host内部的插件并管理application信息
