@@ -70,6 +70,8 @@ public abstract class PackageParser {
 
     public abstract List getPermissionGroups() throws Exception;
 
+    public abstract List getRequestedPermissions() throws Exception;
+
     public abstract List getReceivers() throws Exception;
 
     public abstract List getInstrumentations() throws Exception;

@@ -5,8 +5,12 @@ package com.earthgee.library.core;
  */
 
 import android.content.Context;
+import android.view.animation.CycleInterpolator;
 
 import java.io.File;
+import java.net.ConnectException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 插件目录结构
@@ -41,9 +45,71 @@ public class PluginDirHelper {
         return enforceDirExists(sBaseDir);
     }
 
+    public static String makePluginBaseDir(Context context,String pluginInfoPackageName){
+        init(context);
+        return enforceDirExists(new File(sBaseDir,pluginInfoPackageName));
+    }
 
+    public static String getPluginDataDir(Context context,String pluginInfoPackageName){
+        return enforceDirExists(new File(makePluginBaseDir(context,pluginInfoPackageName)
+                ,"data/"+pluginInfoPackageName));
+    }
+
+    public static String getPluginNativeLibraryDir(Context context,String pluginInfoPackageName){
+        return enforceDirExists(new File(makePluginBaseDir(context, pluginInfoPackageName),"lib"));
+    }
+
+    public static String getPluginSignatureDir(Context context,String pluginInfoPackageName){
+        return enforceDirExists(new File(makePluginBaseDir(context,pluginInfoPackageName),"Signature/"));
+    }
+
+    public static String getPluginSignatureFile(Context context,String pluginInfoPackageName,int index){
+        return new File(getPluginSignatureDir(context,pluginInfoPackageName),String.format("Signature_%s.key",index)).getPath();
+    }
+
+    public static List<String> getPluginSignatureFiles(Context context,String pluginInfoPackageName){
+        ArrayList<String> files=new ArrayList<>();
+        String dir=getPluginSignatureDir(context,pluginInfoPackageName);
+        File d=new File(dir);
+        File[] fs=d.listFiles();
+        if(fs!=null&&fs.length>0){
+            for(File f:fs){
+                files.add(f.getPath());
+            }
+        }
+        return files;
+    }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

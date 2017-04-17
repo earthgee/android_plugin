@@ -7,11 +7,13 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PermissionGroupInfo;
 import android.content.pm.PermissionInfo;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
+import android.content.pm.Signature;
 import android.os.RemoteException;
 
 import com.earthgee.library.IApplicationCallback;
@@ -21,10 +23,17 @@ import com.earthgee.library.am.BaseActivityManagerService;
 import com.earthgee.library.am.MyActivityManagerService;
 import com.earthgee.library.core.PluginDirHelper;
 import com.earthgee.library.pm.parser.PluginPackageParser;
+import com.earthgee.library.util.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by zhaoruixuan on 2017/4/14.
@@ -35,6 +44,11 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
     private BaseActivityManagerService mActivityManagerService;
 
     private final Object mLock=new Object();
+    private AtomicBoolean mHasLoadedOk=new AtomicBoolean(false);
+
+    private Map<String,PluginPackageParser> mPluginCache= Collections.synchronizedMap(new HashMap<String, PluginPackageParser>(20));
+    private Map<String,Signature[]> mSignatureCache=new HashMap<>();
+    private Set<String> mHostRequestedPermission=new HashSet<>(10);
 
     public IPluginManagerImpl(Context context){
         mContext=context;
@@ -62,6 +76,20 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
         }
     }
 
+    private void loadHostRequestPermission(){
+        try{
+            mHostRequestedPermission.clear();
+            PackageManager pm=mContext.getPackageManager();
+            PackageInfo pms=pm.getPackageInfo(mContext.getPackageName(),PackageManager.GET_PERMISSIONS);
+            if(pms!=null&&pms.requestedPermissions!=null&&pms.requestedPermissions.length>0){
+                for (String requestedPermission:pms.requestedPermissions){
+                    mHostRequestedPermission.add(requestedPermission);
+                }
+            }
+        }catch (Exception e){
+        }
+    }
+
     private void loadAllPlugin(Context context){
         ArrayList<File> apkFiles=null;
         try{
@@ -83,11 +111,71 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
             for(File pluginFile:apkFiles){
                 try{
                     PluginPackageParser pluginPackageParser=new PluginPackageParser(mContext,pluginFile);
+                    Signature[] signatures=readSignatures(pluginPackageParser.getPackageName());
+                    if(signatures==null||signatures.length<=0){
+                        pluginPackageParser.collectCertificates(0);
+                        PackageInfo info=pluginPackageParser.getPackageInfo(PackageManager.GET_SIGNATURES);
+                        saveSignatures(info);
+                    }else{
+                        mSignatureCache.put(pluginPackageParser.getPackageName(),signatures);
+                        pluginPackageParser.writeSignature(signatures);
+                    }
+                    if(!mPluginCache.containsKey(pluginPackageParser.getPackageName())){
+                        mPluginCache.put(pluginPackageParser.getPackageName(),pluginPackageParser);
+                    }
                 }catch (Throwable e){
                 }finally {
                 }
+
+                try{
+                    mActivityManagerService.onCreate(IPluginManagerImpl.this);
+                }catch (Throwable e){
+                }
             }
         }
+    }
+
+    private Signature[] readSignatures(String packageName){
+        List<String> files=PluginDirHelper.getPluginSignatureFiles(mContext,packageName);
+        List<Signature> signatures=new ArrayList<>(files.size());
+        int i=0;
+        for (String file:files){
+            try{
+                byte[] data= Utils.readFromFile(new File(file));
+                if(data!=null){
+                    Signature sin=new Signature(data);
+                    signatures.add(sin);
+                }else{
+                    return null;
+                }
+                i++;
+            }catch (Exception e){
+                return null;
+            }
+        }
+        return signatures.toArray(new Signature[signatures.size()]);
+    }
+
+    private void saveSignatures(PackageInfo pkgInfo){
+        if(pkgInfo!=null&&pkgInfo.signatures!=null){
+            int i=0;
+            for(Signature signature:pkgInfo.signatures){
+                File file=new File(PluginDirHelper.getPluginSignatureFile(mContext,pkgInfo.packageName,i));
+                try{
+                    Utils.writeToFile(file,signature.toByteArray());
+                }catch (Exception e){
+                    e.printStackTrace();
+                    file.delete();
+                    Utils.deleteDir(PluginDirHelper.getPluginSignatureDir(mContext,pkgInfo.packageName));
+                    break;
+                }
+                i++;
+            }
+        }
+    }
+
+    public void onDestroy(){
+        mActivityManagerService.onDestroy();
     }
 
     @Override
