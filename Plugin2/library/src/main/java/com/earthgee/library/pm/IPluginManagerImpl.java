@@ -14,6 +14,7 @@ import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.content.pm.Signature;
+import android.os.Binder;
 import android.os.RemoteException;
 
 import com.earthgee.library.IApplicationCallback;
@@ -180,7 +181,19 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public boolean waitForReady() throws RemoteException {
-        return false;
+        waitForReadyInner();
+        return true;
+    }
+
+    private void waitForReadyInner(){
+        if(!mHasLoadedOk.get()){
+            synchronized (mLock){
+                try{
+                    mLock.wait();
+                }catch (InterruptedException e){
+                }
+            }
+        }
     }
 
     @Override
@@ -375,7 +388,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public boolean registerApplicationCallback(IApplicationCallback callback) throws RemoteException {
-        return false;
+        return mActivityManagerService.registerApplicationCallback(Binder.getCallingPid(),Binder.getCallingUid(),callback);
     }
 
     @Override

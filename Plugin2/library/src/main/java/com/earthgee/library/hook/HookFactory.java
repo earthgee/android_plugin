@@ -36,6 +36,14 @@ public class HookFactory {
         }
     }
 
+    public void setHookEnable(boolean enable,boolean reinstallHook){
+        synchronized (mHookList){
+            for (Hook hook:mHookList){
+                hook.setEnable(enable,reinstallHook);
+            }
+        }
+    }
+
     public void installHook(Hook hook,ClassLoader cl){
         try{
             hook.onInstall(cl);

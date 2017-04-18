@@ -6,9 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.RemoteException;
 
 import com.earthgee.library.BuildConfig;
+import com.earthgee.library.IApplicationCallback;
 import com.earthgee.library.IPluginManager;
 import com.earthgee.library.PluginManagerService;
 
@@ -16,6 +19,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -76,8 +80,45 @@ public class PluginManager implements ServiceConnection{
     }
 
     @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
+    public void onServiceConnected(final ComponentName name, final IBinder service) {
+        mPluginManager=IPluginManager.Stub.asInterface(service);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mPluginManager.waitForReady();
+                    mPluginManager.registerApplicationCallback(new IApplicationCallback.Stub(){
+                        @Override
+                        public Bundle onCallback(Bundle extra) throws RemoteException {
+                            return extra;
+                        }
+                    });
 
+                    Iterator<WeakReference<ServiceConnection>> iterator=sServiceConnection.iterator();
+                    while (iterator.hasNext()){
+                        WeakReference<ServiceConnection> wsc=iterator.next();
+                        ServiceConnection sc=wsc!=null?wsc.get():null;
+                        if(sc!=null){
+                            sc.onServiceConnected(name,service);
+                        }else{
+                            iterator.remove();
+                        }
+                    }
+
+                    //read
+                    mPluginManager.asBinder().linkToDeath(new IBinder.DeathRecipient(){
+                        @Override
+                        public void binderDied() {
+                            
+                        }
+                    },0);
+                }catch (Throwable e){
+
+                }finally {
+
+                }
+            }
+        }).start();
     }
 
     @Override

@@ -119,6 +119,10 @@ public class PluginProcessManager {
         HookFactory.getInstance().setHookEnable(enable);
     }
 
+    public static void setHookEnable(boolean enable,boolean reinstallHook){
+        HookFactory.getInstance().setHookEnable(enable,reinstallHook);
+    }
+
 }
 
 

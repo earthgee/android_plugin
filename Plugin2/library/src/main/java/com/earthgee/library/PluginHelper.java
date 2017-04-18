@@ -65,17 +65,14 @@ public class PluginHelper implements ServiceConnection{
         }catch (Throwable e){
         }
 
-//        try{
-//            if(PluginProcessManager.isPluginProcess(baseContext)){
-//                PluginProcessManager.setHookEnable(true);
-//            }else {
-//                PluginProcessManager.setHookEnable(false);
-//            }
-//        }catch (Throwable e){
-//        }
-
-        //权益之计
-        PluginProcessManager.setHookEnable(true);
+        try{
+            if(PluginProcessManager.isPluginProcess(baseContext)){
+                PluginProcessManager.setHookEnable(true);
+            }else {
+                PluginProcessManager.setHookEnable(false);
+            }
+        }catch (Throwable e){
+        }
 
         try{
             PluginManager.getInstance().addServiceConnection(PluginHelper.this);
@@ -145,12 +142,11 @@ public class PluginHelper implements ServiceConnection{
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-
+        PluginProcessManager.setHookEnable(true,true);
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
-
     }
 }
 
