@@ -287,6 +287,26 @@ public class PluginPackageParser {
         }
     }
 
+    public File getPluginFile() {
+        return mPluginFile;
+    }
+
+    public ActivityInfo getActivityInfo(ComponentName className,int flags) throws Exception{
+        Object data;
+        synchronized (mActivityInfoCache){
+            data=mActivityInfoCache.get(className);
+        }
+        if(data!=null){
+            ActivityInfo activityInfo=mParser.generateActivityInfo(data,flags);
+            fixApplicationInfo(activityInfo.applicationInfo);
+            if(TextUtils.isEmpty(activityInfo.processName)){
+                activityInfo.processName=activityInfo.packageName;
+            }
+            return activityInfo;
+        }
+        return null;
+    }
+
 }
 
 

@@ -36,7 +36,10 @@ public class ISearchManagerHookHandle extends BaseHookHandle{
                 ComponentName cpn= (ComponentName) args[args.length-1];
                 ActivityInfo info=PluginManager.getInstance().getActivityInfo(cpn,0);
                 if(info!=null){
-
+                    ActivityInfo proxyInfo=PluginManager.getInstance().selectStubActivityInfo(info);
+                    if(proxyInfo!=null){
+                        args[args.length-1]=new ComponentName(proxyInfo.packageName,proxyInfo.name);
+                    }
                 }
             }
             return super.beforeInvoke(receiver, method, args);

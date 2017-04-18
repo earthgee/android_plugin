@@ -74,6 +74,8 @@ public class PluginManager implements ServiceConnection{
             if(mPluginManager!=null&&className!=null){
                 return mPluginManager.getActivityInfo(className,flags);
             }
+        }catch (RemoteException e){
+        }catch (Exception e){
         }
 
         return null;
@@ -109,13 +111,17 @@ public class PluginManager implements ServiceConnection{
                     mPluginManager.asBinder().linkToDeath(new IBinder.DeathRecipient(){
                         @Override
                         public void binderDied() {
-                            
+                            onServiceDisconnected(name);
                         }
                     },0);
                 }catch (Throwable e){
-
                 }finally {
-
+                    try{
+                        synchronized (mWaitLock){
+                            mWaitLock.notifyAll();
+                        }
+                    }catch (Exception e){
+                    }
                 }
             }
         }).start();
@@ -123,6 +129,51 @@ public class PluginManager implements ServiceConnection{
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
+        mPluginManager=null;
 
+        Iterator<WeakReference<ServiceConnection>> iterator=sServiceConnection.iterator();
+        while (iterator.hasNext()){
+            WeakReference<ServiceConnection> wsc=iterator.next();
+            ServiceConnection sc=wsc!=null?wsc.get():null;
+            if(sc!=null){
+                sc.onServiceDisconnected(name);
+            }else{
+                iterator.remove();
+            }
+        }
+        connectToService();
     }
+
+    private Object mWaitLock=new Object();
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

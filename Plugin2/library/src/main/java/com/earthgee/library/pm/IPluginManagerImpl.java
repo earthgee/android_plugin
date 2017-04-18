@@ -15,6 +15,7 @@ import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.content.pm.Signature;
 import android.os.Binder;
+import android.os.Build;
 import android.os.RemoteException;
 
 import com.earthgee.library.IApplicationCallback;
@@ -208,6 +209,19 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public ActivityInfo getActivityInfo(ComponentName className, int flags) throws RemoteException {
+        waitForReady();
+        try{
+            String pkg=className.getPackageName();
+            if(pkg!=null){
+                enforcePluginFileExists();
+                PluginPackageParser packageParser=mPluginCache.get(className.getPackageName());
+                if(packageParser!=null){
+                    return packageParser.getActivityInfo(className,flags);
+                }
+            }
+        }catch (Exception e){
+            handleException(e);
+        }
         return null;
     }
 
@@ -435,4 +449,57 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
     public int getMyPid() throws RemoteException {
         return 0;
     }
+
+    private void enforcePluginFileExists() throws RemoteException{
+        List<String> removedPkg=new ArrayList<>();
+        for(String pkg:mPluginCache.keySet()){
+            PluginPackageParser parser=mPluginCache.get(pkg);
+            File pluginFile=parser.getPluginFile();
+            if(pluginFile!=null&&pluginFile.exists()){
+            }else {
+                removedPkg.add(pkg);
+            }
+        }
+        for(String pkg:removedPkg){
+            deletePackage(pkg,0);
+        }
+    }
+
+    private void handleException(Exception e) throws RemoteException {
+        RemoteException remoteException;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+            remoteException = new RemoteException(e.getMessage());
+            remoteException.initCause(e);
+            remoteException.setStackTrace(e.getStackTrace());
+        } else {
+            remoteException = new RemoteException();
+            remoteException.initCause(e);
+            remoteException.setStackTrace(e.getStackTrace());
+        }
+        throw remoteException;
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
