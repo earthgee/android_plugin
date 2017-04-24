@@ -13,11 +13,14 @@ import android.content.pm.ServiceInfo;
 import android.content.pm.Signature;
 import android.os.Build;
 
+import com.earthgee.library.reflect.FieldUtils;
 import com.earthgee.library.reflect.MethodUtils;
 import com.earthgee.library.util.UserHandleCompat;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -134,71 +137,89 @@ public class PackageParserApi21 extends PackageParser{
 
         try{
             Method method=MethodUtils.getAccessibleMethod(sPackageParserClass,"generatePackageInfo",mPackage.getClass(),
-                    int[].class,int.class,long.class,long.class,sArraySetClass,sPackageUserStateClass,int.class);
-            return method.invoke(null,mPackage,gids,flags,firstInstallTime,lastUpdateTime,
-                    )
+                    int[].class,int.class,long.class,long.class,HashSet.class,sPackageUserStateClass,int.class);
+            return (PackageInfo) method.invoke(null,mPackage,gids,flags,firstInstallTime,lastUpdateTime,
+                    grantedPermission,mDefaultPackageUserState,mUserId);
         }catch (NoSuchMethodException e){
         }
-        return null;
+
+        try{
+            Method method=MethodUtils.getAccessibleMethod(sPackageParserClass,"generatePackageInfo",mPackage.getClass(),
+                    int[].class,int.class,long.class,long.class,sArraySetClass,sPackageUserStateClass,int.class);
+            Object grantedPermissionsArray=null;
+            try{
+                Constructor constructor=sArraySetClass.getConstructor(Collection.class);
+                grantedPermissionsArray=constructor.newInstance(grantedPermission);
+            }catch (Exception e){
+            }
+            if(grantedPermissionsArray==null){
+                grantedPermissionsArray=grantedPermission;
+            }
+            return (PackageInfo) method.invoke(null,mPackage,gids,flags,firstInstallTime,lastUpdateTime,grantedPermissionsArray,
+                    mDefaultPackageUserState,mUserId);
+        }catch (NoSuchMethodException e){
+
+        }
+        throw new NoSuchMethodException("Can not found method generatePackageInfo");
     }
 
     @Override
     public List getActivities() throws Exception {
-        return null;
+        return (List) FieldUtils.readField(mPackage,"activities");
     }
 
     @Override
     public List getServices() throws Exception {
-        return null;
+        return (List) FieldUtils.readField(mPackage,"services");
     }
 
     @Override
     public List getProviders() throws Exception {
-        return null;
+        return (List) FieldUtils.readField(mPackage,"providers");
     }
 
     @Override
     public List getPermissions() throws Exception {
-        return null;
+        return (List) FieldUtils.readField(mPackage,"permissions");
     }
 
     @Override
     public List getPermissionGroups() throws Exception {
-        return null;
+        return (List) FieldUtils.readField(mPackage,"permissionGroups");
     }
 
     @Override
     public List getRequestedPermissions() throws Exception {
-        return null;
+        return (List) FieldUtils.readField(mPackage,"requestedPermissions");
     }
 
     @Override
     public List getReceivers() throws Exception {
-        return null;
+        return (List) FieldUtils.readField(mPackage,"receivers");
     }
 
     @Override
     public List getInstrumentations() throws Exception {
-        return null;
+        return (List) FieldUtils.readField(mPackage,"instrumentation");
     }
 
     @Override
     public String getPackageName() throws Exception {
-        return null;
+        return (String) FieldUtils.readField(mPackage,"packageName");
     }
 
     @Override
     public String readNameFromComponent(Object data) throws Exception {
-        return null;
+        return (String) FieldUtils.readField(data,"className");
     }
 
     @Override
     public List<IntentFilter> readIntentFilterFromComponent(Object data) throws Exception {
-        return null;
+        return (List<IntentFilter>) FieldUtils.readField(data,"intents");
     }
 
     @Override
     public void writeSignature(Signature[] signatures) throws Exception {
-
+        FieldUtils.writeField(mPackage,"mSignatures",signatures);
     }
 }

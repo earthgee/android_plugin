@@ -1,5 +1,6 @@
 package com.earthgee.library.reflect;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -241,6 +242,25 @@ public class MethodUtils {
         }
         return method.invoke(object,args);
     }
+
+    public static <T> T invokeConstructor(final Class<T> cls,Object... args) throws Exception{
+        args=Utils.nullToEmpty(args);
+        final Class<?>[] parameterTypes=Utils.toClass(args);
+        return invokeConstructor(cls,args,parameterTypes);
+    }
+
+    public static <T> T invokeConstructor(final Class<T> cls,
+                                          Object[] args,Class<?>[] parameters) throws Exception{
+        args=Utils.nullToEmpty(args);
+        parameters=Utils.nullToEmpty(parameters);
+        final Constructor<T> ctor=getMatchingAccessibleConstructor(cls,parameters);
+        if(ctor==null){
+            throw new NoSuchMethodException("No such accessible constructor on object: "+cls.getName());
+        }
+        return ctor.newInstance(args);
+    }
+
+
 
 }
 

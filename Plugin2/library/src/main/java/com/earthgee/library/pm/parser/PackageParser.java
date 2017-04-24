@@ -13,12 +13,10 @@ import android.content.pm.ProviderInfo;
 import android.content.pm.ServiceInfo;
 import android.content.pm.Signature;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
 
 import com.earthgee.library.util.SystemPropertiesCompat;
 
 import java.io.File;
-import java.net.ConnectException;
 import java.util.HashSet;
 import java.util.List;
 
@@ -88,7 +86,7 @@ public abstract class PackageParser {
         if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.LOLLIPOP_MR1){
             if("1".equals(SystemPropertiesCompat.
                     get("ro.build.version.perview_sdk",""))){
-                return new PackageParserApiPreview1(context);
+                return new PackageParserApi22Preview1(context);
             }else{
                 return new PackageParserApi22(context);
             }

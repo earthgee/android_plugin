@@ -13,9 +13,9 @@ import java.util.HashSet;
 /**
  * Created by zhaoruixuan on 2017/4/17.
  */
-public class PackageParserApi22 extends PackageParserApi21{
+public class PackageParserApi22Preview1 extends PackageParserApi21{
 
-    PackageParserApi22(Context context) throws Exception {
+    PackageParserApi22Preview1(Context context) throws Exception {
         super(context);
     }
 
@@ -42,28 +42,5 @@ public class PackageParserApi22 extends PackageParserApi21{
         return (PackageInfo) method.invoke(null,mPackage,gids,flags,firstInstallTime,lastUpdateTime,grantedPermissionsArray,
                 mDefaultPackageUserState,mUserId);
     }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
