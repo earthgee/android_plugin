@@ -144,6 +144,27 @@ public class MethodUtils {
         return method.invoke(null,args);
     }
 
+    public static Method getAccessibleMethod(final Class<?> cls,final String methodName
+                ,final Class<?>... parameterTypes) throws Exception{
+        String key=getKey(cls,methodName,parameterTypes);
+        Method method;
+        synchronized (sMethodCache){
+            method=sMethodCache.get(key);
+        }
+        if(method!=null){
+            if(!method.isAccessible()){
+                method.setAccessible(true);
+            }
+            return method;
+        }
+
+        Method accessibleMethod=getAccessibleMethod(cls.getMethod(methodName,parameterTypes));
+        synchronized (sMethodCache){
+            sMethodCache.put(key,accessibleMethod);
+        }
+        return accessibleMethod;
+    }
+
     /**
      * 寻找合适方法
      * @param cls 类信息

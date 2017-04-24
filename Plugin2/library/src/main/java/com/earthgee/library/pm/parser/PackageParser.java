@@ -53,7 +53,7 @@ public abstract class PackageParser {
 
     public abstract ApplicationInfo generateApplicationInfo(int flags) throws Exception;
 
-    public abstract PermissionGroupInfo generatePermissionGroupInfo(Object permission,int flags);
+    public abstract PermissionGroupInfo generatePermissionGroupInfo(Object permission,int flags) throws Exception;
 
     public abstract PermissionInfo generatePermissionInfo(Object permission,int flags) throws Exception;
 
