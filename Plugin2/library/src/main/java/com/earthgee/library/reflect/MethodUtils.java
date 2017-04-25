@@ -260,7 +260,52 @@ public class MethodUtils {
         return ctor.newInstance(args);
     }
 
+    public static <T> Constructor<T> getMatchingAccessibleConstructor(final Class<T> cls
+            ,final Class<?>... parameterTypes){
+        Validate.isTrue(cls!=null,"class cannot be null");
+        try{
+            final Constructor<T> ctor=cls.getConstructor(parameterTypes);
+            MemberUtils.setAccessibleWorkaround(ctor);
+            return ctor;
+        }catch (NoSuchMethodException e){
+        }
 
+        Constructor<T> result=null;
+        final Constructor<?>[] ctors=cls.getConstructors();
+
+        for(Constructor<?> ctor:ctors){
+            if(MemberUtils.isAssignable(parameterTypes,ctor.getParameterTypes(),true)){
+                ctor=getAccessibleConstructor(ctor);
+                if(ctor!=null){
+                    MemberUtils.setAccessibleWorkaround(ctor);
+                    if(result==null||MemberUtils.compareParameterTypes(
+                            ctor.getParameterTypes(),result.getParameterTypes(),
+                            parameterTypes
+                    )<0){
+                        final Constructor<T> constructor= (Constructor<T>) ctor;
+                        result=constructor;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private static <T> Constructor<T> getAccessibleConstructor(final Constructor<T> ctor){
+        Validate.isTrue(ctor!=null,"constructor cannot be null");
+        return MemberUtils.isAccessible(ctor)&&isAccessible(ctor.getDeclaringClass())?ctor:null;
+    }
+
+    private static boolean isAccessible(final Class<?> type){
+        Class<?> cls=type;
+        while (cls!=null){
+            if(!Modifier.isPublic(cls.getModifiers())){
+                return false;
+            }
+            cls=cls.getEnclosingClass();
+        }
+        return true;
+    }
 
 }
 

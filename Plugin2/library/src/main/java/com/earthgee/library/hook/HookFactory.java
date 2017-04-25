@@ -59,6 +59,7 @@ public class HookFactory {
         installHook(new IClipboardBinderHook(context),classLoader);
         installHook(new ISearchManagerBinderHook(context),classLoader);
         installHook(new INotificationManagerBinderHook(context),classLoader);
+        installHook(new IMountServiceBinderHook(context),classLoader);
     }
 
 }
