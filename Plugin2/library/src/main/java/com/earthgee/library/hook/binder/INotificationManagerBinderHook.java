@@ -5,6 +5,7 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import com.earthgee.library.hook.BaseHookHandle;
+import com.earthgee.library.hook.handle.INotificationManagerHookHandle;
 import com.earthgee.library.util.INotificationManagerCompat;
 
 /**
@@ -31,6 +32,6 @@ public class INotificationManagerBinderHook extends BinderHook{
 
     @Override
     protected BaseHookHandle createHookHandle() {
-        return null;
+        return new INotificationManagerHookHandle(mHostContext);
     }
 }

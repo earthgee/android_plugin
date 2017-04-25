@@ -204,7 +204,9 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public boolean isPluginPackage(String packageName) throws RemoteException {
-        return false;
+        waitForReady();
+        enforcePluginFileExists();
+        return mPluginCache.containsKey(packageName);
     }
 
     @Override

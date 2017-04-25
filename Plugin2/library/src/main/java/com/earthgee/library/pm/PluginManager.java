@@ -9,6 +9,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.text.TextUtils;
 
 import com.earthgee.library.BuildConfig;
 import com.earthgee.library.IApplicationCallback;
@@ -146,7 +147,24 @@ public class PluginManager implements ServiceConnection{
 
     private Object mWaitLock=new Object();
 
+    public boolean isPluginPackage(String packageName) throws RemoteException{
+        try{
+            if(mHostContext==null){
+                return false;
+            }
+            if(TextUtils.equals(mHostContext.getPackageName(),packageName)){
+                return false;
+            }
 
+            if(mPluginManager!=null&&packageName!=null){
+                return mPluginManager.isPluginPackage(packageName);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return false;
+    }
 
 }
 

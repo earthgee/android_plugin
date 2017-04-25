@@ -9,11 +9,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.regex.Pattern;
 
 /**
  * Created by zhaoruixuan on 2017/4/17.
  */
 public class Utils {
+
+    private static final String VALID_JAVA_IDENTIFIER="(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*\\.)*\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*";
+    private static final Pattern ANDROID_DATA_PATTERN=Pattern.compile(VALID_JAVA_IDENTIFIER);
+
+    public static boolean valideJavaIdentifier(String identifier){
+        return ANDROID_DATA_PATTERN.matcher(identifier).matches();
+    }
 
     public static void deleteDir(String file){
         deleteFile(new File(file));
