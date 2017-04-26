@@ -365,9 +365,9 @@ public class INotificationManagerHookHandle extends BaseHookHandle {
         }
     }
 
-    private class cancelAllNotification extends MyNotification{
+    private class cancelAllNotifications extends MyNotification{
 
-        public cancelAllNotification(Context hostContext) {
+        public cancelAllNotifications(Context hostContext) {
             super(hostContext);
         }
     }
@@ -398,7 +398,113 @@ public class INotificationManagerHookHandle extends BaseHookHandle {
         }
     }
 
+    private class cancelToast extends MyNotification{
 
+        public cancelToast(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            int index=1;
+            if(args!=null&&args.length>index){
+                Object obj=args[index];
+                View view= (View) FieldUtils.readField(obj,"mView");
+                View nextView= (View) FieldUtils.readField(obj,"mNextView");
+                if(nextView!=null){
+                    FieldUtils.writeField(nextView,"mContext",mHostContext);
+                }
+                if(view!=null){
+                    FieldUtils.writeField(view,"mContext",mHostContext);
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class enqueueNotificationWithTag extends MyNotification{
+
+        public enqueueNotificationWithTag(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            final int index=0;
+            if(args!=null&&args.length>index&&args[index] instanceof String){
+                String pkg= (String) args[index];
+                if(!TextUtils.equals(pkg,mHostContext.getPackageName())){
+                    args[index]=mHostContext.getPackageName();
+                }
+            }
+            final int index2=findFirstNotificationIndex(args);
+            if(index2>=0){
+                Notification notification= (Notification) args[index2];
+                if(isPluginNotification(notification)){
+                    if(shouldBlock(notification)){
+                        return true;
+                    }else{
+                        hackNotification(notification);
+                        return false;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+
+    private class enqueueNotificationWithTagPriority extends MyNotification{
+
+        public enqueueNotificationWithTagPriority(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            final int index=0;
+            if(args!=null&&args.length>index&&args[index] instanceof String){
+                String pkg= (String) args[index];
+                if(!TextUtils.equals(pkg,mHostContext.getPackageName())){
+                    args[index]=mHostContext.getPackageName();
+                }
+            }
+            final int index2=findFirstNotificationIndex(args);
+            if(index2>=0){
+                Notification notification= (Notification) args[index2];
+                if(isPluginNotification(notification)){
+                    if(shouldBlock(notification)){
+                        return true;
+                    }else{
+                        hackNotification(notification);
+                        return false;
+                    }
+                }
+            }
+            return false;
+        }
+
+    }
+
+    private class cancelNotificationWithTag extends MyNotification{
+
+        public cancelNotificationWithTag(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private class setNotificationsEnabledForPackage extends MyNotification{
+
+        public setNotificationsEnabledForPackage(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private class areNotificationsEnabledForPackage extends MyNotification{
+
+        public areNotificationsEnabledForPackage(Context hostContext) {
+            super(hostContext);
+        }
+    }
 
 }
 

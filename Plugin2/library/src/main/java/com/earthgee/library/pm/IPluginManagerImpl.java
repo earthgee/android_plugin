@@ -17,6 +17,7 @@ import android.content.pm.Signature;
 import android.os.Binder;
 import android.os.Build;
 import android.os.RemoteException;
+import android.text.TextUtils;
 
 import com.earthgee.library.IApplicationCallback;
 import com.earthgee.library.IPackageDataObserver;
@@ -40,25 +41,25 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by zhaoruixuan on 2017/4/14.
  */
-public class IPluginManagerImpl extends IPluginManager.Stub{
+public class IPluginManagerImpl extends IPluginManager.Stub {
 
     private Context mContext;
     private BaseActivityManagerService mActivityManagerService;
 
-    private final Object mLock=new Object();
-    private AtomicBoolean mHasLoadedOk=new AtomicBoolean(false);
+    private final Object mLock = new Object();
+    private AtomicBoolean mHasLoadedOk = new AtomicBoolean(false);
 
-    private Map<String,PluginPackageParser> mPluginCache= Collections.synchronizedMap(new HashMap<String, PluginPackageParser>(20));
-    private Map<String,Signature[]> mSignatureCache=new HashMap<>();
-    private Set<String> mHostRequestedPermission=new HashSet<>(10);
+    private Map<String, PluginPackageParser> mPluginCache = Collections.synchronizedMap(new HashMap<String, PluginPackageParser>(20));
+    private Map<String, Signature[]> mSignatureCache = new HashMap<>();
+    private Set<String> mHostRequestedPermission = new HashSet<>(10);
 
-    public IPluginManagerImpl(Context context){
-        mContext=context;
-        mActivityManagerService=new MyActivityManagerService(mContext);
+    public IPluginManagerImpl(Context context) {
+        mContext = context;
+        mActivityManagerService = new MyActivityManagerService(mContext);
     }
 
-    public void onCreate(){
-        new Thread(){
+    public void onCreate() {
+        new Thread() {
             @Override
             public void run() {
                 onCreateInner();
@@ -66,109 +67,109 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
         }.start();
     }
 
-    private void onCreateInner(){
+    private void onCreateInner() {
         loadAllPlugin(mContext);
         loadHostRequestPermission();
-        try{
+        try {
             mHasLoadedOk.set(true);
-            synchronized (mLock){
+            synchronized (mLock) {
                 mLock.notifyAll();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
         }
     }
 
-    private void loadHostRequestPermission(){
-        try{
+    private void loadHostRequestPermission() {
+        try {
             mHostRequestedPermission.clear();
-            PackageManager pm=mContext.getPackageManager();
-            PackageInfo pms=pm.getPackageInfo(mContext.getPackageName(),PackageManager.GET_PERMISSIONS);
-            if(pms!=null&&pms.requestedPermissions!=null&&pms.requestedPermissions.length>0){
-                for (String requestedPermission:pms.requestedPermissions){
+            PackageManager pm = mContext.getPackageManager();
+            PackageInfo pms = pm.getPackageInfo(mContext.getPackageName(), PackageManager.GET_PERMISSIONS);
+            if (pms != null && pms.requestedPermissions != null && pms.requestedPermissions.length > 0) {
+                for (String requestedPermission : pms.requestedPermissions) {
                     mHostRequestedPermission.add(requestedPermission);
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
         }
     }
 
-    private void loadAllPlugin(Context context){
-        ArrayList<File> apkFiles=null;
-        try{
-            apkFiles=new ArrayList<>();
-            File baseDir=new File(PluginDirHelper.getBaseDir(context));
-            File[] dirs=baseDir.listFiles();
-            for(File dir:dirs){
-                if(dir.isDirectory()){
-                    File file=new File(dir,"apk/base-1.apk");
-                    if(file.exists()){
+    private void loadAllPlugin(Context context) {
+        ArrayList<File> apkFiles = null;
+        try {
+            apkFiles = new ArrayList<>();
+            File baseDir = new File(PluginDirHelper.getBaseDir(context));
+            File[] dirs = baseDir.listFiles();
+            for (File dir : dirs) {
+                if (dir.isDirectory()) {
+                    File file = new File(dir, "apk/base-1.apk");
+                    if (file.exists()) {
                         apkFiles.add(file);
                     }
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
         }
 
-        if(apkFiles!=null&&apkFiles.size()>0){
-            for(File pluginFile:apkFiles){
-                try{
-                    PluginPackageParser pluginPackageParser=new PluginPackageParser(mContext,pluginFile);
-                    Signature[] signatures=readSignatures(pluginPackageParser.getPackageName());
-                    if(signatures==null||signatures.length<=0){
+        if (apkFiles != null && apkFiles.size() > 0) {
+            for (File pluginFile : apkFiles) {
+                try {
+                    PluginPackageParser pluginPackageParser = new PluginPackageParser(mContext, pluginFile);
+                    Signature[] signatures = readSignatures(pluginPackageParser.getPackageName());
+                    if (signatures == null || signatures.length <= 0) {
                         pluginPackageParser.collectCertificates(0);
-                        PackageInfo info=pluginPackageParser.getPackageInfo(PackageManager.GET_SIGNATURES);
+                        PackageInfo info = pluginPackageParser.getPackageInfo(PackageManager.GET_SIGNATURES);
                         saveSignatures(info);
-                    }else{
-                        mSignatureCache.put(pluginPackageParser.getPackageName(),signatures);
+                    } else {
+                        mSignatureCache.put(pluginPackageParser.getPackageName(), signatures);
                         pluginPackageParser.writeSignature(signatures);
                     }
-                    if(!mPluginCache.containsKey(pluginPackageParser.getPackageName())){
-                        mPluginCache.put(pluginPackageParser.getPackageName(),pluginPackageParser);
+                    if (!mPluginCache.containsKey(pluginPackageParser.getPackageName())) {
+                        mPluginCache.put(pluginPackageParser.getPackageName(), pluginPackageParser);
                     }
-                }catch (Throwable e){
-                }finally {
+                } catch (Throwable e) {
+                } finally {
                 }
 
-                try{
+                try {
                     mActivityManagerService.onCreate(IPluginManagerImpl.this);
-                }catch (Throwable e){
+                } catch (Throwable e) {
                 }
             }
         }
     }
 
-    private Signature[] readSignatures(String packageName){
-        List<String> files=PluginDirHelper.getPluginSignatureFiles(mContext,packageName);
-        List<Signature> signatures=new ArrayList<>(files.size());
-        int i=0;
-        for (String file:files){
-            try{
-                byte[] data= Utils.readFromFile(new File(file));
-                if(data!=null){
-                    Signature sin=new Signature(data);
+    private Signature[] readSignatures(String packageName) {
+        List<String> files = PluginDirHelper.getPluginSignatureFiles(mContext, packageName);
+        List<Signature> signatures = new ArrayList<>(files.size());
+        int i = 0;
+        for (String file : files) {
+            try {
+                byte[] data = Utils.readFromFile(new File(file));
+                if (data != null) {
+                    Signature sin = new Signature(data);
                     signatures.add(sin);
-                }else{
+                } else {
                     return null;
                 }
                 i++;
-            }catch (Exception e){
+            } catch (Exception e) {
                 return null;
             }
         }
         return signatures.toArray(new Signature[signatures.size()]);
     }
 
-    private void saveSignatures(PackageInfo pkgInfo){
-        if(pkgInfo!=null&&pkgInfo.signatures!=null){
-            int i=0;
-            for(Signature signature:pkgInfo.signatures){
-                File file=new File(PluginDirHelper.getPluginSignatureFile(mContext,pkgInfo.packageName,i));
-                try{
-                    Utils.writeToFile(file,signature.toByteArray());
-                }catch (Exception e){
+    private void saveSignatures(PackageInfo pkgInfo) {
+        if (pkgInfo != null && pkgInfo.signatures != null) {
+            int i = 0;
+            for (Signature signature : pkgInfo.signatures) {
+                File file = new File(PluginDirHelper.getPluginSignatureFile(mContext, pkgInfo.packageName, i));
+                try {
+                    Utils.writeToFile(file, signature.toByteArray());
+                } catch (Exception e) {
                     e.printStackTrace();
                     file.delete();
-                    Utils.deleteDir(PluginDirHelper.getPluginSignatureDir(mContext,pkgInfo.packageName));
+                    Utils.deleteDir(PluginDirHelper.getPluginSignatureDir(mContext, pkgInfo.packageName));
                     break;
                 }
                 i++;
@@ -176,7 +177,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
         }
     }
 
-    public void onDestroy(){
+    public void onDestroy() {
         mActivityManagerService.onDestroy();
     }
 
@@ -186,12 +187,12 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
         return true;
     }
 
-    private void waitForReadyInner(){
-        if(!mHasLoadedOk.get()){
-            synchronized (mLock){
-                try{
+    private void waitForReadyInner() {
+        if (!mHasLoadedOk.get()) {
+            synchronized (mLock) {
+                try {
                     mLock.wait();
-                }catch (InterruptedException e){
+                } catch (InterruptedException e) {
                 }
             }
         }
@@ -212,16 +213,16 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
     @Override
     public ActivityInfo getActivityInfo(ComponentName className, int flags) throws RemoteException {
         waitForReady();
-        try{
-            String pkg=className.getPackageName();
-            if(pkg!=null){
+        try {
+            String pkg = className.getPackageName();
+            if (pkg != null) {
                 enforcePluginFileExists();
-                PluginPackageParser packageParser=mPluginCache.get(className.getPackageName());
-                if(packageParser!=null){
-                    return packageParser.getActivityInfo(className,flags);
+                PluginPackageParser packageParser = mPluginCache.get(className.getPackageName());
+                if (packageParser != null) {
+                    return packageParser.getActivityInfo(className, flags);
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             handleException(e);
         }
         return null;
@@ -304,21 +305,38 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public ProviderInfo resolveContentProvider(String name, int flags) throws RemoteException {
+        waitForReady();
+        try {
+            enforcePluginFileExists();
+            for (PluginPackageParser pluginPackageParser : mPluginCache.values()) {
+                List<ProviderInfo> providerInfos = pluginPackageParser.getProviders();
+                for (ProviderInfo providerInfo : providerInfos) {
+                    if (TextUtils.equals(providerInfo.authority, name)) {
+                        return providerInfo;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            handleException(e);
+        }
         return null;
     }
 
     @Override
-    public void deleteApplicationCacheFiles(String packageName, IPackageDataObserver observer) throws RemoteException {
+    public void deleteApplicationCacheFiles(String packageName, IPackageDataObserver
+            observer) throws RemoteException {
 
     }
 
     @Override
-    public void clearApplicationUserData(String packageName, IPackageDataObserver observer) throws RemoteException {
+    public void clearApplicationUserData(String packageName, IPackageDataObserver
+            observer) throws RemoteException {
 
     }
 
     @Override
-    public ApplicationInfo getApplicationInfo(String packageName, int flags) throws RemoteException {
+    public ApplicationInfo getApplicationInfo(String packageName, int flags) throws
+            RemoteException {
         return null;
     }
 
@@ -353,7 +371,8 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
     }
 
     @Override
-    public ActivityInfo selectStubActivityInfoByIntent(Intent targetIntent) throws RemoteException {
+    public ActivityInfo selectStubActivityInfoByIntent(Intent targetIntent) throws
+            RemoteException {
         return null;
     }
 
@@ -374,7 +393,8 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public ProviderInfo selectStubProviderInfo(String name) throws RemoteException {
-        return null;
+        ProviderInfo targetInfo=resolveContentProvider(name,0);
+        return mActivityManagerService.selectStubProviderInfo(Binder.getCallingPid(),Binder.getCallingUid(),targetInfo);
     }
 
     @Override
@@ -403,47 +423,56 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
     }
 
     @Override
-    public boolean registerApplicationCallback(IApplicationCallback callback) throws RemoteException {
-        return mActivityManagerService.registerApplicationCallback(Binder.getCallingPid(),Binder.getCallingUid(),callback);
+    public boolean registerApplicationCallback(IApplicationCallback callback) throws
+            RemoteException {
+        return mActivityManagerService.registerApplicationCallback(Binder.getCallingPid(), Binder.getCallingUid(), callback);
     }
 
     @Override
-    public boolean unregisterApplicationCallback(IApplicationCallback callback) throws RemoteException {
+    public boolean unregisterApplicationCallback(IApplicationCallback callback) throws
+            RemoteException {
         return false;
     }
 
     @Override
-    public void onActivityCreated(ActivityInfo stubInfo, ActivityInfo targetInfo) throws RemoteException {
+    public void onActivityCreated(ActivityInfo stubInfo, ActivityInfo targetInfo) throws
+            RemoteException {
 
     }
 
     @Override
-    public void onActivityDestroy(ActivityInfo stubInfo, ActivityInfo targetInfo) throws RemoteException {
+    public void onActivityDestroy(ActivityInfo stubInfo, ActivityInfo targetInfo) throws
+            RemoteException {
 
     }
 
     @Override
-    public void onServiceCreated(ServiceInfo stubInfo, ServiceInfo targetInfo) throws RemoteException {
+    public void onServiceCreated(ServiceInfo stubInfo, ServiceInfo targetInfo) throws
+            RemoteException {
 
     }
 
     @Override
-    public void onServiceDestroy(ServiceInfo stubInfo, ServiceInfo targetInfo) throws RemoteException {
+    public void onServiceDestroy(ServiceInfo stubInfo, ServiceInfo targetInfo) throws
+            RemoteException {
 
     }
 
     @Override
-    public void onProviderCreated(ProviderInfo stubInfo, ProviderInfo targetInfo) throws RemoteException {
+    public void onProviderCreated(ProviderInfo stubInfo, ProviderInfo targetInfo) throws
+            RemoteException {
 
     }
 
     @Override
-    public void reportMyProcessName(String stubProcessName, String targetProcessName, String targetPkg) throws RemoteException {
+    public void reportMyProcessName(String stubProcessName, String targetProcessName, String
+            targetPkg) throws RemoteException {
 
     }
 
     @Override
-    public void onActivityOnNewIntent(ActivityInfo stubInfo, ActivityInfo targetInfo, Intent intent) throws RemoteException {
+    public void onActivityOnNewIntent(ActivityInfo stubInfo, ActivityInfo targetInfo, Intent
+            intent) throws RemoteException {
 
     }
 
@@ -452,18 +481,18 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
         return 0;
     }
 
-    private void enforcePluginFileExists() throws RemoteException{
-        List<String> removedPkg=new ArrayList<>();
-        for(String pkg:mPluginCache.keySet()){
-            PluginPackageParser parser=mPluginCache.get(pkg);
-            File pluginFile=parser.getPluginFile();
-            if(pluginFile!=null&&pluginFile.exists()){
-            }else {
+    private void enforcePluginFileExists() throws RemoteException {
+        List<String> removedPkg = new ArrayList<>();
+        for (String pkg : mPluginCache.keySet()) {
+            PluginPackageParser parser = mPluginCache.get(pkg);
+            File pluginFile = parser.getPluginFile();
+            if (pluginFile != null && pluginFile.exists()) {
+            } else {
                 removedPkg.add(pkg);
             }
         }
-        for(String pkg:removedPkg){
-            deletePackage(pkg,0);
+        for (String pkg : removedPkg) {
+            deletePackage(pkg, 0);
         }
     }
 

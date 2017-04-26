@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.earthgee.library.hook.binder.IAudioServiceBinderHook;
 import com.earthgee.library.hook.binder.IClipboardBinderHook;
+import com.earthgee.library.hook.binder.IContentServiceBinderHook;
 import com.earthgee.library.hook.binder.IMountServiceBinderHook;
 import com.earthgee.library.hook.binder.INotificationManagerBinderHook;
 import com.earthgee.library.hook.binder.ISearchManagerBinderHook;
@@ -63,6 +64,7 @@ public class HookFactory {
         installHook(new INotificationManagerBinderHook(context),classLoader);
         installHook(new IMountServiceBinderHook(context),classLoader);
         installHook(new IAudioServiceBinderHook(context),classLoader);
+        installHook(new IContentServiceBinderHook(context),classLoader);
     }
 
 }

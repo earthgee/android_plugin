@@ -307,6 +307,34 @@ public class PluginPackageParser {
         return null;
     }
 
+    public List<ActivityInfo> getActivities() throws Exception{
+        return new ArrayList<>(mActivityInfoCache.values());
+    }
+
+    public List<ServiceInfo> getServices() throws Exception{
+        return new ArrayList<>(mServiceInfoCache.values());
+    }
+
+    public List<ProviderInfo> getProviders() throws Exception{
+        return new ArrayList<>(mProviderInfoCache.values());
+    }
+
+    public List<ActivityInfo> getReceivers() throws Exception{
+        return new ArrayList<>(mReceiversInfoCache.values());
+    }
+
+    public List<PermissionInfo> getPermissions() throws Exception{
+        return new ArrayList<>(mPermissionsInfoCache.values());
+    }
+
+    public List<PermissionGroupInfo> getPermissionGroups() throws Exception{
+        return new ArrayList<>(mPermissionGroupInfoCache.values());
+    }
+
+    public List<InstrumentationInfo> getInstrumentatiInfos(){
+        return new ArrayList<>(mInstrumentationInfoCache.values());
+    }
+
 }
 
 

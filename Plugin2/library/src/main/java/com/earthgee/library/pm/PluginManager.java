@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ProviderInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -165,6 +166,31 @@ public class PluginManager implements ServiceConnection{
         }
         return false;
     }
+
+    public ProviderInfo resolveContentProvider(String name,Integer flags) throws RemoteException{
+        try {
+            if(mPluginManager!=null&&name!=null){
+                return mPluginManager.resolveContentProvider(name,flags);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
+    }
+
+    public ProviderInfo selectStubProviderInfo(String name) throws RemoteException{
+        try {
+            if(mPluginManager!=null){
+                return mPluginManager.selectStubProviderInfo(name);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
+    }
+
 
 }
 
