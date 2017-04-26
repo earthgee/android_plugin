@@ -1,20 +1,25 @@
 package com.earthgee.library.core;
 
 import android.app.ActivityManager;
+import android.app.Application;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ServiceInfo;
+import android.os.Looper;
 import android.text.TextUtils;
 
 import com.earthgee.library.hook.HookFactory;
 import com.earthgee.library.pm.PluginManager;
+import com.earthgee.library.reflect.FieldUtils;
 import com.earthgee.library.stub.ActivityStub;
 import com.earthgee.library.stub.ServiceStub;
+import com.earthgee.library.util.ActivityThreadCompat;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -121,6 +126,27 @@ public class PluginProcessManager {
 
     public static void setHookEnable(boolean enable,boolean reinstallHook){
         HookFactory.getInstance().setHookEnable(enable,reinstallHook);
+    }
+
+    private static HashMap<String,Application> sApplicationCache=new HashMap<>(2);
+
+    public static Application getPluginContext(String packageName) throws Exception{
+        if(!sApplicationCache.containsKey(packageName)){
+            Object at= ActivityThreadCompat.currentActivityThread();
+            Object mAllApplications= FieldUtils.readField(at,"mAllApplications");
+            if(mAllApplications instanceof List){
+                List apps= (List) mAllApplications;
+                for(Object o:apps){
+                    if(o instanceof Application){
+                        Application app= (Application) o;
+                        if(!sApplicationCache.containsKey(app.getPackageName())){
+                            sApplicationCache.put(app.getPackageName(),app);
+                        }
+                    }
+                }
+            }
+        }
+        return sApplicationCache.get(packageName);
     }
 
 }
