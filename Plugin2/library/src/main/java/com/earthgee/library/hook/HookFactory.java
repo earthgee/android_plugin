@@ -3,6 +3,7 @@ package com.earthgee.library.hook;
 import android.content.Context;
 import android.os.Build;
 
+import com.earthgee.library.hook.binder.IAppOpsServiceBinderHook;
 import com.earthgee.library.hook.binder.IAudioServiceBinderHook;
 import com.earthgee.library.hook.binder.IClipboardBinderHook;
 import com.earthgee.library.hook.binder.IContentServiceBinderHook;
@@ -10,10 +11,16 @@ import com.earthgee.library.hook.binder.IGraphicsStatsBinderHook;
 import com.earthgee.library.hook.binder.IInputMethodManagerBinderHook;
 import com.earthgee.library.hook.binder.ILocationManagerBinderHook;
 import com.earthgee.library.hook.binder.IMediaRouterServiceBinderHook;
+import com.earthgee.library.hook.binder.IMmsBinderHook;
 import com.earthgee.library.hook.binder.IMountServiceBinderHook;
 import com.earthgee.library.hook.binder.INotificationManagerBinderHook;
+import com.earthgee.library.hook.binder.IPhoneSubInfoBinderHook;
 import com.earthgee.library.hook.binder.ISearchManagerBinderHook;
 import com.earthgee.library.hook.binder.ISessionManagerBinderHook;
+import com.earthgee.library.hook.binder.ISmsBinderHook;
+import com.earthgee.library.hook.binder.ISubBinderHook;
+import com.earthgee.library.hook.binder.ITelephonyBinderHook;
+import com.earthgee.library.hook.binder.ITelephonyRegistryBinderHook;
 import com.earthgee.library.hook.binder.IWifiManagerBinderHook;
 import com.earthgee.library.hook.binder.IWindowManagerBinderHook;
 
@@ -94,6 +101,24 @@ public class HookFactory {
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
             installHook(new ITelephonyRegistryBinderHook(context), classLoader);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+            installHook(new ISubBinderHook(context), classLoader);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+            installHook(new IPhoneSubInfoBinderHook(context), classLoader);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+            installHook(new ITelephonyBinderHook(context), classLoader);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+            installHook(new ISmsBinderHook(context), classLoader);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+            installHook(new IMmsBinderHook(context), classLoader);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            installHook(new IAppOpsServiceBinderHook(context), classLoader);
         }
     }
 
