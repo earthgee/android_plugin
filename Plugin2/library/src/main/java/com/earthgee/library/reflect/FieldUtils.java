@@ -142,6 +142,21 @@ public class FieldUtils {
         return readField(field,(Object) null,forceAccess);
     }
 
+    public static void writeStaticField(final Class<?> cls,final String fieldName
+                ,final Object value) throws Exception{
+        final Field field=getField(cls,fieldName,true);
+        Validate.isTrue(field!=null,"Cannot locate field %s on %s",fieldName,cls);
+        writeStaticField(field,value,true);
+    }
+
+    public static void writeStaticField(final Field field,final Object value
+                ,final boolean forceAccess) throws Exception{
+        Validate.isTrue(field!=null,"The field must not be null");
+        Validate.isTrue(Modifier.isStatic(field.getModifiers()),"The field %s.%s is not static",
+                field.getDeclaringClass().getName(),field.getName());
+        writeField(field,(Object) null,value,forceAccess);
+    }
+
 }
 
 
