@@ -28,6 +28,7 @@ import java.util.TreeMap;
 
 /**
  * Created by zhaoruixuan on 2017/4/17.
+ * 通过反射系统PackageParser解析插件包并保存信息
  */
 public class PluginPackageParser {
 

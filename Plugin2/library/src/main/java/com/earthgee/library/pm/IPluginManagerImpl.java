@@ -49,7 +49,9 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
     private final Object mLock = new Object();
     private AtomicBoolean mHasLoadedOk = new AtomicBoolean(false);
 
+    //插件对应解析器信息
     private Map<String, PluginPackageParser> mPluginCache = Collections.synchronizedMap(new HashMap<String, PluginPackageParser>(20));
+    //插件对应签名信息
     private Map<String, Signature[]> mSignatureCache = new HashMap<>();
     private Set<String> mHostRequestedPermission = new HashSet<>(10);
 
@@ -93,6 +95,10 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         }
     }
 
+    /**
+     * 加载所有插件并将信息保存在内存中
+     * @param context
+     */
     private void loadAllPlugin(Context context) {
         ArrayList<File> apkFiles = null;
         try {
@@ -114,8 +120,10 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
             for (File pluginFile : apkFiles) {
                 try {
                     PluginPackageParser pluginPackageParser = new PluginPackageParser(mContext, pluginFile);
+                    //插件签名目录下的签名构建
                     Signature[] signatures = readSignatures(pluginPackageParser.getPackageName());
                     if (signatures == null || signatures.length <= 0) {
+                        //使用系统的签名
                         pluginPackageParser.collectCertificates(0);
                         PackageInfo info = pluginPackageParser.getPackageInfo(PackageManager.GET_SIGNATURES);
                         saveSignatures(info);
@@ -200,6 +208,23 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
 
     @Override
     public PackageInfo getPackageInfo(String packageName, int flags) throws RemoteException {
+        waitForReady();
+        try{
+            String pkg=packageName;
+            if(pkg!=null&&!TextUtils.equals(packageName,mContext.getPackageName())){
+                enforcePluginFileExists();
+                PluginPackageParser parser=mPluginCache.get(pkg);
+                if(parser!=null){
+                    PackageInfo packageInfo=parser.getPackageInfo(flags);
+                    if(packageInfo!=null&&(flags&PackageManager.GET_SIGNATURES)!=0&&packageInfo.signatures==null){
+                        packageInfo.signatures=mSignatureCache.get(packageName);
+                    }
+                    return packageInfo;
+                }
+            }
+        }catch (Exception e){
+            handleException(e);
+        }
         return null;
     }
 

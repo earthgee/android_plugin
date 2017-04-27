@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PermissionInfo;
 import android.content.pm.ProviderInfo;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -26,6 +28,7 @@ import java.util.List;
 
 /**
  * Created by zhaoruixuan on 2017/4/12.
+ * 虚拟pms发起者
  */
 public class PluginManager implements ServiceConnection{
 
@@ -53,6 +56,9 @@ public class PluginManager implements ServiceConnection{
         connectToService();
     }
 
+    /**
+     * 启动插件解析service
+     */
     public void connectToService(){
         if(mPluginManager==null){
             try{
@@ -66,22 +72,6 @@ public class PluginManager implements ServiceConnection{
     }
 
     private IPluginManager mPluginManager;
-
-    public ActivityInfo getActivityInfo(ComponentName className,int flags) throws Exception{
-        try{
-            if(className==null){
-                return null;
-            }
-
-            if(mPluginManager!=null&&className!=null){
-                return mPluginManager.getActivityInfo(className,flags);
-            }
-        }catch (RemoteException e){
-        }catch (Exception e){
-        }
-
-        return null;
-    }
 
     @Override
     public void onServiceConnected(final ComponentName name, final IBinder service) {
@@ -191,6 +181,45 @@ public class PluginManager implements ServiceConnection{
         return null;
     }
 
+    public PackageInfo getPackageInfo(String packageName,int flags) throws RemoteException{
+        try {
+            if(mPluginManager!=null){
+                return mPluginManager.getPackageInfo(packageName, flags);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
+    }
+
+    public ActivityInfo getActivityInfo(ComponentName className,int flags) throws Exception{
+        try{
+            if(className==null){
+                return null;
+            }
+
+            if(mPluginManager!=null&&className!=null){
+                return mPluginManager.getActivityInfo(className,flags);
+            }
+        }catch (RemoteException e){
+        }catch (Exception e){
+        }
+
+        return null;
+    }
+
+    public PermissionInfo getPermissionInfo(String name,int flags) throws RemoteException{
+        try{
+            if(mPluginManager!=null&&name!=null){
+                return mPluginManager.getPermissionInfo(name, flags);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
+    }
 
 }
 
