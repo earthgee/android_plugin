@@ -30,6 +30,7 @@ import com.earthgee.library.util.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -462,9 +463,38 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         boolean pkg2Signed=signatures2!=null&&signatures2.length>0;
 
         if(!pkg1Signed&&!pkg2Signed){
-            retun
+            return PackageManager.SIGNATURE_NEITHER_SIGNED;
+        }else if(!pkg1Signed&&pkg2Signed){
+            return PackageManager.SIGNATURE_FIRST_NOT_SIGNED;
+        }else if(pkg1Signed&&!pkg2Signed){
+            return PackageManager.SIGNATURE_SECOND_NOT_SIGNED;
+        }else {
+            if(signatures1.length==signatures2.length) {
+                for (int i = 0; i < signatures1.length; i++) {
+                    Signature s1 = signatures1[i];
+                    Signature s2 = signatures2[i];
+                    if (!Arrays.equals(s1.toByteArray(), s2.toByteArray())) {
+                        return PackageManager.SIGNATURE_NO_MATCH;
+                    }
+                    return PackageManager.SIGNATURE_MATCH;
+                }
+            }else{
+                return PackageManager.SIGNATURE_NO_MATCH;
+            }
         }
+
         return 0;
+    }
+
+    private Signature[] getSignature(String pkg,PackageManager pm) throws RemoteException,PackageManager.NameNotFoundException{
+        PackageInfo info=getPackageInfo(pkg,PackageManager.GET_SIGNATURES);
+        if(info==null){
+            info=pm.getPackageInfo(pkg,PackageManager.GET_SIGNATURES);
+        }
+        if(info==null){
+            throw new PackageManager.NameNotFoundException();
+        }
+        return info.signatures;
     }
 
     @Override

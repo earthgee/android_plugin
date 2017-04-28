@@ -531,6 +531,40 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
         }
     }
 
+    private class getPackagesForUid extends HookedMethodHandler {
+        public getPackagesForUid(Context context) {
+            super(context);
+        }
+        //API 2.3, 4.01_r1, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /* public  String[] getPackagesForUid(int uid) throws RemoteException*/
+    }
+
+    private class getNameForUid extends HookedMethodHandler {
+        public getNameForUid(Context context) {
+            super(context);
+        }
+        //API 2.3, 4.01_r1, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /*public String getNameForUid(int uid) throws RemoteException;*/
+    }
+
+    private class getUidForSharedUser extends HookedMethodHandler {
+        public getUidForSharedUser(Context context) {
+            super(context);
+        }
+        //API 2.3, 4.01_r1, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /*  public int getUidForSharedUser(String sharedUserName) throws RemoteException;*/
+    }
+
+    private class getFlagsForUid extends HookedMethodHandler {
+        public getFlagsForUid(Context context) {
+            super(context);
+        }
+        //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1
+//        NO
+        //API 4.4_r1, 5.0.2_r1
+        /*public int getFlagsForUid(int uid) throws android.os.RemoteException;*/
+    }
+
 }
 
 
