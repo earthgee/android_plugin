@@ -336,6 +336,15 @@ public class PluginPackageParser {
         return new ArrayList<>(mInstrumentationInfoCache.values());
     }
 
+    public ApplicationInfo getApplicationInfo(int flags) throws Exception{
+        ApplicationInfo applicationInfo=mParser.generateApplicationInfo(flags);
+        fixApplicationInfo(applicationInfo);
+        if(TextUtils.isEmpty(applicationInfo.processName)){
+            applicationInfo.processName=applicationInfo.packageName;
+        }
+        return applicationInfo;
+    }
+
 }
 
 

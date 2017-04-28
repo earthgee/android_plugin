@@ -315,16 +315,61 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
 
     @Override
     public List<PermissionInfo> queryPermissionsByGroup(String group, int flags) throws RemoteException {
+        waitForReadyInner();
+        try{
+            enforcePluginFileExists();
+            List<PermissionInfo> list=new ArrayList<>();
+            for(PluginPackageParser pluginPackageParser:mPluginCache.values()){
+                List<PermissionInfo> permissionInfos=pluginPackageParser.getPermissions();
+                for(PermissionInfo permissionInfo:permissionInfos){
+                    if(TextUtils.equals(permissionInfo.group,group)&&!list.contains(permissionInfo)){
+                        list.add(permissionInfo);
+                    }
+                }
+            }
+            return list;
+        }catch (Exception e){
+            handleException(e);
+        }
         return null;
     }
 
     @Override
     public PermissionGroupInfo getPermissionGroupInfo(String name, int flags) throws RemoteException {
+        waitForReadyInner();
+        try{
+            enforcePluginFileExists();
+            for(PluginPackageParser pluginPackageParser:mPluginCache.values()){
+                List<PermissionGroupInfo> permissionGroupInfos=pluginPackageParser.getPermissionGroups();
+                for(PermissionGroupInfo permissionGroupInfo:permissionGroupInfos){
+                    if(TextUtils.equals(permissionGroupInfo.name,name)){
+                        return permissionGroupInfo;
+                    }
+                }
+            }
+        }catch (Exception e){
+            handleException(e);
+        }
         return null;
     }
 
     @Override
     public List<PermissionGroupInfo> getAllPermissionGroups(int flags) throws RemoteException {
+        waitForReadyInner();
+        try{
+            enforcePluginFileExists();
+            List<PermissionGroupInfo> list=new ArrayList<>();
+            for(PluginPackageParser pluginPackageParser:mPluginCache.values()){
+                List<PermissionGroupInfo> permissionGroupInfos=pluginPackageParser.getPermissionGroups();
+                for(PermissionGroupInfo permissionGroupInfo:permissionGroupInfos){
+                    if(!list.contains(permissionGroupInfo)){
+                        list.add(permissionGroupInfo);
+                    }
+                }
+            }
+        }catch (Exception e){
+            handleException(e);
+        }
         return null;
     }
 
@@ -362,6 +407,18 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
     @Override
     public ApplicationInfo getApplicationInfo(String packageName, int flags) throws
             RemoteException {
+        waitForReadyInner();
+        try{
+            if(TextUtils.equals(packageName,mContext.getPackageName())){
+                return null;
+            }
+            PluginPackageParser parser=mPluginCache.get(packageName);
+            if(parser!=null){
+                return parser.getApplicationInfo(flags);
+            }
+        }catch (Exception e){
+            handleException(e);
+        }
         return null;
     }
 
@@ -387,6 +444,26 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
 
     @Override
     public int checkSignatures(String pkg1, String pkg2) throws RemoteException {
+        PackageManager pm=mContext.getPackageManager();
+        Signature[] signatures1=new Signature[0];
+        try{
+            signatures1=getSignature(pkg1,pm);
+        }catch (PackageManager.NameNotFoundException e){
+            return PackageManager.SIGNATURE_UNKNOWN_PACKAGE;
+        }
+        Signature[] signatures2=new Signature[0];
+        try{
+            signatures2=getSignature(pkg2,pm);
+        }catch (PackageManager.NameNotFoundException e){
+            return PackageManager.SIGNATURE_UNKNOWN_PACKAGE;
+        }
+
+        boolean pkg1Signed=signatures1!=null&&signatures1.length>0;
+        boolean pkg2Signed=signatures2!=null&&signatures2.length>0;
+
+        if(!pkg1Signed&&!pkg2Signed){
+            retun
+        }
         return 0;
     }
 

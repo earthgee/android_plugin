@@ -6,9 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PermissionGroupInfo;
 import android.content.pm.PermissionInfo;
 import android.content.pm.ProviderInfo;
+import android.content.pm.ServiceInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -219,6 +223,110 @@ public class PluginManager implements ServiceConnection{
         }catch (Exception e){
         }
         return null;
+    }
+
+    public List<PermissionInfo> queryPermissionsByGroup(String group,int flags) throws RemoteException{
+        try{
+            if(mPluginManager!=null&&group!=null){
+                return mPluginManager.queryPermissionsByGroup(group, flags);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
+    }
+
+    public PermissionGroupInfo getPermissionGroupInfo(String name,int flags) throws RemoteException{
+        try {
+            if(mPluginManager!=null&&name!=null){
+                return mPluginManager.getPermissionGroupInfo(name,flags);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
+    }
+
+    public List<PermissionGroupInfo> getAllPermissionGroups(int flags) throws RemoteException{
+        try{
+            if(mPluginManager!=null){
+                return mPluginManager.getAllPermissionGroups(flags);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
+    }
+
+    public ApplicationInfo getApplicationInfo(String packageName,int flags) throws RemoteException{
+        try {
+            if(mPluginManager!=null&&packageName!=null){
+                return mPluginManager.getApplicationInfo(packageName, flags);
+            }
+        }catch (RemoteException e){
+        }catch (Exception e){
+        }
+        return null;
+    }
+
+    public ActivityInfo getReceiverInfo(ComponentName className,int flags) throws Exception{
+        if(className==null){
+            return null;
+        }
+        try{
+            if(mPluginManager!=null&&className!=null){
+                return mPluginManager.getReceiverInfo(className,flags);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
+    }
+
+    public ServiceInfo getServiceInfo(ComponentName className,int flags) throws Exception{
+        if(className==null){
+            return null;
+        }
+
+        try{
+            if(mPluginManager!=null&&className!=null){
+                return mPluginManager.getServiceInfo(className, flags);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
+    }
+
+    public ProviderInfo getProviderInfo(ComponentName className,int flags) throws Exception{
+        try{
+            if(mPluginManager!=null&&className!=null){
+                return mPluginManager.getProviderInfo(className, flags);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
+    }
+
+    public int checkSignatures(String pkg0,String pkg1) throws RemoteException{
+        try{
+            if(mPluginManager!=null){
+                return mPluginManager.checkSignatures(pkg0, pkg1);
+            }else{
+                return PackageManager.SIGNATURE_NO_MATCH;
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return PackageManager.SIGNATURE_NO_MATCH;
     }
 
 }

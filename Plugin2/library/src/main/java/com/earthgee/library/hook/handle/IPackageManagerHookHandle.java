@@ -1,8 +1,15 @@
 package com.earthgee.library.hook.handle;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.content.pm.PermissionGroupInfo;
 import android.content.pm.PermissionInfo;
+import android.content.pm.ProviderInfo;
+import android.content.pm.ServiceInfo;
+import android.text.TextUtils;
 
 import com.earthgee.library.hook.BaseHookHandle;
 import com.earthgee.library.hook.Hook;
@@ -10,6 +17,7 @@ import com.earthgee.library.hook.HookedMethodHandler;
 import com.earthgee.library.pm.PluginManager;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * Created by zhaoruixuan on 2017/4/27.
@@ -209,6 +217,314 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
                         setFakeResult(permissionInfo);
                         return true;
                     }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class queryPermissionsByGroup extends HookedMethodHandler{
+
+        public queryPermissionsByGroup(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
+            if(args!=null&&invokeResult instanceof List){
+                final int index0=0,index1=1;
+                if(args.length>1
+                        &&args[index0] instanceof String
+                        &&args[index1] instanceof Integer){
+                    String groups= (String) args[index0];
+                    int flags= (int) args[index1];
+                    List<PermissionInfo> infos=PluginManager.getInstance().queryPermissionsByGroup(groups,flags);
+                    if(infos!=null&&infos.size()>0){
+                        List old= (List) invokeResult;
+                        old.addAll(infos);
+                    }
+                }
+            }
+            super.afterInvoke(receiver, method, args, invokeResult);
+        }
+    }
+
+    private class getPermissionGroupInfo extends HookedMethodHandler{
+
+        public getPermissionGroupInfo(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if(args!=null){
+                final int index0=0,index1=1;
+                if(args.length>1&&args[index0] instanceof String&&args[index1] instanceof Integer){
+                    String name= (String) args[index0];
+                    int flags= (int) args[index1];
+                    PermissionGroupInfo permissionGroupInfo=PluginManager.getInstance().getPermissionGroupInfo(name,flags);
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class getAllPermissionGroups extends HookedMethodHandler{
+
+        public getAllPermissionGroups(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
+            if(args!=null&&invokeResult instanceof List){
+                final int index=0;
+                if(args.length>index&&args[index] instanceof Integer){
+                    int flags= (int) args[index];
+                    List<PermissionGroupInfo> infos=PluginManager.getInstance().getAllPermissionGroups(flags);
+                    if(infos!=null&&infos.size()>0){
+                        List old= (List) invokeResult;
+                        old.addAll(infos);
+                    }
+                }
+            }
+            super.afterInvoke(receiver, method, args, invokeResult);
+        }
+    }
+
+    private class getApplicationInfo extends HookedMethodHandler{
+
+        public getApplicationInfo(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if(args!=null){
+                final int index0=0,index1=1;
+                if(args.length>=2&&args[index0] instanceof String&&args[index1] instanceof Integer){
+                    String packageName= (String) args[index0];
+                    int flags= (int) args[index1];
+                    ApplicationInfo info=PluginManager.getInstance().getApplicationInfo(packageName,flags);
+                    if(info!=null){
+                        setFakeResult(info);
+                        return true;
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class getActivityInfo extends HookedMethodHandler{
+
+        public getActivityInfo(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if(args!=null){
+                final int index0=0,index1=1;
+                if(args.length>=2&&args[index0] instanceof ComponentName
+                        &&args[index1] instanceof Integer){
+                    ComponentName className= (ComponentName) args[index0];
+                    int flags= (int) args[index1];
+                    ActivityInfo info=PluginManager.getInstance().getActivityInfo(className,flags);
+                    if(info!=null){
+                        setFakeResult(info);
+                        return true;
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class getReceiverInfo extends HookedMethodHandler{
+
+        public getReceiverInfo(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if(args!=null){
+                final int index0=0,index1=1;
+                if(args.length>=2&&args[index0] instanceof ComponentName
+                        &&args[index1] instanceof Integer){
+                    ComponentName className= (ComponentName) args[index0];
+                    int flags= (int) args[index1];
+                    ActivityInfo info=PluginManager.getInstance().getReceiverInfo(className,flags);
+                    if(info!=null){
+                        setFakeResult(info);
+                        return true;
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class getServiceInfo extends HookedMethodHandler{
+
+        public getServiceInfo(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if(args!=null){
+                final int index0=0,index1=1;
+                if(args.length>=2&&args[index0] instanceof ComponentName&&
+                        args[index1] instanceof Integer){
+                    ComponentName className= (ComponentName) args[index0];
+                    int flags= (int) args[index1];
+                    ServiceInfo info=PluginManager.getInstance().getServiceInfo(className,flags);
+                    if(info!=null){
+                        setFakeResult(info);
+                        return true;
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class getProviderInfo extends HookedMethodHandler{
+
+        public getProviderInfo(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if(args!=null){
+                final int index0=0,index1=1;
+                if(args.length>=2&&args[index0] instanceof ComponentName&&
+                        args[index1] instanceof Integer){
+                    ComponentName className= (ComponentName) args[index0];
+                    int flags= (int) args[index1];
+                    ProviderInfo info=PluginManager.getInstance().getProviderInfo(className,flags);
+                    if(info!=null){
+                        setFakeResult(info);
+                        return true;
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class checkPermission extends HookedMethodHandler{
+
+        public checkPermission(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if(args!=null){
+                final int index=1;
+                if(args.length>index&&args[index] instanceof String){
+                    String packageName= (String) args[index];
+                    if(PluginManager.getInstance().isPluginPackage(packageName)){
+                        args[index]=mHostContext.getPackageName();
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class checkUidPermission extends HookedMethodHandler{
+
+        public checkUidPermission(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private class addPermission extends HookedMethodHandler{
+
+        public addPermission(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private class remotePermission extends HookedMethodHandler{
+
+        public remotePermission(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private class grantPermission extends HookedMethodHandler{
+
+        public grantPermission(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if (args != null) {
+                final int index = 0;
+                if (args.length > index && args[index] instanceof String) {
+                    String packageName = (String) args[index];
+                    if (PluginManager.getInstance().isPluginPackage(packageName)) {
+                        args[index] = mHostContext.getPackageName();
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class revokePermission extends HookedMethodHandler {
+        public revokePermission(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            //API 2.3, 4.01, 4.0.3_r1
+            //NO
+            //API 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /*public void revokePermission(String packageName, String permissionName) throws RemoteException;*/
+            if (args != null) {
+                final int index = 0;
+                if (args.length > index && args[index] instanceof String) {
+                    String packageName = (String) args[index];
+                    if (PluginManager.getInstance().isPluginPackage(packageName)) {
+                        args[index] = mHostContext.getPackageName();
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class checkSignatures extends HookedMethodHandler{
+
+        public checkSignatures(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            final int index0=0,index1=1;
+            String pkg0=null,pkg1=null;
+            if(args!=null&&args[index0]!=null&&args[index0] instanceof String){
+                pkg0= (String) args[index0];
+            }
+            if(args!=null&&args[index1]!=null&&args[index1] instanceof String){
+                pkg1= (String) args[index1];
+            }
+            if(!TextUtils.isEmpty(pkg0)&&!TextUtils.isEmpty(pkg1)){
+                PluginManager instance=PluginManager.getInstance();
+                if(instance.isPluginPackage(pkg0)&&instance.isPluginPackage(pkg1)){
+                    int result=instance.checkSignatures(pkg0,pkg1);
+                    setFakeResult(result);
+                    return true;
                 }
             }
             return super.beforeInvoke(receiver, method, args);
