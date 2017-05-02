@@ -2,12 +2,14 @@ package com.earthgee.library.hook.handle;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PermissionGroupInfo;
 import android.content.pm.PermissionInfo;
 import android.content.pm.ProviderInfo;
+import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.text.TextUtils;
 
@@ -563,6 +565,50 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
 //        NO
         //API 4.4_r1, 5.0.2_r1
         /*public int getFlagsForUid(int uid) throws android.os.RemoteException;*/
+    }
+
+    private class resolveIntent extends HookedMethodHandler{
+
+        public resolveIntent(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if(args!=null){
+                final int index0=0,index1=1,index2=2;
+                Intent intent=null;
+                if(args.length>index0){
+                    if(args[index0] instanceof Intent){
+                        intent= (Intent) args[index0];
+                    }
+                }
+
+                String resolvedType=null;
+                if(args.length>index1){
+                    if(args[index1] instanceof String){
+                        resolvedType= (String) args[index1];
+                    }
+                }
+
+                Integer flags=0;
+                if(args.length>index2){
+                    if(args[index2] instanceof Integer){
+                        flags= (Integer) args[index2];
+                    }
+                }
+
+                if(intent!=null){
+                    ResolveInfo info=PluginManager.getInstance().
+                            resolveIntent(intent,resolvedType,flags);
+                    if(info!=null){
+                        setFakeResult(info);
+                        return true;
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
     }
 
 }

@@ -308,6 +308,27 @@ public class PluginPackageParser {
         return null;
     }
 
+    public ServiceInfo getServiceInfo(ComponentName className,int flags) throws Exception{
+        Object data;
+        synchronized (mServiceObjCache){
+            data=mServiceObjCache.get(className);
+        }
+        if(data!=null){
+            ServiceInfo serviceInfo=mParser.generateServiceInfo(data,flags);
+            fixApplicationInfo(serviceInfo.applicationInfo);
+            if(TextUtils.isEmpty(serviceInfo.processName)){
+                serviceInfo.processName=serviceInfo.packageName;
+            }
+            return serviceInfo;
+        }
+        return null;
+    }
+
+    public ProviderInfo getProviderInfo(ComponentName className,int flags) throws Exception{
+        Object data;
+        synchronized ()
+    }
+
     public List<ActivityInfo> getActivities() throws Exception{
         return new ArrayList<>(mActivityInfoCache.values());
     }
@@ -343,6 +364,24 @@ public class PluginPackageParser {
             applicationInfo.processName=applicationInfo.packageName;
         }
         return applicationInfo;
+    }
+
+    public List<IntentFilter> getActivityIntentFilter(ComponentName className){
+        synchronized (mActivityIntentFilterCache){
+            return mActivityIntentFilterCache.get(className);
+        }
+    }
+
+    public List<IntentFilter> getServiceIntentFilter(ComponentName className){
+        synchronized (mServiceIntentFilterCache){
+            return mServiceIntentFilterCache.get(className);
+        }
+    }
+
+    public List<IntentFilter> getProviderIntentFilter(ComponentName className){
+        synchronized (mProviderIntentFilterCache){
+            return mProviderIntentFilterCache.get(className);
+        }
     }
 
 }

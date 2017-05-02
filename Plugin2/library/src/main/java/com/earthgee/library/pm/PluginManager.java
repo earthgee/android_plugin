@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PermissionGroupInfo;
 import android.content.pm.PermissionInfo;
 import android.content.pm.ProviderInfo;
+import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -327,6 +328,18 @@ public class PluginManager implements ServiceConnection{
         }catch (Exception e){
         }
         return PackageManager.SIGNATURE_NO_MATCH;
+    }
+
+    public ResolveInfo resolveIntent(Intent intent,String resolvedType,int flags) throws RemoteException{
+        try{
+            if(mPluginManager!=null&&intent!=null){
+                return mPluginManager.resolveIntent(intent, resolvedType, flags);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
     }
 
 }
