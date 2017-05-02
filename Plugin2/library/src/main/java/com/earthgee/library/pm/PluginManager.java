@@ -39,6 +39,8 @@ public class PluginManager implements ServiceConnection{
 
     public static final String AUTHORITY_NAME= BuildConfig.AUTHORITY_NAME;
 
+    public static final int STUB_NO_ACTIVITY_MAX_NUM=4;
+
     private List<WeakReference<ServiceConnection>> sServiceConnection=
             Collections.synchronizedList(new ArrayList<WeakReference<ServiceConnection>>(1));
 

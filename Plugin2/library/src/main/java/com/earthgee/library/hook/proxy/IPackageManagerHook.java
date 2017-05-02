@@ -17,7 +17,7 @@ import java.util.List;
  * Created by zhaoruixuan on 2017/4/27.
  */
 public class IPackageManagerHook extends ProxyHook{
-    protected IPackageManagerHook(Context hostContext) {
+    public IPackageManagerHook(Context hostContext) {
         super(hostContext);
     }
 

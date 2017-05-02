@@ -23,6 +23,8 @@ import com.earthgee.library.hook.binder.ITelephonyBinderHook;
 import com.earthgee.library.hook.binder.ITelephonyRegistryBinderHook;
 import com.earthgee.library.hook.binder.IWifiManagerBinderHook;
 import com.earthgee.library.hook.binder.IWindowManagerBinderHook;
+import com.earthgee.library.hook.proxy.IActivityManagerHook;
+import com.earthgee.library.hook.proxy.IPackageManagerHook;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,6 +122,8 @@ public class HookFactory {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             installHook(new IAppOpsServiceBinderHook(context), classLoader);
         }
+        installHook(new IPackageManagerHook(context),classLoader);
+        installHook(new IActivityManagerHook(context),classLoader);
     }
 
 }
