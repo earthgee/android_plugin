@@ -6,19 +6,26 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PermissionGroupInfo;
 import android.content.pm.PermissionInfo;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
+import android.os.Build;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 import com.earthgee.library.hook.BaseHookHandle;
 import com.earthgee.library.hook.Hook;
 import com.earthgee.library.hook.HookedMethodHandler;
 import com.earthgee.library.pm.PluginManager;
+import com.earthgee.library.reflect.MethodUtils;
+import com.earthgee.library.util.IPackageDataObserverCompat;
+import com.earthgee.library.util.ParceledListSliceCompat;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -609,6 +616,864 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
             }
             return super.beforeInvoke(receiver, method, args);
         }
+    }
+
+    private class queryIntentActivities extends HookedMethodHandler{
+
+        public queryIntentActivities(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
+            if(args!=null&&(invokeResult instanceof List|| ParceledListSliceCompat.isParceledListSlice(invokeResult))){
+                final int index0=0,index1=1,index2=2;
+                Intent intent=null;
+                if(args.length>index0){
+                    if(args[index0] instanceof Intent){
+                        intent= (Intent) args[index0];
+                    }
+                }
+
+                String resolvedType=null;
+                if(args.length>index1){
+                    if(args[index1] instanceof String){
+                        resolvedType= (String) args[index1];
+                    }
+                }
+
+                Integer flags=0;
+                if(args.length>index2){
+                    if(args[index2] instanceof Integer){
+                        flags= (Integer) args[index2];
+                    }
+                }
+
+                if(intent!=null){
+                    List<ResolveInfo> infos=PluginManager.getInstance().queryIntentActivities(intent,resolvedType,flags);
+                    if(infos!=null&&infos.size()>0){
+                        if(invokeResult instanceof List){
+                            List old= (List) invokeResult;
+                            old.addAll(infos);
+                        }else if(ParceledListSliceCompat.isParceledListSlice(invokeResult)){
+                            if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.JELLY_BEAN_MR2){
+                                Method getListMethod= MethodUtils.getAccessibleMethod(invokeResult.getClass(),"getList");
+                                List data= (List) getListMethod.invoke(invokeResult);
+                                data.addAll(infos);
+                            }
+                        }
+                    }
+                }
+            }
+            super.afterInvoke(receiver, method, args, invokeResult);
+        }
+    }
+
+    private class queryIntentActivityOptions extends HookedMethodHandler {
+        public queryIntentActivityOptions(Context context) {
+            super(context);
+        }
+    }
+
+    private class queryIntentReceivers extends HookedMethodHandler {
+        public queryIntentReceivers(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
+            //API 2.3, 4.01, 4.0.3_r1
+        /*  public List<ResolveInfo> queryIntentReceivers(Intent intent, String resolvedType, int flags) throws RemoteException;*/
+            //API 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /*public List<ResolveInfo> queryIntentReceivers(Intent intent, String resolvedType, int flags, int userId) throws RemoteException;*/
+            if (args != null && invokeResult instanceof List) {
+                final int index0 = 0, index1 = 1, index2 = 2;
+                Intent intent = null;
+                if (args.length > index0) {
+                    if (args[index0] instanceof Intent) {
+                        intent = (Intent) args[index0];
+                    }
+                }
+
+                String resolvedType = null;
+                if (args.length > index1) {
+                    if (args[index1] instanceof String) {
+                        resolvedType = (String) args[index1];
+                    }
+                }
+
+                Integer flags = 0;
+                if (args.length > index2) {
+                    if (args[index2] instanceof Integer) {
+                        flags = (Integer) args[index2];
+                    }
+                }
+
+                if (intent != null) {
+                    List<ResolveInfo> infos = PluginManager.getInstance().queryIntentReceivers(intent, resolvedType, flags);
+                    if (infos != null && infos.size() > 0) {
+                        List old = (List) invokeResult;
+                        old.addAll(infos);
+                        setFakeResult(invokeResult);
+                    }
+                }
+            }
+            super.afterInvoke(receiver, method, args, invokeResult);
+        }
+    }
+
+    private class resolveService extends HookedMethodHandler {
+        public resolveService(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            //API 2.3, 4.01, 4.0.3_r1
+        /* public ResolveInfo resolveService(Intent intent, String resolvedType, int flags) throws RemoteException;*/
+            //API 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /* public ResolveInfo resolveService(Intent intent, String resolvedType, int flags, int userId) throws RemoteException;*/
+            if (args != null) {
+                final int index0 = 0, index1 = 1, index2 = 2;
+                Intent intent = null;
+                if (args.length > index0) {
+                    if (args[index0] instanceof Intent) {
+                        intent = (Intent) args[index0];
+                    }
+                }
+
+                String resolvedType = null;
+                if (args.length > index1) {
+                    if (args[index1] instanceof String) {
+                        resolvedType = (String) args[index1];
+                    }
+                }
+
+                Integer flags = 0;
+                if (args.length > index2) {
+                    if (args[index2] instanceof Integer) {
+                        flags = (Integer) args[index2];
+                    }
+                }
+
+                if (intent != null) {
+                    ResolveInfo info = PluginManager.getInstance().resolveService(intent, resolvedType, flags);
+                    if (info != null) {
+                        setFakeResult(info);
+                        return true;
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class queryIntentServices extends HookedMethodHandler {
+        public queryIntentServices(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
+            //API 2.3
+        /*public List<ResolveInfo> queryIntentServices(Intent intent, String resolvedType, int flags) throws RemoteException;*/
+            //API 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /* public List<ResolveInfo> queryIntentServices(Intent intent, String resolvedType, int flags, int userId) throwsRemoteException;*/
+            if (args != null && invokeResult instanceof List) {
+                final int index0 = 0, index1 = 1, index2 = 2;
+                Intent intent = null;
+                if (args.length > index0) {
+                    if (args[index0] instanceof Intent) {
+                        intent = (Intent) args[index0];
+                    }
+                }
+
+                String resolvedType = null;
+                if (args.length > index1) {
+                    if (args[index1] instanceof String) {
+                        resolvedType = (String) args[index1];
+                    }
+                }
+
+                Integer flags = 0;
+                if (args.length > index2) {
+                    if (args[index2] instanceof Integer) {
+                        flags = (Integer) args[index2];
+                    }
+                }
+
+                if (intent != null) {
+                    List<ResolveInfo> infos = PluginManager.getInstance().queryIntentServices(intent, resolvedType, flags);
+                    if (infos != null && infos.size() > 0) {
+                        List old = (List) invokeResult;
+                        old.addAll(infos);
+                    }
+                }
+            }
+            super.afterInvoke(receiver, method, args, invokeResult);
+        }
+    }
+
+    private class queryIntentContentProviders extends HookedMethodHandler {
+        public queryIntentContentProviders(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
+            //ONLY FOR API 4.4_r1, 5.0.2_r1
+        /*public List<ResolveInfo> queryIntentContentProviders(Intent intent, String resolvedType, int flags, int userId) throws RemoteException;*/
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                if (args != null && invokeResult instanceof List) {
+                    final int index0 = 0, index1 = 1, index2 = 2;
+                    Intent intent = null;
+                    if (args.length > index0) {
+                        if (args[index0] instanceof Intent) {
+                            intent = (Intent) args[index0];
+                        }
+                    }
+
+                    String resolvedType = null;
+                    if (args.length > index1) {
+                        if (args[index1] instanceof String) {
+                            resolvedType = (String) args[index1];
+                        }
+                    }
+
+                    Integer flags = 0;
+                    if (args.length > index2) {
+                        if (args[index2] instanceof Integer) {
+                            flags = (Integer) args[index2];
+                        }
+                    }
+
+                    if (intent != null) {
+                        List<ResolveInfo> infos = PluginManager.getInstance().queryIntentContentProviders(intent, resolvedType, flags);
+                        if (infos != null && infos.size() > 0) {
+                            List old = (List) invokeResult;
+                            old.addAll(infos);
+                        }
+                    }
+                }
+            }
+            super.afterInvoke(receiver, method, args, invokeResult);
+        }
+    }
+
+    private class getInstalledPackage extends HookedMethodHandler{
+
+        public getInstalledPackage(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
+            try{
+                if(invokeResult!=null&&ParceledListSliceCompat.isParceledListSlice(invokeResult)){
+                    if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.JELLY_BEAN_MR2){
+                        Method getListMethod=MethodUtils.getAccessibleMethod(invokeResult.getClass(),"getList");
+                        List data= (List) getListMethod.invoke(invokeResult);
+                        final int index0=0;
+                        if(args.length>index0&&args[index0] instanceof Integer){
+                            int flags= (int) args[index0];
+                            List<PackageInfo> infos=PluginManager.getInstance().getInstallPackages(flags);
+                            if(infos!=null&&infos.size()>0){
+                                data.addAll(infos);
+                            }
+                        }
+                    }else{
+                        Method isLastSliceMethod=invokeResult.getClass().getMethod("isLastSlice");
+                        Method setLastSlice=invokeResult.getClass().getMethod("setLastSlice",boolean.class);
+                        Method appendMethod=invokeResult.getClass().getMethod("append", Parcelable.class);
+                        Method populateList=invokeResult.getClass().getMethod("populateList",List.class,Parcelable.Creator.class);
+
+                        if(!setLastSlice.isAccessible()){
+                            setLastSlice.setAccessible(true);
+                        }
+                        if (!populateList.isAccessible()) {
+                            populateList.setAccessible(true);
+                        }
+                        if (!isLastSliceMethod.isAccessible()) {
+                            isLastSliceMethod.setAccessible(true);
+                        }
+                        if (!appendMethod.isAccessible()) {
+                            appendMethod.setAccessible(true);
+                        }
+                        boolean isLastSlice = (Boolean) isLastSliceMethod.invoke(invokeResult);
+                        if (isLastSlice) {
+                            final int index0 = 0;
+                            if (args.length > index0 && args[index0] instanceof Integer) {
+                                int flags = (Integer) args[index0];
+                                List<PackageInfo> infos = PluginManager.getInstance().getInstalledPackages(flags);
+                                if (infos != null && infos.size() > 0) {
+                                    final List<PackageInfo> packageInfos = new ArrayList<PackageInfo>();
+                                    populateList.invoke(invokeResult, packageInfos, PackageInfo.CREATOR);
+                                    packageInfos.addAll(infos);
+                                    Object parceledListSlice = invokeResult.getClass().newInstance();
+                                    for (PackageInfo packageInfo : packageInfos) {
+                                        appendMethod.invoke(parceledListSlice, packageInfo);
+                                    }
+                                    setLastSlice.invoke(parceledListSlice, true);
+                                    setFakeResult(parceledListSlice);
+                                }
+                            }
+                        }
+                    }
+                }else if (invokeResult instanceof List) {
+                    final int index0 = 0;
+                    if (args.length > index0 && args[index0] instanceof Integer) {
+                        int flags = (Integer) args[index0];
+                        List<PackageInfo> infos = PluginManager.getInstance().getInstalledPackages(flags);
+                        if (infos != null && infos.size() > 0) {
+                            List old = (List) invokeResult;
+                            old.addAll(infos);
+                        }
+                    }
+                }
+            }catch (Exception e){
+            }
+            super.afterInvoke(receiver, method, args, invokeResult);
+        }
+    }
+
+    private class getPackagesHoldingPermissions extends HookedMethodHandler {
+        public getPackagesHoldingPermissions(Context context) {
+            super(context);
+        }
+    }
+
+    private class getInstalledApplications extends HookedMethodHandler {
+        public getInstalledApplications(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
+            //API 2.3
+        /* public List<ApplicationInfo> getInstalledApplications(int flags) throws RemoteException;*/
+            //API 4.01, 4.0.3_r1
+        /*public ParceledListSlice getInstalledApplications(int flags, java.lang.String lastRead) throws RemoteException;*/
+
+            //API 4.1.1_r1 , 4.2_r1
+        /*  public ParceledListSlice getInstalledApplications(int flags, java.lang.String lastRead, int userId) throws RemoteException*/
+
+            //API 4.3_r1,4.4_r1, 5.0.2_r1
+        /* public ParceledListSlice getInstalledApplications(int flags, int userId) throws RemoteException */
+            try {
+                if (ParceledListSliceCompat.isParceledListSlice(invokeResult)) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        Method getListMethod = MethodUtils.getAccessibleMethod(invokeResult.getClass(), "getList");
+                        List data = (List) getListMethod.invoke(invokeResult);
+                        final int index0 = 0;
+                        if (args.length > index0 && args[index0] instanceof Integer) {
+                            int flags = (Integer) args[index0];
+                            List<ApplicationInfo> infos = PluginManager.getInstance().getInstalledApplications(flags);
+                            if (infos != null && infos.size() > 0) {
+                                data.addAll(infos);
+                            }
+                        }
+                    } else {
+                        Method isLastSliceMethod = invokeResult.getClass().getMethod("isLastSlice");
+                        Method setLastSlice = invokeResult.getClass().getMethod("setLastSlice", boolean.class);
+                        Method appendMethod = invokeResult.getClass().getMethod("append", Parcelable.class);
+                        Method populateList = invokeResult.getClass().getMethod("populateList", List.class, Parcelable.Creator.class);
+                        if (!setLastSlice.isAccessible()) {
+                            setLastSlice.setAccessible(true);
+                        }
+                        if (!populateList.isAccessible()) {
+                            populateList.setAccessible(true);
+                        }
+                        if (!isLastSliceMethod.isAccessible()) {
+                            isLastSliceMethod.setAccessible(true);
+                        }
+                        if (!appendMethod.isAccessible()) {
+                            appendMethod.setAccessible(true);
+                        }
+                        boolean isLastSlice = (Boolean) isLastSliceMethod.invoke(invokeResult);
+                        if (isLastSlice) {
+                            final int index0 = 0;
+                            if (args.length > index0 && args[index0] instanceof Integer) {
+                                int flags = (Integer) args[index0];
+                                List<ApplicationInfo> infos = PluginManager.getInstance().getInstalledApplications(flags);
+                                if (infos != null && infos.size() > 0) {
+                                    final List<ApplicationInfo> packageInfos = new ArrayList<ApplicationInfo>();
+                                    populateList.invoke(invokeResult, packageInfos, ApplicationInfo.CREATOR);
+                                    packageInfos.addAll(infos);
+                                    Object parceledListSlice = invokeResult.getClass().newInstance();
+                                    for (ApplicationInfo info : packageInfos) {
+                                        appendMethod.invoke(parceledListSlice, info);
+                                    }
+                                    setLastSlice.invoke(parceledListSlice, true);
+                                    setFakeResult(parceledListSlice);
+                                }
+                            }
+                        }
+                    }
+                } else if (invokeResult instanceof List) {
+                    final int index0 = 0;
+                    if (args.length > index0 && args[index0] instanceof Integer) {
+                        int flags = (Integer) args[index0];
+                        List<ApplicationInfo> infos = PluginManager.getInstance().getInstalledApplications(flags);
+                        if (infos != null && infos.size() > 0) {
+                            List old = (List) invokeResult;
+                            old.addAll(infos);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+            }
+            super.afterInvoke(receiver, method, args, invokeResult);
+        }
+    }
+
+    private class getPersistentApplications extends HookedMethodHandler {
+        public getPersistentApplications(Context context) {
+            super(context);
+        }
+        //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /*  public List<ApplicationInfo> getPersistentApplications(int flags) throws RemoteException;*/
+    }
+
+    private class resolveContentProvider extends HookedMethodHandler {
+        public resolveContentProvider(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            //API 2.3, 4.01, 4.0.3_r1
+        /*public ProviderInfo resolveContentProvider(String name, int flags) throws RemoteException;*/
+            //API 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /* public ProviderInfo resolveContentProvider(String name, int flags, int userId) throws RemoteException*/
+
+            return super.beforeInvoke(receiver, method, args);
+        }
+
+        @Override
+        protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
+            if (args != null) {
+                if (invokeResult == null) {
+                    final int index0 = 0, index1 = 1;
+                    if (args.length >= 2 && args[index0] instanceof String && args[index1] instanceof Integer) {
+                        String name = (String) args[index0];
+                        Integer flags = (Integer) args[index1];
+                        ProviderInfo info = PluginManager.getInstance().resolveContentProvider(name, flags);
+                        if (info != null) {
+                            setFakeResult(info);
+                        }
+                    }
+                }
+            }
+            super.afterInvoke(receiver, method, args, invokeResult);
+        }
+    }
+
+    private class querySyncProviders extends HookedMethodHandler {
+        public querySyncProviders(Context context) {
+            super(context);
+        }
+        //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /*  public void querySyncProviders(List<String> outNames, List<ProviderInfo> outInfo) throws RemoteException;*/
+        //TODO 查询插件的结果并入到返回值中。
+    }
+
+    private class queryContentProviders extends HookedMethodHandler {
+        public queryContentProviders(Context context) {
+            super(context);
+        }
+
+        //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /*public List<ProviderInfo> queryContentProviders(String processName, int uid, int flags) throws RemoteException;*/
+        //TODO 查询插件的结果并入到返回值中。
+    }
+
+    private class getInstrumentationInfo extends HookedMethodHandler {
+        public getInstrumentationInfo(Context context) {
+            super(context);
+        }
+
+        //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /*public InstrumentationInfo getInstrumentationInfo(ComponentName className, int flags) throws RemoteException;*/
+        //FIXME 自动化测试相关的东西，先不处理。
+    }
+
+    private class queryInstrumentation extends HookedMethodHandler {
+        public queryInstrumentation(Context context) {
+            super(context);
+        }
+
+        //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /*public List<InstrumentationInfo> queryInstrumentation(String targetPackage, int flags) throws RemoteException;*/
+        //FIXME 自动化测试相关的东西，先不处理。
+    }
+
+    private class getInstallerPackageName extends HookedMethodHandler {
+        public getInstallerPackageName(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /* public String getInstallerPackageName(String packageName) throws RemoteException;*/
+            if (args != null) {
+                final int index = 0;
+                if (args.length > index && args[index] instanceof String) {
+                    String packageName = (String) args[index];
+                    if (PluginManager.getInstance().isPluginPackage(packageName)) {
+                        setFakeResult(mHostContext.getPackageName());
+                        return true;
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class addPacakgeToPreferred extends HookedMethodHandler{
+
+        public addPacakgeToPreferred(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if(args!=null){
+                final int index=0;
+                if(args.length>index&&args[index] instanceof String){
+                    String packageName= (String) args[index];
+                    if(PluginManager.getInstance().isPluginPackage(packageName)){
+                        args[index]=mHostContext.getPackageName();
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class removePackageFromPreferred extends HookedMethodHandler {
+        public removePackageFromPreferred(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+         /*public void removePackageFromPreferred(String packageName) throws RemoteException;*/
+            if (args != null) {
+                final int index = 0;
+                if (args.length > index && args[index] instanceof String) {
+                    String packageName = (String) args[index];
+                    if (PluginManager.getInstance().isPluginPackage(packageName)) {
+                        args[index] = mHostContext.getPackageName();
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class getPreferredPackages extends HookedMethodHandler {
+        public getPreferredPackages(Context context) {
+            super(context);
+        }
+        //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /*public List<PackageInfo> getPreferredPackages(int flags) throws RemoteException;*/
+        //这里插件没有结果的，所以就不处理了。
+    }
+
+    private class resetPreferredActivities extends HookedMethodHandler {
+        public resetPreferredActivities(Context context) {
+            super(context);
+        }
+        //API  4.3_r1, 4.4_r1, 5.0.2_r1
+        /* public void resetPreferredActivities(int userId) throws android.os.RemoteException;*/
+        //这里插件没有结果的，所以就不处理了。
+    }
+
+    private class getLastChosenActivity extends HookedMethodHandler {
+        public getLastChosenActivity(Context context) {
+            super(context);
+        }
+        //API 4.4_r1, 5.0.2_r1
+        /*public ResolveInfo getLastChosenActivity(Intent intent, String resolvedType, int flags) throws RemoteException;*/
+        //这里插件没有结果的，所以就不处理了。
+    }
+
+    private class setLastChosenActivity extends HookedMethodHandler {
+        public setLastChosenActivity(Context context) {
+            super(context);
+        }
+
+        //API 4.4_r1, 5.0.2_r1
+        /*public void setLastChosenActivity(Intent intent, String resolvedType, int flags, IntentFilter filter, int match, ComponentName activity) throws RemoteException;*/
+        //这里插件没有结果的，所以就不处理了。
+    }
+
+    private class addPreferredActivity extends HookedMethodHandler {
+        public addPreferredActivity(Context context) {
+            super(context);
+        }
+
+        //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1
+        /* public void addPreferredActivity(IntentFilter filter, int match, ComponentName[] set, ComponentName activity) throws RemoteException;*/
+        //API  4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /* public void addPreferredActivity(IntentFilter filter, int match, ComponentName[] set, ComponentName activity, int userId) throws RemoteException;*/
+        //这里插件没有结果的，所以就不处理了。
+    }
+
+    private class replacePreferredActivity extends HookedMethodHandler {
+        public replacePreferredActivity(Context context) {
+            super(context);
+        }
+
+        //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1
+        /*public void replacePreferredActivity(IntentFilter filter, int match, ComponentName[] set, ComponentName activity) throws RemoteException;*/
+
+        //API 5.0.2_r1
+        /*public void replacePreferredActivity(IntentFilter filter, int match, ComponentName[] set, ComponentName activity, int userId) throws RemoteException;*/
+        //这里插件没有结果的，所以就不处理了。
+    }
+
+    private class clearPackagePreferredActivities extends HookedMethodHandler {
+        public clearPackagePreferredActivities(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /*public void clearPackagePreferredActivities(String packageName) throws RemoteException;*/
+            if (args != null) {
+                final int index = 0;
+                if (args.length > index && args[index] instanceof String) {
+                    String packageName = (String) args[index];
+                    if (PluginManager.getInstance().isPluginPackage(packageName)) {
+                        args[index] = mHostContext.getPackageName();
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class getPreferredActivities extends HookedMethodHandler {
+        public getPreferredActivities(Context context) {
+            super(context);
+        }
+
+        //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /* public int getPreferredActivities(List<IntentFilter> outFilters, List<ComponentName> outActivities, String packageName) throws RemoteException;*/
+        //这里插件没有结果的，所以就不处理了。
+    }
+
+    //ONLY for 4.4_r1 or later
+    private class getHomeActivities extends HookedMethodHandler {
+        public getHomeActivities(Context context) {
+            super(context);
+        }
+
+        //API 4.4_r1, 5.0.2_r1
+        /* public ComponentName getHomeActivities(List<ResolveInfo> outHomeCandidates) throws RemoteException;*/
+        //这里插件没有结果的，所以就不处理了。
+    }
+
+    private class setComponentEnabledSetting extends HookedMethodHandler{
+
+        public setComponentEnabledSetting(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            final int index=0;
+            if(args!=null&&args.length>index&&args[index] instanceof ComponentName){
+                ComponentName componentName= (ComponentName) args[index];
+                if(PluginManager.getInstance().isPluginPackage(componentName)){
+                    setFakeResult(PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+    private class getComponentEnabledSetting extends HookedMethodHandler {
+        public getComponentEnabledSetting(Context context) {
+            super(context);
+        }
+
+        //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1
+        /*public int getComponentEnabledSetting(ComponentName componentName) throws RemoteException;*/
+        //API 4.2_r1, 4.3_r1,4.4_r1, 5.0.2_r1
+        /*public void setComponentEnabledSetting(ComponentName componentName, int newState, int flags, int userId) throws RemoteException*/
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            final int index = 0;
+            if (args != null && args.length > index && args[index] instanceof ComponentName) {
+                ComponentName componentName = (ComponentName) args[index];
+                if (PluginManager.getInstance().isPluginPackage(componentName)) {
+                    setFakeResult(PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
+                    return true;
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class setApplicationEnabledSetting extends HookedMethodHandler {
+        public setApplicationEnabledSetting(Context context) {
+            super(context);
+        }
+
+        //API 2.3
+        /*public void setApplicationEnabledSetting(String packageName, int newState, int flags) throws RemoteException;*/
+        //API  4.01, 4.0.3_r1, 4.1.1_r1, 4.2_r1
+        /*public void setApplicationEnabledSetting(String packageName, int newState, int flags, int userId) throws RemoteException*/
+        //API  4.3_r1, 4.4_r1, 5.0.2_r1
+        /*public void setApplicationEnabledSetting(String packageName, int newState, int flags, int userId, String callingPackage) throws RemoteException;*/
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            final int index = 0;
+            if (args != null && args.length > index && args[index] instanceof String) {
+                String packageName = (String) args[index];
+                if (PluginManager.getInstance().isPluginPackage(packageName)) {
+                    return true;
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class getApplicationEnabledSetting extends HookedMethodHandler {
+        public getApplicationEnabledSetting(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            //API 2.3, 4.01, 4.0.3_r1,
+        /* public int getApplicationEnabledSetting(String packageName) throws RemoteException;*/
+            //API 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /*public int getApplicationEnabledSetting(String packageName, int userId) throws RemoteException;*/
+            if (args != null) {
+                final int index = 0;
+                if (args.length > index && args[index] instanceof String) {
+                    String packageName = (String) args[index];
+                    if (PluginManager.getInstance().isPluginPackage(packageName)) {
+                        //DO NOTHING
+                        setFakeResult(PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
+                        return true;
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class setPackageStoppedState extends HookedMethodHandler{
+
+        public setPackageStoppedState(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if(args!=null){
+                final int index=0;
+                if(args.length>index&&args[index] instanceof String){
+                    String packageName= (String) args[index];
+                    if(PluginManager.getInstance().isPluginPackage(packageName)){
+                        PluginManager.getInstance().forceStopPackage(packageName);
+                        return true;
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class deleteApplicationCacheFiles extends HookedMethodHandler{
+
+        public deleteApplicationCacheFiles(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if(args!=null){
+                final int index0=0,index1=1;
+                if(args.length>=2&&args[index0] instanceof String
+                        &&IPackageDataObserverCompat.isIPackageDataObserver(args[index1])){
+                    String packageName= (String) args[index0];
+                    if(PluginManager.getInstance().isPluginPackage(packageName)){
+                        final Object observer=args[index1];
+                        PluginManager.getInstance().deleteApplicationCacheFiles(packageName,observer);
+                        return true;
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class clearApplicationUserData extends HookedMethodHandler {
+        public clearApplicationUserData(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            //API 2.3, 4.01, 4.0.3_r1
+        /* public void clearApplicationUserData(String packageName, IPackageDataObserver observer) throws RemoteException;*/
+            //API 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /*public void clearApplicationUserData(String packageName, IPackageDataObserver observer, int userId) throws RemoteException;*/
+            if (args != null) {
+                final int index0 = 0, index1 = 1;
+                if (args.length >= 2 && args[index0] instanceof String && IPackageDataObserverCompat.isIPackageDataObserver(args[index1])) {
+                    String packageName = (String) args[index0];
+                    if (PluginManager.getInstance().isPluginPackage(packageName)) {
+                        final Object observer = args[index1];
+                        PluginManager.getInstance().clearApplicationUserData(packageName, observer);
+                        return true;
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class getPackageSizeInfo extends HookedMethodHandler {
+        public getPackageSizeInfo(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1
+        /*public void getPackageSizeInfo(String packageName, IPackageStatsObserver observer) throws RemoteException;*/
+            //API 4.2_r1 4.3_r1, 4.4_r1, 5.0.2_r1
+        /*public void getPackageSizeInfo(String packageName, int userHandle, IPackageStatsObserver observer) throws RemoteException;*/
+            //TODO 获取包大小。
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class performDexOpt extends HookedMethodHandler {
+        public performDexOpt(Context context) {
+            super(context);
+        }
+
+        //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1
+        /*  public boolean performDexOpt(String packageName) throws RemoteException;*/
+        //API 5.0.2_r1 NO
+    }
+
+    private class movePackage extends HookedMethodHandler {
+        public movePackage(Context context) {
+            super(context);
+        }
+        //API 2.3, 4.01, 4.0.3_r1, 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /*  public void movePackage(String packageName, IPackageMoveObserver observer, int flags) throws RemoteException;*/
     }
 
 }

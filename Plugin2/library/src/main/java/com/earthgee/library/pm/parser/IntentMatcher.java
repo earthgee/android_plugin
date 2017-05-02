@@ -54,10 +54,6 @@ public class IntentMatcher {
         }
     };
 
-    public static final List<ResolveInfo> resolveReceiverIntent() {
-
-    }
-
     public static final List<ResolveInfo> resolveIntent(Context context, Map<String, PluginPackageParser> pluginPackages
             , Intent intent, String resolvedType, int flags) throws Exception {
         if (intent == null || context == null) {
@@ -93,7 +89,7 @@ public class IntentMatcher {
                     Collections.sort(list, mResolvePrioritySorter);
                     return list;
                 }
-                queryIntentReveiverForPackage(context, parser, intent, flags, list);
+                queryIntentReceiverForPackage(context, parser, intent, flags, list);
                 if (list.size() > 0) {
                     Collections.sort(list, mResolvePrioritySorter);
                     return list;
@@ -110,14 +106,14 @@ public class IntentMatcher {
                 queryIntentActivityForPackage(context, parser, intent, flags, list);
                 queryIntentServiceForPackage(context, parser, intent, flags, list);
                 queryIntentProviderForPackage(context, parser, intent, flags, list);
-                queryIntentReveiverForPackage(context, parser, intent, flags, list);
+                queryIntentReceiverForPackage(context, parser, intent, flags, list);
             }
         } else {
             for (PluginPackageParser parser : pluginPackages.values()) {
                 queryIntentActivityForPackage(context, parser, intent, flags, list);
                 queryIntentServiceForPackage(context, parser, intent, flags, list);
                 queryIntentProviderForPackage(context, parser, intent, flags, list);
-                queryIntentReveiverForPackage(context, parser, intent, flags, list);
+                queryIntentReceiverForPackage(context, parser, intent, flags, list);
             }
         }
         Collections.sort(list, mResolvePrioritySorter);
@@ -276,7 +272,8 @@ public class IntentMatcher {
         List<ActivityInfo> receivers = packageParser.getReceivers();
         if (receivers != null && receivers.size() >= 0) {
             for (ActivityInfo receiver : receivers) {
-                List<IntentFilter> intentFilters = packageParser.getReceiverIntentFilter(receiver);
+                ComponentName componentName=new ComponentName(receiver.packageName,receiver.name);
+                List<IntentFilter> intentFilters = packageParser.getReceiverIntentFilter(componentName);
                 if (intentFilters != null && intentFilters.size() > 0) {
                     for (IntentFilter intentFilter : intentFilters) {
                         int match = intentFilter.match(context.getContentResolver(), intent, true, "");
@@ -311,6 +308,191 @@ public class IntentMatcher {
         }
     }
 
+    public static List<ResolveInfo> resolveActivityIntent(Context context,Map<String,PluginPackageParser> pluginPackages
+            ,Intent intent,String resolvedType,int flags) throws Exception{
+        if(intent==null||context==null){
+            return null;
+        }
+
+        List<ResolveInfo> list=new ArrayList<>();
+        ComponentName comp=intent.getComponent();
+        if(comp==null){
+            if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1){
+                if(intent.getSelector()!=null){
+                    intent=intent.getSelector();
+                    comp=intent.getComponent();
+                }
+            }
+        }
+
+        if(comp!=null&&comp.getPackageName()!=null){
+            PluginPackageParser parser=pluginPackages.get(comp.getPackageName());
+            if(parser!=null){
+                queryIntentActivityForPackage(context,parser,intent,flags,list);
+                if(list.size()>0){
+                    Collections.sort(list,mResolvePrioritySorter);
+                    return list;
+                }
+            }
+        }
+        Collections.sort(list,mResolvePrioritySorter);
+        return list;
+    }
+
+    public static final List<ResolveInfo> resolveReceiverIntent(Context context, Map<String, PluginPackageParser> pluginPackages, Intent intent, String resolvedType, int flags) throws Exception {
+        if (intent == null || context == null) {
+            return null;
+        }
+        List<ResolveInfo> list = new ArrayList<ResolveInfo>(1);
+        ComponentName comp = intent.getComponent();
+        if (comp == null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+                if (intent.getSelector() != null) {
+                    intent = intent.getSelector();
+                    comp = intent.getComponent();
+
+                }
+            }
+        }
+
+        if (comp != null && comp.getPackageName() != null) {
+            PluginPackageParser parser = pluginPackages.get(comp.getPackageName());
+            if (parser != null) {
+                queryIntentReceiverForPackage(context, parser, intent, flags, list);
+                if (list.size() > 0) {
+                    Collections.sort(list, mResolvePrioritySorter);
+                    return list;
+                }
+            } else {
+                //intent指定的包名不在我们的插件列表中。
+            }
+            Collections.sort(list, mResolvePrioritySorter);
+            return list;
+        }
+
+
+        final String pkgName = intent.getPackage();
+        if (pkgName != null) {
+            PluginPackageParser parser = pluginPackages.get(pkgName);
+            if (parser != null) {
+                queryIntentReceiverForPackage(context, parser, intent, flags, list);
+            } else {
+                //intent指定的包名不在我们的插件列表中。
+            }
+        } else {
+            for (PluginPackageParser parser : pluginPackages.values()) {
+                queryIntentReceiverForPackage(context, parser, intent, flags, list);
+            }
+
+        }
+        Collections.sort(list, mResolvePrioritySorter);
+        return list;
+    }
+
+    public static final List<ResolveInfo> resolveServiceIntent(Context context, Map<String, PluginPackageParser> pluginPackages, Intent intent, String resolvedType, int flags) throws Exception {
+        if (intent == null || context == null) {
+            return null;
+        }
+        List<ResolveInfo> list = new ArrayList<ResolveInfo>(1);
+        ComponentName comp = intent.getComponent();
+        if (comp == null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+                if (intent.getSelector() != null) {
+                    intent = intent.getSelector();
+                    comp = intent.getComponent();
+
+                }
+            }
+        }
+
+        if (comp != null && comp.getPackageName() != null) {
+            PluginPackageParser parser = pluginPackages.get(comp.getPackageName());
+            if (parser != null) {
+
+                queryIntentServiceForPackage(context, parser, intent, flags, list);
+                if (list.size() > 0) {
+                    Collections.sort(list, mResolvePrioritySorter);
+                    return list;
+                }
+
+            } else {
+                //intent指定的包名不在我们的插件列表中。
+            }
+            Collections.sort(list, mResolvePrioritySorter);
+            return list;
+        }
+
+
+        final String pkgName = intent.getPackage();
+        if (pkgName != null) {
+            PluginPackageParser parser = pluginPackages.get(pkgName);
+            if (parser != null) {
+                queryIntentServiceForPackage(context, parser, intent, flags, list);
+            } else {
+                //intent指定的包名不在我们的插件列表中。
+            }
+        } else {
+            for (PluginPackageParser parser : pluginPackages.values()) {
+                queryIntentServiceForPackage(context, parser, intent, flags, list);
+            }
+        }
+        Collections.sort(list, mResolvePrioritySorter);
+        return list;
+    }
+
+    public static final List<ResolveInfo> resolveProviderIntent(Context context, Map<String, PluginPackageParser> pluginPackages, Intent intent, String resolvedType, int flags) throws Exception {
+        if (intent == null || context == null) {
+            return null;
+        }
+        List<ResolveInfo> list = new ArrayList<ResolveInfo>(1);
+        ComponentName comp = intent.getComponent();
+        if (comp == null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+                if (intent.getSelector() != null) {
+                    intent = intent.getSelector();
+                    comp = intent.getComponent();
+
+                }
+            }
+        }
+
+        if (comp != null && comp.getPackageName() != null) {
+            PluginPackageParser parser = pluginPackages.get(comp.getPackageName());
+            if (parser != null) {
+                queryIntentProviderForPackage(context, parser, intent, flags, list);
+                if (list.size() > 0) {
+                    Collections.sort(list, mResolvePrioritySorter);
+                    return list;
+                }
+            } else {
+                //intent指定的包名不在我们的插件列表中。
+            }
+            Collections.sort(list, mResolvePrioritySorter);
+            return list;
+        }
+
+
+        final String pkgName = intent.getPackage();
+        if (pkgName != null) {
+            PluginPackageParser parser = pluginPackages.get(pkgName);
+            if (parser != null) {
+                queryIntentProviderForPackage(context, parser, intent, flags, list);
+            } else {
+                //intent指定的包名不在我们的插件列表中。
+            }
+        } else {
+            for (PluginPackageParser parser : pluginPackages.values()) {
+                queryIntentProviderForPackage(context, parser, intent, flags, list);
+            }
+
+        }
+        Collections.sort(list, mResolvePrioritySorter);
+        return list;
+    }
+
+    public static ResolveInfo findBest(List<ResolveInfo> infos){
+        return infos.get(0);
+    }
 
 }
 

@@ -162,6 +162,13 @@ public class PluginManager implements ServiceConnection{
         return false;
     }
 
+    public boolean isPluginPackage(ComponentName className) throws RemoteException{
+        if(className==null){
+            return false;
+        }
+        return isPluginPackage(className.getPackageName());
+    }
+
     public ProviderInfo resolveContentProvider(String name,Integer flags) throws RemoteException{
         try {
             if(mPluginManager!=null&&name!=null){
@@ -340,6 +347,101 @@ public class PluginManager implements ServiceConnection{
         }catch (Exception e){
         }
         return null;
+    }
+
+    public List<ResolveInfo> queryIntentActivities(Intent intent,String resolvedType,int flags) throws RemoteException{
+        try{
+            if(mPluginManager!=null&&intent!=null){
+                return mPluginManager.queryIntentActivities(intent, resolvedType, flags);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
+    }
+
+    public List<ResolveInfo> queryIntentReceivers(Intent intent, String resolvedType, int flags) throws RemoteException {
+        try {
+            if (mPluginManager != null && intent != null) {
+                return mPluginManager.queryIntentReceivers(intent, resolvedType, flags);
+            }
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public ResolveInfo resolveService(Intent intent, String resolvedType, Integer flags) throws RemoteException {
+        try {
+            if (mPluginManager != null && intent != null) {
+                return mPluginManager.resolveService(intent, resolvedType, flags);
+            }
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public List<ResolveInfo> queryIntentServices(Intent intent, String resolvedType, int flags) throws RemoteException {
+        try {
+            if (mPluginManager != null && intent != null) {
+                return mPluginManager.queryIntentServices(intent, resolvedType, flags);
+            }
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public List<ResolveInfo> queryIntentContentProviders(Intent intent, String resolvedType, int flags) throws RemoteException {
+        try {
+            if (mPluginManager != null && intent != null) {
+                return mPluginManager.queryIntentContentProviders(intent, resolvedType, flags);
+            }
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public List<PackageInfo> getInstalledPackages(int flags) throws RemoteException {
+        try {
+            if (mPluginManager != null) {
+                return mPluginManager.getInstallPackages(flags);
+            }
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public List<ApplicationInfo> getInstalledApplications(int flags) throws RemoteException {
+        try {
+            if (mPluginManager != null) {
+                return mPluginManager.getInstalledApplications(flags);
+            }
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public void forceStopPackage(String packageName) throws RemoteException{
+        try{
+            if(mPluginManager!=null){
+                mPluginManager.forceStopPackage(packageName);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 package com.earthgee.library.pm;
 
+import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import com.earthgee.library.am.BaseActivityManagerService;
 import com.earthgee.library.am.MyActivityManagerService;
 import com.earthgee.library.core.PluginDirHelper;
 import com.earthgee.library.pm.parser.IntentMatcher;
+import com.earthgee.library.pm.parser.PackageParser;
 import com.earthgee.library.pm.parser.PluginPackageParser;
 import com.earthgee.library.util.Utils;
 
@@ -288,36 +290,95 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
 
     @Override
     public List<ResolveInfo> queryIntentActivities(Intent intent, String resolvedType, int flags) throws RemoteException {
+        waitForReadyInner();
+        try{
+            enforcePluginFileExists();
+            return IntentMatcher.resolveActivityIntent(mContext,mPluginCache,intent,resolvedType,flags);
+        }catch (Exception e){
+            handleException(e);
+        }
         return null;
     }
 
     @Override
     public List<ResolveInfo> queryIntentReceivers(Intent intent, String resolvedType, int flags) throws RemoteException {
+        waitForReadyInner();
+        try {
+            enforcePluginFileExists();
+            return IntentMatcher.resolveReceiverIntent(mContext, mPluginCache, intent, resolvedType, flags);
+        } catch (Exception e) {
+            handleException(e);
+        }
         return null;
     }
 
     @Override
     public ResolveInfo resolveService(Intent intent, String resolvedType, int flags) throws RemoteException {
+        waitForReadyInner();
+        try {
+            enforcePluginFileExists();
+            List<ResolveInfo> infos = IntentMatcher.resolveServiceIntent(mContext, mPluginCache, intent, resolvedType, flags);
+            if (infos != null && infos.size() > 0) {
+                return IntentMatcher.findBest(infos);
+            }
+        } catch (Exception e) {
+            handleException(e);
+        }
         return null;
     }
 
     @Override
     public List<ResolveInfo> queryIntentServices(Intent intent, String resolvedType, int flags) throws RemoteException {
+        waitForReadyInner();
+        try {
+            enforcePluginFileExists();
+            return IntentMatcher.resolveServiceIntent(mContext, mPluginCache, intent, resolvedType, flags);
+        } catch (Exception e) {
+            handleException(e);
+        }
         return null;
     }
 
     @Override
     public List<ResolveInfo> queryIntentContentProviders(Intent intent, String resolvedType, int flags) throws RemoteException {
+        waitForReadyInner();
+        try {
+            enforcePluginFileExists();
+            return IntentMatcher.resolveProviderIntent(mContext, mPluginCache, intent, resolvedType, flags);
+        } catch (Exception e) {
+            handleException(e);
+        }
         return null;
     }
 
     @Override
     public List<PackageInfo> getInstallPackages(int flags) throws RemoteException {
+        waitForReadyInner();
+        try{
+            enforcePluginFileExists();
+            List<PackageInfo> infos=new ArrayList<>(mPluginCache.size());
+            for(PluginPackageParser pluginPackageParser:mPluginCache.values()){
+                infos.add(pluginPackageParser.getPackageInfo(flags));
+            }
+        }catch (Exception e){
+            handleException(e);
+        }
         return null;
     }
 
     @Override
     public List<ApplicationInfo> getInstalledApplications(int flags) throws RemoteException {
+        waitForReadyInner();
+        try {
+            enforcePluginFileExists();
+            List<ApplicationInfo> infos = new ArrayList<ApplicationInfo>(mPluginCache.size());
+                for (PluginPackageParser pluginPackageParser : mPluginCache.values()) {
+                    infos.add(pluginPackageParser.getApplicationInfo(flags));
+                }
+            return infos;
+        } catch (Exception e) {
+            handleException(e);
+        }
         return null;
     }
 
@@ -553,7 +614,20 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
 
     @Override
     public boolean killBackgroundProcesses(String packageName) throws RemoteException {
-        return false;
+        ActivityManager am= (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> infos=am.getRunningAppProcesses();
+        boolean success=false;
+        for(ActivityManager.RunningAppProcessInfo info:infos){
+            if(info.pkgList!=null){
+                String[] pkgListCopy=Arrays.copyOf(info.pkgList,info.pkgList.length);
+                Arrays.sort(pkgListCopy);
+                if(Arrays.binarySearch(pkgListCopy,packageName)>=0&&info.pid!=android.os.Process.myPid()){
+                    android.os.Process.killProcess(info.pid);
+                    success=true;
+                }
+            }
+        }
+        return success;
     }
 
     @Override
@@ -563,7 +637,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
 
     @Override
     public boolean forceStopPackage(String pluginPackageName) throws RemoteException {
-        return false;
+        return killBackgroundProcesses(pluginPackageName);
     }
 
     @Override
