@@ -572,7 +572,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
 
     @Override
     public ActivityInfo selectStubActivityInfo(ActivityInfo targetInfo) throws RemoteException {
-        return null;
+        return mActivityManagerService.selectStubActivityInfo(Binder.getCallingPid(),Binder.getCallingUid(),targetInfo);
     }
 
     @Override
@@ -582,7 +582,15 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         if(targetIntent.getComponent()!=null){
             ai=getActivityInfo(targetIntent.getComponent(),0);
         }else {
-            
+            ResolveInfo resolveInfo=resolveIntent(targetIntent,targetIntent.
+                    resolveTypeIfNeeded(mContext.getContentResolver()),0);
+            if(resolveInfo!=null&&resolveInfo.activityInfo!=null){
+                ai=resolveInfo.activityInfo;
+            }
+        }
+
+        if(ai!=null){
+            return selectStubActivityInfo(ai);
         }
         return null;
     }
