@@ -446,6 +446,38 @@ public class PluginManager implements ServiceConnection{
         }
     }
 
+    public ActivityInfo resolveActivityInfo(Intent intent,int flags) throws RemoteException{
+        try{
+            if(mPluginManager!=null){
+                if(intent.getComponent()!=null){
+                    return mPluginManager.getActivityInfo(intent.getComponent(),flags);
+                }else{
+                    ResolveInfo resolveInfo=mPluginManager.resolveIntent(intent,
+                            intent.resolveTypeIfNeeded(mHostContext.getContentResolver()),flags);
+                    if(resolveInfo!=null&&resolveInfo.activityInfo!=null){
+                        return resolveInfo.activityInfo;
+                    }
+                }
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
+    }
+
+    public ActivityInfo selectStubActivityInfo(Intent pluginInfo) throws RemoteException{
+        try{
+            if(mPluginManager!=null){
+                return mPluginManager.selectStubActivityInfoByIntent(pluginInfo);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
+    }
+
 }
 
 

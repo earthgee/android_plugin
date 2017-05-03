@@ -1,8 +1,16 @@
 package com.earthgee.library.hook.handle;
 
+import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.os.Build;
+import android.os.RemoteException;
 
+import com.earthgee.library.am.RunningActivities;
 import com.earthgee.library.hook.BaseHookHandle;
+import com.earthgee.library.pm.PluginManager;
 
 import java.lang.reflect.Method;
 
@@ -84,11 +92,66 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
             super(hostContext);
         }
 
+        protected boolean doReplaceIntentForStartActivityAPILow(Object[] args) throws RemoteException{
+            int intentOfArgIndex=findFirstIntentInArgs(args);
+            if(args!=null&&args.length>1&&intentOfArgIndex>=0){
+                Intent intent= (Intent) args[intentOfArgIndex];
+                ActivityInfo activityInfo=resolveActivity(intent);
+                if(activityInfo!=null&&isPackagePlugin(activityInfo.packageName)){
+                    ComponentName componentName=selectProxyActivity(intent);
+                }
+            }
+        }
+
         @Override
         protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
             RunningActivities.beforeStartActivity();
+            boolean bRet=true;
+            if(Build.VERSION.SDK_INT< Build.VERSION_CODES.JELLY_BEAN_MR2){
+                bRet=doReplaceIntentForStartActivityAPILow(args);
+            }else{
+                bRet=doReplaceIntentForStartActivityAPIHigh(args);
+            }
+            if(!bRet){
+                setFakeResult(Activity.RESULT_CANCELED);
+                return true;
+            }
             return super.beforeInvoke(receiver, method, args);
         }
+    }
+
+    private static int findFirstIntentInArgs(Object[] args){
+        if(args!=null&&args.length>0){
+            int i=0;
+            for(Object arg:args){
+                if(arg!=null&&arg instanceof Intent){
+                    return i;
+                }
+                i++;
+            }
+        }
+        return -1;
+    }
+
+    private static ActivityInfo resolveActivity(Intent intent) throws RemoteException{
+        return PluginManager.getInstance().resolveActivityInfo(intent,0);
+    }
+
+    private static boolean isPackagePlugin(String packageName) throws RemoteException{
+        return PluginManager.getInstance().isPluginPackage(packageName);
+    }
+
+    private static ComponentName selectProxyActivity(Intent intent){
+        try{
+            if(intent!=null){
+                ActivityInfo proxyInfo=PluginManager.getInstance().selectStubActivityInfo(intent);
+                if(proxyInfo!=null){
+                    return new ComponentName(proxyInfo.packageName,proxyInfo.name);
+                }
+            }
+        }catch (Exception e){
+        }
+        return null;
     }
 
 }

@@ -578,6 +578,12 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
     @Override
     public ActivityInfo selectStubActivityInfoByIntent(Intent targetIntent) throws
             RemoteException {
+        ActivityInfo ai=null;
+        if(targetIntent.getComponent()!=null){
+            ai=getActivityInfo(targetIntent.getComponent(),0);
+        }else {
+            
+        }
         return null;
     }
 
