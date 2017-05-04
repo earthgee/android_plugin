@@ -478,6 +478,10 @@ public class PluginManager implements ServiceConnection{
         return null;
     }
 
+    public boolean isConnected(){
+        return mHostContext!=null&&mPluginManager!=null;
+    }
+
 }
 
 

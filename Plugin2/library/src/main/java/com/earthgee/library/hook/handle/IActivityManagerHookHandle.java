@@ -6,11 +6,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.RemoteException;
+import android.text.TextUtils;
 
+import com.earthgee.library.PluginPatchManager;
 import com.earthgee.library.am.RunningActivities;
+import com.earthgee.library.core.Env;
+import com.earthgee.library.core.PluginProcessManager;
 import com.earthgee.library.hook.BaseHookHandle;
 import com.earthgee.library.pm.PluginManager;
+import com.earthgee.library.reflect.FieldUtils;
 
 import java.lang.reflect.Method;
 
@@ -92,15 +98,76 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
             super(hostContext);
         }
 
+        private void setIntentClassLoader(Intent intent,ClassLoader classLoader){
+            try{
+                Bundle mExtras=intent.getExtras();
+                if(mExtras!=null){
+                    mExtras.setClassLoader(classLoader);
+                }else{
+                    Bundle value=new Bundle();
+                    value.setClassLoader(classLoader);
+                    FieldUtils.writeField(intent,"mExtras",value);
+                }
+            }catch (Exception e){
+            }finally {
+                intent.setExtrasClassLoader(classLoader);
+            }
+        }
+
         protected boolean doReplaceIntentForStartActivityAPILow(Object[] args) throws RemoteException{
             int intentOfArgIndex=findFirstIntentInArgs(args);
             if(args!=null&&args.length>1&&intentOfArgIndex>=0){
                 Intent intent= (Intent) args[intentOfArgIndex];
                 ActivityInfo activityInfo=resolveActivity(intent);
                 if(activityInfo!=null&&isPackagePlugin(activityInfo.packageName)){
-                    ComponentName componentName=selectProxyActivity(intent);
+                    ComponentName component=selectProxyActivity(intent);
+                    if(component!=null){
+                        Intent newIntent=new Intent();
+                        newIntent.setComponent(component);
+                        newIntent.putExtra(Env.EXTRA_TARGET_INTENT,intent);
+                        newIntent.setFlags(intent.getFlags());
+                        if(TextUtils.equals(mHostContext.getPackageName(),activityInfo.packageName)){
+                            newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        }
+                        args[intentOfArgIndex]=newIntent;
+                    }
                 }
             }
+            return true;
+        }
+
+        protected boolean doReplaceIntentForStartActivityAPIHigh(Object[] args) throws RemoteException{
+            int intentOfArgIndex=findFirstIntentInArgs(args);
+            if(args!=null&&args.length>1&&intentOfArgIndex>=0){
+                Intent intent= (Intent) args[intentOfArgIndex];
+                if(!PluginPatchManager.getInstance().canStartPluginActivity(intent)){
+                    PluginPatchManager.getInstance().startPluginActivity(intent);
+                    return false;
+                }
+                ActivityInfo activityInfo=resolveActivity(intent);
+                if(activityInfo!=null&&isPackagePlugin(activityInfo.packageName)){
+                    ComponentName component=selectProxyActivity(intent);
+                    if(component!=null){
+                        Intent newIntent=new Intent();
+                        try{
+                            ClassLoader pluginClassLoader= PluginProcessManager.getPluginClassLoader(component.getPackageName());
+                            setIntentClassLoader(newIntent,pluginClassLoader);
+                        }catch (Exception e){
+                        }
+                        newIntent.setComponent(component);
+                        newIntent.putExtra(Env.EXTRA_TARGET_INTENT,intent);
+                        newIntent.setFlags(intent.getFlags());
+
+                        String callingPackage= (String) args[1];
+                        if(TextUtils.equals(mHostContext.getPackageName(),callingPackage)){
+                            newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        }
+                        args[intentOfArgIndex]=newIntent;
+                        args[1]=mHostContext.getPackageName();
+                    }
+                }
+            }
+            return true;
         }
 
         @Override
@@ -118,6 +185,219 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
             }
             return super.beforeInvoke(receiver, method, args);
         }
+    }
+
+    private static class startActivityAsUser extends startActivity {
+
+        public startActivityAsUser(Context hostContext) {
+            super(hostContext);
+        }
+
+        //API 17
+         /* public int startActivityAsUser(IApplicationThread caller,
+            Intent intent, String resolvedType, IBinder resultTo, String resultWho,
+            int requestCode, int flags, String profileFile,
+            ParcelFileDescriptor profileFd, Bundle options, int userId) throws RemoteException;*/
+        //API 18,19
+        /* public int startActivityAsUser(IApplicationThread caller, String callingPackage,
+            Intent intent, String resolvedType, IBinder resultTo, String resultWho,
+            int requestCode, int flags, String profileFile,
+            ParcelFileDescriptor profileFd, Bundle options, int userId) throws RemoteException;*/
+
+        //API 21
+        /* public int startActivityAsUser(IApplicationThread caller, String callingPackage,
+            Intent intent, String resolvedType, IBinder resultTo, String resultWho,
+            int requestCode, int flags, ProfilerInfo profilerInfo,
+            Bundle options, int userId) throws RemoteException;*/
+    }
+
+
+    private static class startActivityAsCaller extends startActivity {
+
+        public startActivityAsCaller(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            //API 21
+             /* public int startActivityAsCaller(IApplicationThread caller, String callingPackage,
+            Intent intent, String resolvedType, IBinder resultTo, String resultWho, int requestCode,
+            int flags, ProfilerInfo profilerInfo, Bundle options, int userId) throws RemoteException;*/
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private static class startActivityAndWait extends startActivity {
+
+        public startActivityAndWait(Context hostContext) {
+            super(hostContext);
+        }
+
+        //API 2.3
+        /*public WaitResult startActivityAndWait(IApplicationThread caller,
+            Intent intent, String resolvedType, Uri[] grantedUriPermissions,
+            int grantedMode, IBinder resultTo, String resultWho, int requestCode,
+            boolean onlyIfNeeded, boolean debug) throws RemoteException;*/
+
+        //API 15
+        /* public WaitResult startActivityAndWait(IApplicationThread caller,
+            Intent intent, String resolvedType, Uri[] grantedUriPermissions,
+            int grantedMode, IBinder resultTo, String resultWho, int requestCode,
+            boolean onlyIfNeeded, boolean debug, String profileFile,
+            ParcelFileDescriptor profileFd, boolean autoStopProfiler) throws RemoteException;*/
+
+
+        //API 16
+        /*  public WaitResult startActivityAndWait(IApplicationThread caller,
+            Intent intent, String resolvedType, IBinder resultTo, String resultWho,
+            int requestCode, int flags, String profileFile,
+            ParcelFileDescriptor profileFd, Bundle options) throws RemoteException;*/
+
+        //API 17
+        /*  public WaitResult startActivityAndWait(IApplicationThread caller,
+            Intent intent, String resolvedType, IBinder resultTo, String resultWho,
+            int requestCode, int flags, String profileFile,
+            ParcelFileDescriptor profileFd, Bundle options, int userId) throws RemoteException;*/
+
+        //API 18,19
+        /*  public WaitResult startActivityAndWait(IApplicationThread caller, String callingPackage,
+            Intent intent, String resolvedType, IBinder resultTo, String resultWho,
+            int requestCode, int flags, String profileFile,
+            ParcelFileDescriptor profileFd, Bundle options, int userId) throws RemoteException;*/
+
+        //API 21
+        /* public WaitResult startActivityAndWait(IApplicationThread caller, String callingPackage,
+            Intent intent, String resolvedType, IBinder resultTo, String resultWho,
+            int requestCode, int flags, ProfilerInfo profilerInfo,
+            Bundle options, int userId) throws RemoteException;*/
+    }
+
+
+    private static class startActivityWithConfig extends startActivity {
+
+        public startActivityWithConfig(Context hostContext) {
+            super(hostContext);
+        }
+
+        //API 2.3,15
+        /*  public int startActivityWithConfig(IApplicationThread caller,
+            Intent intent, String resolvedType, Uri[] grantedUriPermissions,
+            int grantedMode, IBinder resultTo, String resultWho, int requestCode,
+            boolean onlyIfNeeded, boolean debug, Configuration newConfig) throws RemoteException;*/
+
+
+        //API 16
+        /* public int startActivityWithConfig(IApplicationThread caller,
+            Intent intent, String resolvedType, IBinder resultTo, String resultWho,
+            int requestCode, int startFlags, Configuration newConfig,
+            Bundle options) throws RemoteException;*/
+
+        //API 17
+        /* public int startActivityWithConfig(IApplicationThread caller,
+            Intent intent, String resolvedType, IBinder resultTo, String resultWho,
+            int requestCode, int startFlags, Configuration newConfig,
+            Bundle options, int userId) throws RemoteException;*/
+        //API 18,19,21
+        /*  public int startActivityWithConfig(IApplicationThread caller, String callingPackage,
+            Intent intent, String resolvedType, IBinder resultTo, String resultWho,
+            int requestCode, int startFlags, Configuration newConfig,
+            Bundle options, int userId) throws RemoteException;*/
+    }
+
+    private static class startActivityIntentSender extends ReplaceCallingPackageHookedMethodHandler {
+
+        public startActivityIntentSender(Context hostContext) {
+            super(hostContext);
+        }
+
+        //API 2.3,15
+        /* public int startActivityIntentSender(IApplicationThread caller,
+            IntentSender intent, Intent fillInIntent, String resolvedType,
+            IBinder resultTo, String resultWho, int requestCode,
+            int flagsMask, int flagsValues) throws RemoteException;*/
+
+        //API 16,17,18,19,21
+        /*  public int startActivityIntentSender(IApplicationThread caller,
+            IntentSender intent, Intent fillInIntent, String resolvedType,
+            IBinder resultTo, String resultWho, int requestCode,
+            int flagsMask, int flagsValues, Bundle options) throws RemoteException;*/
+        //DO NOTHING
+    }
+
+    private static class startVoiceActivity extends startActivity {
+
+        public startVoiceActivity(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            //API 21
+        /*   public int startVoiceActivity(String callingPackage, int callingPid, int callingUid,
+            Intent intent, String resolvedType, IVoiceInteractionSession session,
+            IVoiceInteractor interactor, int flags, ProfilerInfo profilerInfo, Bundle options,
+            int userId) throws RemoteException;*/
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                final int index = 0;
+                if (args != null && args.length > index) {
+                    if (args[index] != null && args[index] instanceof String) {
+                        String targetPkg = (String) args[index];
+                        if (isPackagePlugin(targetPkg)) {
+                            args[index] = mHostContext.getPackageName();
+                        }
+                    }
+                }
+                doReplaceIntentForStartActivityAPIHigh(args);
+            }
+            return false;
+        }
+    }
+
+    private static class startNextMatchingActivity extends startActivity {
+
+        public startNextMatchingActivity(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            //API 2.3,15
+        /*  public boolean startNextMatchingActivity(IBinder callingActivity,
+            Intent intent) throws RemoteException;*/
+
+            //API 16,17,17,19,21
+        /* public boolean startNextMatchingActivity(IBinder callingActivity,
+            Intent intent, Bundle options) throws RemoteException;*/
+            doReplaceIntentForStartActivityAPILow(args);
+            return false;
+        }
+    }
+
+    private static class startActivityFromRecents extends ReplaceCallingPackageHookedMethodHandler {
+
+        public startActivityFromRecents(Context hostContext) {
+            super(hostContext);
+        }
+
+        //API 21
+        /*public int startActivityFromRecents(int taskId, Bundle options) throws RemoteException;*/
+        //DO NOTHING
+    }
+
+    private static class finishActivity extends ReplaceCallingPackageHookedMethodHandler {
+
+        public finishActivity(Context hostContext) {
+            super(hostContext);
+        }
+
+        //API 2.3,15,16,17,18,19
+        /* public boolean finishActivity(IBinder token, int code, Intent data)
+            throws RemoteException;*/
+        //API 21
+        /*public boolean finishActivity(IBinder token, int code, Intent data, boolean finishTask)
+            throws RemoteException;*/
+        //FIXME 先不修改。
     }
 
     private static int findFirstIntentInArgs(Object[] args){
@@ -152,6 +432,134 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         }catch (Exception e){
         }
         return null;
+    }
+
+    private static class getCallingPackage extends ReplaceCallingPackageHookedMethodHandler {
+
+        public getCallingPackage(Context hostContext) {
+            super(hostContext);
+        }
+
+        //API 2.3,15,16,17,18,19,21
+        /* public String getCallingPackage(IBinder token) throws RemoteException;*/
+        //FIXME  I don't know what function of this,just hook it.
+    }
+
+    private static class getCallingActivity extends ReplaceCallingPackageHookedMethodHandler {
+
+        public getCallingActivity(Context hostContext) {
+            super(hostContext);
+        }
+
+        //API  2.3,15,16,17,18,19, 21
+        /*  public ComponentName getCallingActivity(IBinder token) throws RemoteException;*/
+        //FIXME I don't know what function of this,just hook it.
+        //也不知道这个是干嘛的。是返回此Activity是由谁调起的么？
+    }
+
+    private static class getAppTasks extends ReplaceCallingPackageHookedMethodHandler {
+
+        public getAppTasks(Context hostContext) {
+            super(hostContext);
+        }
+        // API 21
+        /* public List<IAppTask> getAppTasks(String callingPackage) throws RemoteException;*/
+        //FIXME I don't know what function of this,just hook it.
+    }
+
+    private static class addAppTask extends ReplaceCallingPackageHookedMethodHandler {
+
+        public addAppTask(Context hostContext) {
+            super(hostContext);
+        }
+
+        //API 21
+        /* public int addAppTask(IBinder activityToken, Intent intent,
+            ActivityManager.TaskDescription description, Bitmap thumbnail) throws RemoteException;*/
+        //FIXME api21的不知道干嘛的，先不修改吧。
+    }
+
+    private static class getTasks extends ReplaceCallingPackageHookedMethodHandler {
+
+        public getTasks(Context hostContext) {
+            super(hostContext);
+        }
+
+        //API 2.3,15,16,17,18
+        /*  public List getTasks(int maxNum, int flags,
+                         IThumbnailReceiver receiver) throws RemoteException;*/
+        //API 19
+        /*public List<RunningTaskInfo> getTasks(int maxNum, int flags,
+                         IThumbnailReceiver receiver) throws RemoteException;*/
+        //API 21
+        /* public List<RunningTaskInfo> getTasks(int maxNum, int flags) throws RemoteException;*/
+        //FIXME 这里需要把原来函数返回的 List<RunningTaskInfo>中关于代理activity修改成插件自己的。
+
+//        @Override
+//        protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
+//            if (invokeResult instanceof List) {
+//                List runningTaskInfo = (List) invokeResult;
+//                if (runningTaskInfo.size() > 0) {
+//                    for (Object obj : runningTaskInfo) {
+//                        RunningTaskInfo info = (RunningTaskInfo) obj;
+//                        info.baseActivity =;
+//                        info.topActivity =;
+//                    }
+//                }
+//            }
+//            super.afterInvoke(receiver, method, args, invokeResult);
+//        }
+    }
+
+    private static class startInstrumentation extends ReplaceCallingPackageHookedMethodHandler {
+
+        public startInstrumentation(Context hostContext) {
+            super(hostContext);
+        }
+
+        //API 2.3,15,16
+        /*    public boolean startInstrumentation(ComponentName className, String profileFile,
+            int flags, Bundle arguments, IInstrumentationWatcher watcher)
+            throws RemoteException;*/
+        //API 17
+       /*    public boolean startInstrumentation(ComponentName className, String profileFile,
+            int flags, Bundle arguments, IInstrumentationWatcher watcher, int userId)
+            throws RemoteException;*/
+        //API 18,19
+        /*    public boolean startInstrumentation(ComponentName className, String profileFile,
+            int flags, Bundle arguments, IInstrumentationWatcher watcher,
+            IUiAutomationConnection connection, int userId) throws RemoteException;*/
+        //API 21
+        /* public boolean startInstrumentation(ComponentName className, String profileFile,
+            int flags, Bundle arguments, IInstrumentationWatcher watcher,
+            IUiAutomationConnection connection, int userId,
+            String abiOverride) throws RemoteException;*/
+
+        //FIXME 单元测试用的。这个就不改了。
+    }
+
+    private static class getActivityClassForToken extends ReplaceCallingPackageHookedMethodHandler {
+
+        public getActivityClassForToken(Context hostContext) {
+            super(hostContext);
+        }
+
+        //API  2.3,15,16,17,18,19, 21
+       /* public ComponentName getActivityClassForToken(IBinder token) throws RemoteException;*/
+        //FIXME I don't know what function of this,just hook it.
+        //通过token拿Activity？搞不懂，不改。
+    }
+
+    private static class getPackageForToken extends ReplaceCallingPackageHookedMethodHandler {
+
+        public getPackageForToken(Context hostContext) {
+            super(hostContext);
+        }
+
+        //API  2.3,15,16,17,18,19, 21
+        /* public String getPackageForToken(IBinder token) throws RemoteException;*/
+        //FIXME I don't know what function of this,just hook it.
+        //通过token拿包名？搞不懂，不改。
     }
 
 }

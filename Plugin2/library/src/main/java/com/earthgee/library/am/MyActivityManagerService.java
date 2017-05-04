@@ -72,6 +72,62 @@ public class MyActivityManagerService extends BaseActivityManagerService{
         boolean useDialogStyle=Window_windowIsTranslucent||Window_windowIsFloating||Window_windowShowWallpaper;
 
         String stubProcessName1=mRunningProcessList.getStubProcessByTarget(targetInfo);
+        if(stubProcessName1!=null){
+            List<ActivityInfo> stubInfos=mStaticProcessList.getActivityInfoForProcessName(stubProcessName1,useDialogStyle);
+            for(ActivityInfo stubInfo:stubInfos){
+                if(stubInfo.launchMode==targetInfo.launchMode){
+                    if(stubInfo.launchMode==ActivityInfo.LAUNCH_MULTIPLE){
+                        mRunningProcessList.setTargetProcessName(stubInfo,targetInfo);
+                        return stubInfo;
+                    }else if(!mRunningProcessList.isStubInfoUsed(stubInfo,targetInfo,stubProcessName1)){
+                        mRunningProcessList.setTargetProcessName(stubInfo,targetInfo);
+                        return stubInfo;
+                    }
+                }
+            }
+        }
+
+        List<String> stubProcessNames=mStaticProcessList.getProcessNames();
+        for(String stubProcessName:stubProcessNames){
+            List<ActivityInfo> stubInfos=mStaticProcessList.getActivityInfoForProcessName(stubProcessName,useDialogStyle);
+            if(mRunningProcessList.isProcessRunning(stubProcessName)){
+                if(mRunningProcessList.isPkgEmpty(stubProcessName)){
+                    for(ActivityInfo stubInfo:stubInfos){
+                        if(stubInfo.launchMode==targetInfo.launchMode){
+                            mRunningProcessList.setTargetProcessName(stubInfo,targetInfo);
+                            return stubInfo;
+                        }else if(!mRunningProcessList.isStubInfoUsed(stubInfo,targetInfo,stubProcessName)){
+                            mRunningProcessList.setTargetProcessName(stubInfo,targetInfo);
+                            return stubInfo;
+                        }
+                    }
+                }else if(mRunningProcessList.isPkgCanRunInProcess(targetInfo.packageName,stubProcessName,targetInfo.processName)){
+                    for(ActivityInfo stubInfo:stubInfos){
+                        if(stubInfo.launchMode==targetInfo.launchMode){
+                            if(stubInfo.launchMode==ActivityInfo.LAUNCH_MULTIPLE){
+                                mRunningProcessList.setTargetProcessName(stubInfo,targetInfo);
+                                return stubInfo;
+                            }else if(!mRunningProcessList.isStubInfoUsed(stubInfo,targetInfo,stubProcessName1)){
+                                mRunningProcessList.setTargetProcessName(stubInfo,targetInfo);
+                                return stubInfo;
+                            }
+                        }
+                    }
+                }
+            }else{
+                for(ActivityInfo stubInfo:stubInfos){
+                    if(stubInfo.launchMode==targetInfo.launchMode){
+                        if(stubInfo.launchMode==ActivityInfo.LAUNCH_MULTIPLE){
+                            mRunningProcessList.setTargetProcessName(stubInfo,targetInfo);
+                            return stubInfo;
+                        }else if(!mRunningProcessList.isStubInfoUsed(stubInfo,targetInfo,stubProcessName1)){
+                            mRunningProcessList.setTargetProcessName(stubInfo,targetInfo);
+                            return stubInfo;
+                        }
+                    }
+                }
+            }
+        }
         return null;
     }
 
