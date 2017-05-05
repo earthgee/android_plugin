@@ -157,6 +157,32 @@ public class FieldUtils {
         writeField(field,(Object) null,value,forceAccess);
     }
 
+    public static Field getDeclaredField(final Class<?> cls,final String fieldName,final boolean forceAccess){
+        Validate.isTrue(cls!=null,"The class must not be null");
+        Validate.isTrue(!TextUtils.isEmpty(fieldName),"The field name must not be empty");
+        try{
+            final Field field=cls.getDeclaredField(fieldName);
+            if(!MemberUtils.isAccessible(field)){
+                if(forceAccess){
+                    field.setAccessible(true);
+                }else{
+                    return null;
+                }
+            }
+            return field;
+        }catch (NoSuchFieldException e){
+        }
+        return null;
+    }
+
+    public static void writeDeclaredField(final Object target,final String fieldName,final Object value) throws Exception{
+        Validate.isTrue(target!=null,"target object must not be null");
+        final Class<?> cls=target.getClass();
+        final Field field=getDeclaredField(cls,fieldName,true);
+        Validate.isTrue(field!=null,"Cannot locate declared %s.%s",cls.getName(),fieldName);
+        writeField(field,target,value,false);
+    }
+
 }
 
 

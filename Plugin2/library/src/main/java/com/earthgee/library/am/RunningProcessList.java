@@ -150,6 +150,17 @@ public class RunningProcessList {
         return false;
     }
 
+    void setProcessName(int pid,String stubProcessName,String targetProcessName,String targetPkg){
+        ProcessItem item=items.get(pid);
+        if(item!=null){
+            if(item.pkgs.contains(targetPkg)){
+                item.pkgs.add(targetPkg);
+            }
+            item.targetProcessName=targetProcessName;
+            item.stubProcessName=stubProcessName;
+        }
+    }
+
 }
 
 

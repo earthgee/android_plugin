@@ -49,6 +49,10 @@ public abstract class BaseActivityManagerService {
         }
     }
 
+    public void onReportMyProcessName(int callingPid,int callingUid,String stubProcessName,String targetProcessName,String targetPkg) {
+
+    }
+
     private class MyRemoteCallbackList extends RemoteCallbackList<IApplicationCallback>{
 
         @Override

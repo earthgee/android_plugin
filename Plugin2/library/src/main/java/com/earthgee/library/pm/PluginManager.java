@@ -482,6 +482,18 @@ public class PluginManager implements ServiceConnection{
         return mHostContext!=null&&mPluginManager!=null;
     }
 
+    public void reportMyProcessName(String stubProcessName,String targetProcessName,
+                                    String targetPkg) throws RemoteException{
+        try{
+            if(mPluginManager!=null){
+                mPluginManager.reportMyProcessName(stubProcessName, targetProcessName, targetPkg);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+    }
+
 }
 
 
