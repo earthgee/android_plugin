@@ -223,7 +223,6 @@ public class PluginCallback implements Handler.Callback{
         }finally {
 
         }
-        return false;
     }
 
     private boolean handleLaunchActivity(Message msg){

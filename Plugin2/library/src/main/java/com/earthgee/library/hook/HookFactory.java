@@ -25,6 +25,8 @@ import com.earthgee.library.hook.binder.IWifiManagerBinderHook;
 import com.earthgee.library.hook.binder.IWindowManagerBinderHook;
 import com.earthgee.library.hook.proxy.IActivityManagerHook;
 import com.earthgee.library.hook.proxy.IPackageManagerHook;
+import com.earthgee.library.hook.proxy.InstrumentationHook;
+import com.earthgee.library.hook.proxy.PluginCallbackHook;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,6 +126,10 @@ public class HookFactory {
         }
         installHook(new IPackageManagerHook(context),classLoader);
         installHook(new IActivityManagerHook(context),classLoader);
+        installHook(new PluginCallbackHook(context),classLoader);
+        installHook(new InstrumentationHook(context),classLoader);
+
+
     }
 
 }

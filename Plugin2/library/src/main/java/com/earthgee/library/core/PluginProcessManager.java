@@ -2,12 +2,16 @@ package com.earthgee.library.core;
 
 import android.app.ActivityManager;
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ServiceInfo;
+import android.os.Build;
 import android.os.Looper;
 import android.text.TextUtils;
 
@@ -18,9 +22,14 @@ import com.earthgee.library.stub.ActivityStub;
 import com.earthgee.library.stub.ServiceStub;
 import com.earthgee.library.util.ActivityThreadCompat;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Created by zhaoruixuan on 2017/4/11.
@@ -31,6 +40,9 @@ public class PluginProcessManager {
     private static Object sGetCurrentProcessNameLock=new Object();
 
     private static List<String> sProcessList=new ArrayList<>();
+
+    private static WeakHashMap<Integer,Context> mFakedContext=new WeakHashMap<>(1);
+    private static Object mServiceCache=null;
 
     public static final boolean isPluginProcess(Context context){
         String currentPorcessName=getCurrentProcessName(context);
@@ -147,6 +159,117 @@ public class PluginProcessManager {
             }
         }
         return sApplicationCache.get(packageName);
+    }
+
+    private static Context getBaseContext(Context c){
+        if(c instanceof ContextWrapper){
+            return ((ContextWrapper)c).getBaseContext();
+        }
+        return c;
+    }
+
+    private static List<String> sSkipService=new ArrayList<>();
+
+    static {
+        sSkipService.add(Context.LAYOUT_INFLATER_SERVICE);
+        sSkipService.add(Context.NOTIFICATION_SERVICE);
+        sSkipService.add("storage");
+        sSkipService.add("accessibility");
+        sSkipService.add("audio");
+        sSkipService.add("clipboard");
+        sSkipService.add("media_router");
+        sSkipService.add("wifi");
+        sSkipService.add("captioning");
+        sSkipService.add("account");
+        sSkipService.add("activity");
+        sSkipService.add("wifiscanner");
+        sSkipService.add("rttmanager");
+        sSkipService.add("tv_input");
+        sSkipService.add("jobscheduler");
+        sSkipService.add("sensorhub");
+        sSkipService.add("servicediscovery");
+    }
+
+    private static void fakeSystemServiceInner(Context hostContext,Context targetContext){
+        try{
+            Context baseContext=getBaseContext(targetContext);
+            if(mFakedContext.containsValue(baseContext)){
+                return;
+            }else if(mServiceCache!=null){
+                FieldUtils.writeField(baseContext,"mServiceCache",mServiceCache);
+                ContentResolver cr=baseContext.getContentResolver();
+                if(cr!=null){
+                    Object crctx=FieldUtils.readField(cr,"mContext");
+                    if(crctx!=null){
+                        FieldUtils.writeField(crctx,"mServiceCache",mServiceCache);
+                    }
+                }
+                if(!mFakedContext.containsValue(baseContext)){
+                    mFakedContext.put(baseContext.hashCode(),baseContext);
+                }
+                return;
+            }
+            Object SYSTEM_SERVICE_MAP=null;
+            try{
+                SYSTEM_SERVICE_MAP=FieldUtils.readStaticField(baseContext.getClass(),"SYETEM_SERVICE_MAP");
+            }catch (Exception e){
+            }
+            if(SYSTEM_SERVICE_MAP==null){
+                try{
+                    SYSTEM_SERVICE_MAP=FieldUtils.readStaticField(Class.forName("android.app.SystemServiceRegistry"),
+                            "SYSTEM_SERVICE_FETCHERS");
+                }catch (Exception e){
+                }
+            }
+
+            if(SYSTEM_SERVICE_MAP!=null&&(SYSTEM_SERVICE_MAP instanceof Map)){
+                Map<?,?> sSYSTEM_SERVICE_MAP= (Map<?, ?>) SYSTEM_SERVICE_MAP;
+                Context originContext=getBaseContext(hostContext);
+
+                Object mServiceCache=FieldUtils.readField(originContext,"mServiceCache");
+                if(mServiceCache instanceof List){
+                    ((List) mServiceCache).clear();
+                }
+
+                for(Object key:sSYSTEM_SERVICE_MAP.keySet()){
+                    if(sSkipService.contains(key)){
+                        continue;
+                    }
+                    Object serviceFetcher=sSYSTEM_SERVICE_MAP.get(key);
+                    try{
+                        Method getService=serviceFetcher.getClass().getMethod("getService",baseContext.getClass());
+                        getService.invoke(serviceFetcher,originContext);
+                    }catch (InvocationTargetException e){
+                        Throwable cause=e.getCause();
+                        if(cause!=null){
+                        }else{
+                        }
+                    }catch (Exception e){
+                    }
+                }
+                mServiceCache=FieldUtils.readField(originContext,"mServiceCache");
+                FieldUtils.writeField(baseContext,"mServiceCache",mServiceCache);
+
+                ContentResolver cr=baseContext.getContentResolver();
+                if(cr!=null){
+                    Object crctx=FieldUtils.readField(cr,"mContext");
+                    if(crctx!=null){
+                        FieldUtils.writeField(crctx,"mServiceCache",mServiceCache);
+                    }
+                }
+            }
+            if(!mFakedContext.containsValue(baseContext)){
+                mFakedContext.put(baseContext.hashCode(),baseContext);
+            }
+        }catch (Exception e){
+        }
+    }
+
+    public static void fakeSystemService(Context hostContext,Context targetContext){
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1&&
+                !TextUtils.equals(hostContext.getPackageName(),targetContext.getPackageName())){
+            fakeSystemServiceInner(hostContext,targetContext);
+        }
     }
 
 }

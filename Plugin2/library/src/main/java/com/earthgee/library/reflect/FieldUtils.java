@@ -20,6 +20,10 @@ public class FieldUtils {
         return sb.toString();
     }
 
+    public static Object readField(final Field field,final Object target) throws Exception {
+        return readField(field, target,true);
+    }
+
     public static Object readField(final Object target,final String fieldName) throws Exception{
         Validate.isTrue(target!=null,"target object must not be null");
         final Class<?> cls=target.getClass();
@@ -96,6 +100,10 @@ public class FieldUtils {
             sFieldCache.put(key,match);
         }
         return match;
+    }
+
+    public static Field getField(final Class<?> cls,final String fieldName){
+        return getField(cls, fieldName,true);
     }
 
     public static void writeField(final Object target,
