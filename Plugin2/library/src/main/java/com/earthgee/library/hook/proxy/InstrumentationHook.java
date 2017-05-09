@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.earthgee.library.hook.BaseHookHandle;
 import com.earthgee.library.hook.Hook;
+import com.earthgee.library.hook.handle.PluginInstrumentation;
 import com.earthgee.library.reflect.FieldUtils;
 import com.earthgee.library.util.ActivityThreadCompat;
 

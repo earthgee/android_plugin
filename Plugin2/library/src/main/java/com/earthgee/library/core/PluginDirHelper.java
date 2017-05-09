@@ -5,6 +5,7 @@ package com.earthgee.library.core;
  */
 
 import android.content.Context;
+import android.os.Environment;
 import android.view.animation.CycleInterpolator;
 
 import java.io.File;
@@ -78,6 +79,11 @@ public class PluginDirHelper {
             }
         }
         return files;
+    }
+
+    public static String getContextDataDir(Context context){
+        String dataDir=new File(Environment.getDataDirectory(),"data/").getPath();
+        return new File(dataDir,context.getPackageName()).getPath();
     }
 
 }

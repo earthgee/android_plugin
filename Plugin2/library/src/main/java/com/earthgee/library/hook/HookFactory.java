@@ -7,6 +7,7 @@ import com.earthgee.library.hook.binder.IAppOpsServiceBinderHook;
 import com.earthgee.library.hook.binder.IAudioServiceBinderHook;
 import com.earthgee.library.hook.binder.IClipboardBinderHook;
 import com.earthgee.library.hook.binder.IContentServiceBinderHook;
+import com.earthgee.library.hook.binder.IDisplayManagerBinderHook;
 import com.earthgee.library.hook.binder.IGraphicsStatsBinderHook;
 import com.earthgee.library.hook.binder.IInputMethodManagerBinderHook;
 import com.earthgee.library.hook.binder.ILocationManagerBinderHook;
@@ -26,6 +27,7 @@ import com.earthgee.library.hook.binder.IWindowManagerBinderHook;
 import com.earthgee.library.hook.proxy.IActivityManagerHook;
 import com.earthgee.library.hook.proxy.IPackageManagerHook;
 import com.earthgee.library.hook.proxy.InstrumentationHook;
+import com.earthgee.library.hook.proxy.LibCoreHook;
 import com.earthgee.library.hook.proxy.PluginCallbackHook;
 
 import java.util.ArrayList;
@@ -128,8 +130,9 @@ public class HookFactory {
         installHook(new IActivityManagerHook(context),classLoader);
         installHook(new PluginCallbackHook(context),classLoader);
         installHook(new InstrumentationHook(context),classLoader);
-
-
+        installHook(new LibCoreHook(context),classLoader);
+        //installHook(new SQLiteDatabaseHook(context),classLoader);
+        installHook(new IDisplayManagerBinderHook(context),classLoader);
     }
 
 }
