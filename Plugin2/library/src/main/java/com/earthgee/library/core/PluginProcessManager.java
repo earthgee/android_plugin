@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ComponentInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
@@ -18,9 +19,11 @@ import android.text.TextUtils;
 import com.earthgee.library.hook.HookFactory;
 import com.earthgee.library.pm.PluginManager;
 import com.earthgee.library.reflect.FieldUtils;
+import com.earthgee.library.reflect.MethodUtils;
 import com.earthgee.library.stub.ActivityStub;
 import com.earthgee.library.stub.ServiceStub;
 import com.earthgee.library.util.ActivityThreadCompat;
+import com.earthgee.library.util.CompatibilityInfoCompat;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -38,6 +41,9 @@ public class PluginProcessManager {
 
     private static String sCurrentProcessName;
     private static Object sGetCurrentProcessNameLock=new Object();
+
+    private static Map<String,ClassLoader> sPluginClassLoaderCache=new WeakHashMap<>(1);
+    private static Map<String,Object> sPluginLoadedApkCache=new WeakHashMap<>(1);
 
     private static List<String> sProcessList=new ArrayList<>();
 
@@ -269,6 +275,73 @@ public class PluginProcessManager {
         if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1&&
                 !TextUtils.equals(hostContext.getPackageName(),targetContext.getPackageName())){
             fakeSystemServiceInner(hostContext,targetContext);
+        }
+    }
+
+    public static ClassLoader getPluginClassLoader(String pkg) throws Exception{
+        ClassLoader classLoader=sPluginClassLoaderCache.get(pkg);
+        if(classLoader==null){
+            Application app=getPluginContext(pkg);
+            if(app!=null){
+                sPluginClassLoaderCache.put(app.getPackageName(),app.getClassLoader());
+            }
+        }
+        return sPluginClassLoaderCache.get(pkg);
+    }
+
+    public static void preLoadedApk(Context hostContext, ComponentInfo pluginInfo) throws Exception{
+        if(pluginInfo==null&&hostContext==null){
+            return;
+        }
+        if(pluginInfo!=null&&getPluginContext(pluginInfo.packageName)!=null){
+            return;
+        }
+
+        boolean found=false;
+        synchronized (sPluginLoadedApkCache){
+            Object object=ActivityThreadCompat.currentActivityThread();
+            if(object!=null){
+                Object mPackagesObj=FieldUtils.readField(object,"mPackages");
+                Object containsKeyObj= MethodUtils.invokeMethod(mPackagesObj,"containsKey",pluginInfo.packageName);
+                if(containsKeyObj instanceof Boolean&&!(Boolean) containsKeyObj){
+                    final Object loadedApk;
+                    if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.HONEYCOMB){
+                        loadedApk=MethodUtils.invokeMethod(object,"getPackageInfoNoCheck",pluginInfo.applicationInfo,
+                                CompatibilityInfoCompat.DEFAULT_COMPATIBILITY_INFO());
+                    }else {
+                        loadedApk=MethodUtils.invokeMethod(object,"getPackageInfoNoCheck",pluginInfo.applicationInfo);
+                    }
+                    sPluginLoadedApkCache.put(pluginInfo.packageName,loadedApk);
+
+                    String optimizedDirectory=PluginDirHelper.getPluginDalvikCacheDir(hostContext,pluginInfo.packageName);
+                    String libraryPath=PluginDirHelper.getPluginNativeLibraryDir(hostContext,pluginInfo.packageName);
+                    String apk=pluginInfo.applicationInfo.publicSourceDir;
+
+                    if(TextUtils.isEmpty(apk)){
+                        pluginInfo.applicationInfo.publicSourceDir=PluginDirHelper.getPluginApkFile(hostContext,pluginInfo.packageName);
+                        apk=pluginInfo.applicationInfo.publicSourceDir;
+                    }
+
+                    if(apk!=null){
+                        ClassLoader classLoader=null;
+                        try{
+                            classLoader=new PluginClassLoader(apk,optimizedDirectory,libraryPath,hostContext.getClassLoader().getParent());
+                        }catch (Exception e){
+                        }
+                        if(classLoader==null){
+                            PluginDirHelper.clearOptimizedDirectory(optimizedDirectory);
+                            classLoader=new PluginClassLoader(apk,optimizedDirectory,libraryPath,hostContext.getClassLoader().getParent());
+                        }
+                        synchronized (loadedApk){
+                            FieldUtils.writeDeclaredField(loadedApk,"mClassLoadeder",classLoader);
+                        }
+                        sPluginClassLoaderCache.put(pluginInfo.packageName,classLoader);
+                        Thread.currentThread().setContextClassLoader(classLoader);
+                        found=true;
+                    }
+                    ProcessCompat.setArgV0(pluginInfo.processName);
+                }
+            }
         }
     }
 
