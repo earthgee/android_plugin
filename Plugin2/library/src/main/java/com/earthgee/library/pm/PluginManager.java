@@ -37,6 +37,9 @@ import java.util.List;
  */
 public class PluginManager implements ServiceConnection{
 
+    public static final String ACTION_PACKAGE_ADDED="com.earthgee.plugin.PACKAGE_ADDED";
+    public static final String ACTION_PACKAGE_REMOVED="com.eathgee.plugin.PACKAGE_REMOVED";
+
     public static final String AUTHORITY_NAME= BuildConfig.AUTHORITY_NAME;
 
     public static final int STUB_NO_ACTIVITY_MAX_NUM=4;
