@@ -10,7 +10,9 @@ import java.util.Map;
  */
 public class MyServiceManager {
 
+    //保存所有未hook情况下取得的service IBinder引用对象
     private static Map<String,IBinder> mOriginServiceCache=new HashMap<>(1);
+    //对mOriginServiceCache中binder引用对象做动态代理所得对象(后续不使用)
     private static Map<String,IBinder> mProxiedServiceCache=new HashMap<>(1);
     private static Map<String,Object> mProxiedObjCache=new HashMap<>(1);
 

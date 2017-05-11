@@ -17,6 +17,7 @@ import java.util.List;
 
 /**
  * Created by zhaoruixuan on 2017/4/6.
+ * 单例 每个进程主线程的crash handler
  */
 public class MyCrashHandler implements Thread.UncaughtExceptionHandler{
 
@@ -43,6 +44,7 @@ public class MyCrashHandler implements Thread.UncaughtExceptionHandler{
         }
     }
 
+    //日志写本地
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
         PrintWriter writer = null;

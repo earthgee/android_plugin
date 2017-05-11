@@ -36,6 +36,7 @@ import java.util.WeakHashMap;
 
 /**
  * Created by zhaoruixuan on 2017/4/11.
+ * 插件进程管理
  */
 public class PluginProcessManager {
 
@@ -134,6 +135,11 @@ public class PluginProcessManager {
         }
     }
 
+    /**
+     * 启动hook 由HookFactory接管
+     * @param hostContext
+     * @throws Throwable
+     */
     public static void installHook(Context hostContext) throws Throwable{
         HookFactory.getInstance().installHook(hostContext,null);
     }

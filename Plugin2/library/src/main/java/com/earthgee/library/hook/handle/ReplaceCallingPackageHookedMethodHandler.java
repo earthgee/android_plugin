@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 
 /**
  * Created by zhaoruixuan on 2017/4/27.
+ * 许多binder hook其实只修复这个问题，就是把调用参数中的包名修改成host的
  */
 public class ReplaceCallingPackageHookedMethodHandler extends HookedMethodHandler{
 

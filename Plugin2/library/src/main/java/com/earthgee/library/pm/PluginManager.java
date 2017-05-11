@@ -481,6 +481,18 @@ public class PluginManager implements ServiceConnection{
         return null;
     }
 
+    public ActivityInfo selectStubActivityInfo(ActivityInfo pluginInfo) throws RemoteException{
+        try{
+            if(mPluginManager!=null){
+                return mPluginManager.selectStubActivityInfo(pluginInfo);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
+    }
+
     public boolean isConnected(){
         return mHostContext!=null&&mPluginManager!=null;
     }

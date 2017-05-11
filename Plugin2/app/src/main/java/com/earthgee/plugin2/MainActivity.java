@@ -11,7 +11,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
 
-    private FragmentStatePagerAdapter mFragmentStatePagerAdapter=new FragmentStatePagerAdapter() {
+    private FragmentStatePagerAdapter mFragmentStatePagerAdapter=new FragmentStatePagerAdapter(getSupportFragmentManager()) {
         @Override
         public Fragment getItem(int position) {
             if(position==0){

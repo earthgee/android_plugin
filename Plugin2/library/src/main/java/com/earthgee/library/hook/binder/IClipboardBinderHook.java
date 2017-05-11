@@ -9,6 +9,7 @@ import com.earthgee.library.util.IClipboardCompat;
 
 /**
  * Created by zhaoruixuan on 2017/4/11.
+ * 对剪切板服务的binder hook
  */
 public class IClipboardBinderHook extends BinderHook{
 

@@ -22,6 +22,10 @@ import java.util.Map;
 
 /**
  * Created by zhaoruixuan on 2017/4/11.
+ * android.os.ServiceManager的sCache变量保存着所有的service引用对象
+ * 先尝试从getService中获取IBinder对象，并将其添加到MyServiceManager的originService列表中（待后续使用）
+ * 然后对获得的IBinder对象做动态代理，并hook queryLocalInterface方法
+ * 这样就使得ContextImpl.getSystemService()获取的对象是hook过的
  */
 public class ServiceManagerCacheBinderHook extends Hook implements InvocationHandler {
 
@@ -72,6 +76,7 @@ public class ServiceManagerCacheBinderHook extends Hook implements InvocationHan
                 return method.invoke(originService, args);
             }
             HookedMethodHandler hookedMethodHandler = mHookHandles.getHookedMethodHandler(method);
+            //如注册有对应的HookedMethodHandler,使用其的doHookInner方法
             if (hookedMethodHandler != null) {
                 return hookedMethodHandler.doHookInner(originService, method, args);
             } else {
@@ -140,6 +145,7 @@ public class ServiceManagerCacheBinderHook extends Hook implements InvocationHan
                 super(hostContext);
             }
 
+            //从MyServiceManager中获取被hook过的binder代理对象并返回(跨进程binder处理，本地binder不进行hook)
             @Override
             protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
                 Object localInterface = invokeResult;

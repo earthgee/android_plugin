@@ -15,6 +15,7 @@ public class PluginApplication extends Application{
         super.attachBaseContext(base);
     }
 
+    //由于插件中的组件可以自由配置所属进程,这里会再多个进程中启动插件服务流程
     @Override
     public void onCreate() {
         super.onCreate();

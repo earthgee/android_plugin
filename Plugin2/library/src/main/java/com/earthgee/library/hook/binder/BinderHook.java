@@ -17,6 +17,11 @@ import java.util.List;
 
 /**
  * Created by zhaoruixuan on 2017/4/11.
+ * binder hook流程:
+ * 1.通过ServiceManager的hook拦截了queryLocalInterface方法
+ * 2.getOldObj方法获取正常情况下的binder代理对象
+ * 3.对这个对象进行动态代理 并在被hook的queryLocalInterface方法执行时返回给系统
+ * 这样就完成了binder代理对象的hook
  */
 abstract class BinderHook extends Hook implements InvocationHandler{
 
@@ -95,6 +100,7 @@ abstract class BinderHook extends Hook implements InvocationHandler{
         }
     }
 
+    //要hook的service的名字，Context类的一个String常量
     public abstract String getServiceName();
 
     abstract Object getOldObj() throws Exception;

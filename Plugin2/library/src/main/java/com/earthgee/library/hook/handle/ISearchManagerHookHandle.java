@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 
 /**
  * Created by zhaoruixuan on 2017/4/12.
+ * 因为AMS里感知的activity是插桩的activity，所以对ComponentName做替换
  */
 public class ISearchManagerHookHandle extends BaseHookHandle{
 

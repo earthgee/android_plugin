@@ -9,6 +9,7 @@ import com.earthgee.library.util.ISearchManagerCompat;
 
 /**
  * Created by zhaoruixuan on 2017/4/12.
+ * 对搜索服务进行binder hook
  */
 public class ISearchManagerBinderHook extends BinderHook{
 

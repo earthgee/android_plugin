@@ -19,6 +19,7 @@ import java.util.HashMap;
 
 /**
  * Created by zhaoruixuan on 2017/4/6.
+ * 单例，整个流程的调用
  */
 public class PluginHelper implements ServiceConnection{
 
@@ -28,7 +29,6 @@ public class PluginHelper implements ServiceConnection{
     private Context mContext;
 
     private PluginHelper(){
-
     }
 
     public static final PluginHelper getInstance(){
@@ -49,18 +49,20 @@ public class PluginHelper implements ServiceConnection{
 
     /**
      * 初始化插件
-     * @param baseContext
+     * @param baseContext 每个进程的application的base context(ContextImpl)
      */
     private void initPlugin(Context baseContext){
-        //日志记录时间消耗 暂且不用
-        long b=System.currentTimeMillis();
+        //一些兼容性问题，与主线无关
         try{
             fixMiuiLbeSecurity();
         }catch (Throwable e){
         }
 
+
         try{
+            //这里只是赋值context
             PluginPatchManager.getInstance().init(baseContext);
+            //开启hook流程
             PluginProcessManager.installHook(baseContext);
         }catch (Throwable e){
         }

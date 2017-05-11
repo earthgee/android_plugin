@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 
 /**
  * Created by zhaoruixuan on 2017/4/25.
+ * 对通知服务进行hook
  */
 public class INotificationManagerHookHandle extends BaseHookHandle {
     public INotificationManagerHookHandle(Context hostContext) {

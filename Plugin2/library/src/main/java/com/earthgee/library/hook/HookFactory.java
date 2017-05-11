@@ -35,6 +35,7 @@ import java.util.List;
 
 /**
  * Created by zhaoruixuan on 2017/4/11.
+ * 单例 实际hook操作者
  */
 public class HookFactory {
 
@@ -50,6 +51,7 @@ public class HookFactory {
         return instance;
     }
 
+    //hook组件列表
     private List<Hook> mHookList=new ArrayList<>(3);
 
     public void setHookEnable(boolean enable){
@@ -68,6 +70,11 @@ public class HookFactory {
         }
     }
 
+    /**
+     * 单个hook
+     * @param hook hook基础组件
+     * @param cl 没用
+     */
     public void installHook(Hook hook,ClassLoader cl){
         try{
             hook.onInstall(cl);
@@ -78,8 +85,15 @@ public class HookFactory {
         }
     }
 
+    /**
+     * 顺序hook
+     * @param context
+     * @param classLoader
+     * @throws Exception
+     */
     public final void installHook(Context context,
                                   ClassLoader classLoader) throws Exception{
+        //1.binder hook binderhook的原因是修复以在插件中正常使用系统服务
         installHook(new IClipboardBinderHook(context),classLoader);
         installHook(new ISearchManagerBinderHook(context),classLoader);
         installHook(new INotificationManagerBinderHook(context),classLoader);

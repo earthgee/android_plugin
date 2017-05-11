@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 
 /**
  * Created by zhaoruixuan on 2017/4/11.
+ * 对剪切板服务的binder hook
  */
 public class IClipboardHookHandle extends BaseHookHandle{
 

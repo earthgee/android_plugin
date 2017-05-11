@@ -10,12 +10,16 @@ public abstract class Hook {
     private boolean mEnable=false;
 
     protected Context mHostContext;
+    //hook某个方法对应的处理器
     protected BaseHookHandle mHookHandles;
 
     public void setEnable(boolean enable,boolean reInstallHook){
         this.mEnable=enable;
     }
 
+    /**
+     * @param enable 此hook运行与否
+     */
     public final void setEnable(boolean enable){
         setEnable(enable,false);
     }

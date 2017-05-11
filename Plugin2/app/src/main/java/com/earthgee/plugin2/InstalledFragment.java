@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -202,7 +203,29 @@ public class InstalledFragment extends ListFragment implements ServiceConnection
 
         @Override
         public void onReceive(Context context, Intent intent) {
-
+            if(PluginManager.ACTION_PACKAGE_ADDED.equals(intent.getAction())){
+                try{
+                    PackageManager pm=getActivity().getPackageManager();
+                    String pkg=intent.getData().getAuthority();
+                    PackageInfo info=PluginManager.getInstance().getPackageInfo(pkg,0);
+                    adapter.add(new ApkItem(pm,info,info.applicationInfo.publicSourceDir));
+                }catch (Exception e){
+                }
+            }else if(PluginManager.ACTION_PACKAGE_REMOVED.equals(intent.getAction())){
+                String pkg=intent.getData().getAuthority();
+                int N=adapter.getCount();
+                ApkItem iremovedItem=null;
+                for(int i=0;i<N;i++){
+                    ApkItem item=adapter.getItem(i);
+                    if(TextUtils.equals(item.packageInfo.packageName,pkg)){
+                        iremovedItem=item;
+                        break;
+                    }
+                }
+                if(iremovedItem!=null){
+                    adapter.remove(iremovedItem);
+                }
+            }
         }
     }
 

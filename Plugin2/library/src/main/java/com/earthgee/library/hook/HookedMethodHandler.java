@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 
 /**
  * Created by zhaoruixuan on 2017/4/11.
+ * 对应单个方法的hook处理器
  */
 public class HookedMethodHandler {
 
@@ -19,6 +20,18 @@ public class HookedMethodHandler {
         this.mHostContext=hostContext;
     }
 
+    /**
+     * 3步
+     * 1.beforeInvoke的拦截可以不走真正的方法 而走hook的方法
+     * 2.method.invoke 执行真正的方法
+     * 3.afterInvoke 可以逆天改命 修改结果并覆盖
+     *
+     * @param receiver
+     * @param method
+     * @param args
+     * @return
+     * @throws Throwable
+     */
     public synchronized Object doHookInner(Object receiver, Method method,Object[] args) throws Throwable{
         long b=System.currentTimeMillis();
         try{
