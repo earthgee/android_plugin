@@ -14,6 +14,7 @@ public class MyServiceManager {
     private static Map<String,IBinder> mOriginServiceCache=new HashMap<>(1);
     //对mOriginServiceCache中binder引用对象做动态代理所得对象(后续不使用)
     private static Map<String,IBinder> mProxiedServiceCache=new HashMap<>(1);
+    //正常情况下获得的binder代理对象做的动态代理对象
     private static Map<String,Object> mProxiedObjCache=new HashMap<>(1);
 
     static IBinder getOriginService(String servicename){

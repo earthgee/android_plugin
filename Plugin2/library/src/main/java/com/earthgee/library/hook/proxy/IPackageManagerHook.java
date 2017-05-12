@@ -15,6 +15,9 @@ import java.util.List;
 
 /**
  * Created by zhaoruixuan on 2017/4/27.
+ * 对pms进行hook hook方式与binder hook略有不同,本质一样
+ * 1.对ActivityThread sPackageManager进行替换，替换为经过动态代理的对象
+ * 2.ApplicationPackageManager mPm进行替换，替换为经过动态代理的对象
  */
 public class IPackageManagerHook extends ProxyHook{
     public IPackageManagerHook(Context hostContext) {

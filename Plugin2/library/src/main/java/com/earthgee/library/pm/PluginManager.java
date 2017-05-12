@@ -21,6 +21,7 @@ import android.text.TextUtils;
 
 import com.earthgee.library.BuildConfig;
 import com.earthgee.library.IApplicationCallback;
+import com.earthgee.library.IPackageDataObserver;
 import com.earthgee.library.IPluginManager;
 import com.earthgee.library.PluginManagerService;
 
@@ -502,6 +503,40 @@ public class PluginManager implements ServiceConnection{
         try{
             if(mPluginManager!=null){
                 mPluginManager.reportMyProcessName(stubProcessName, targetProcessName, targetPkg);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+    }
+
+    public void deleteApplicationCacheFiles(String packageName,final Object observer) throws RemoteException{
+        try{
+            if(mPluginManager!=null&&packageName!=null){
+                mPluginManager.deleteApplicationCacheFiles(packageName, new IPackageDataObserver.Stub() {
+                    @Override
+                    public void onRemoveCompleted(String packageName, boolean succeeded) throws RemoteException {
+
+                    }
+
+                });
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+    }
+
+    public void clearApplicationUserData(String packageName,final Object observer) throws RemoteException{
+        try{
+            if(mPluginManager!=null&&packageName!=null){
+                mPluginManager.clearApplicationUserData(packageName,new IPackageDataObserver.Stub(){
+
+                    @Override
+                    public void onRemoveCompleted(String packageName, boolean succeeded) throws RemoteException {
+
+                    }
+                });
             }
         }catch (RemoteException e){
             throw e;

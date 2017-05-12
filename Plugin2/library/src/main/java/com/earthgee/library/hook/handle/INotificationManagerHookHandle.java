@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 /**
  * Created by zhaoruixuan on 2017/4/25.
  * 对通知服务进行hook
+ * 除对package进行替换外 还对插件的notification进行修复(有些notification不支持)
  */
 public class INotificationManagerHookHandle extends BaseHookHandle {
     public INotificationManagerHookHandle(Context hostContext) {
@@ -55,6 +56,7 @@ public class INotificationManagerHookHandle extends BaseHookHandle {
         sHookedMethodHandlers.put("areNotificationsEnabledForPackage", new areNotificationsEnabledForPackage(mHostContext));
     }
 
+    //保存internal.R中的layout类中的值
     private static Map<Integer, String> sSystemLayoutResIds =
             new HashMap<>(0);
 

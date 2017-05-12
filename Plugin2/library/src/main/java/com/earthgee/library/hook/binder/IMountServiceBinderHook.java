@@ -9,6 +9,7 @@ import com.earthgee.library.util.IMountServiceCompat;
 
 /**
  * Created by zhaoruixuan on 2017/4/25.
+ * hook挂载服务
  */
 public class IMountServiceBinderHook extends BinderHook{
 

@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 
 /**
  * Created by zhaoruixuan on 2017/4/27.
+ * 替换包名
  */
 public class ISessionManagerHookHandle extends BaseHookHandle{
     public ISessionManagerHookHandle(Context hostContext) {

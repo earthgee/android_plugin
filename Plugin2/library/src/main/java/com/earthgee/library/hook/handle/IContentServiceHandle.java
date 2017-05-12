@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 
 /**
  * Created by zhaoruixuan on 2017/4/26.
+ * hook数据同步服务
  */
 public class IContentServiceHandle extends BaseHookHandle{
 

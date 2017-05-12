@@ -272,6 +272,10 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
                     String name= (String) args[index0];
                     int flags= (int) args[index1];
                     PermissionGroupInfo permissionGroupInfo=PluginManager.getInstance().getPermissionGroupInfo(name,flags);
+                    if(permissionGroupInfo!=null){
+                        setFakeResult(permissionGroupInfo);
+                        return true;
+                    }
                 }
             }
             return super.beforeInvoke(receiver, method, args);
@@ -460,9 +464,9 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
         }
     }
 
-    private class remotePermission extends HookedMethodHandler{
+    private class removePermission extends HookedMethodHandler{
 
-        public remotePermission(Context hostContext) {
+        public removePermission(Context hostContext) {
             super(hostContext);
         }
     }
@@ -860,9 +864,9 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
         }
     }
 
-    private class getInstalledPackage extends HookedMethodHandler{
+    private class getInstalledPackages extends HookedMethodHandler{
 
-        public getInstalledPackage(Context hostContext) {
+        public getInstalledPackages(Context hostContext) {
             super(hostContext);
         }
 
@@ -876,7 +880,7 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
                         final int index0=0;
                         if(args.length>index0&&args[index0] instanceof Integer){
                             int flags= (int) args[index0];
-                            List<PackageInfo> infos=PluginManager.getInstance().getInstallPackages(flags);
+                            List<PackageInfo> infos=PluginManager.getInstance().getInstalledPackages(flags);
                             if(infos!=null&&infos.size()>0){
                                 data.addAll(infos);
                             }
@@ -1130,9 +1134,9 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
         }
     }
 
-    private class addPacakgeToPreferred extends HookedMethodHandler{
+    private class addPackageToPreferred extends HookedMethodHandler{
 
-        public addPacakgeToPreferred(Context hostContext) {
+        public addPackageToPreferred(Context hostContext) {
             super(hostContext);
         }
 

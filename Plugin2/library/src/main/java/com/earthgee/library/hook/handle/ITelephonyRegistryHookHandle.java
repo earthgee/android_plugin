@@ -8,6 +8,7 @@ import com.earthgee.library.util.ITelephonyRegistryCompat;
 
 /**
  * Created by zhaoruixuan on 2017/4/27.
+ * 替换包名
  */
 public class ITelephonyRegistryHookHandle extends BaseHookHandle {
     public ITelephonyRegistryHookHandle(Context hostContext) {

@@ -9,6 +9,7 @@ import com.earthgee.library.util.IAudioServiceCompat;
 
 /**
  * Created by zhaoruixuan on 2017/4/25.
+ * hook音频服务
  */
 public class IAudioServiceBinderHook extends BinderHook{
 

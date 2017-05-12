@@ -6,6 +6,7 @@ import com.earthgee.library.hook.BaseHookHandle;
 
 /**
  * Created by zhaoruixuan on 2017/4/27.
+ * 修复包名
  */
 public class ILocationManagerHookHandle extends BaseHookHandle{
 

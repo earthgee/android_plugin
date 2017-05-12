@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.earthgee.library.hook.BaseHookHandle;
 import com.earthgee.library.hook.HookedMethodHandler;
+import com.earthgee.library.hook.proxy.IWindowSessionHook;
 import com.earthgee.library.reflect.Utils;
 import com.earthgee.library.util.MyProxy;
 
@@ -12,6 +13,7 @@ import java.util.List;
 
 /**
  * Created by zhaoruixuan on 2017/4/27.
+ * 对openSession返回的IWindowSession对象进行hook
  */
 public class IWindowManagerHookHandle extends BaseHookHandle{
     public IWindowManagerHookHandle(Context hostContext) {

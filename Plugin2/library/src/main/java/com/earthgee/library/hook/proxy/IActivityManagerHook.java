@@ -18,6 +18,8 @@ import java.util.List;
 
 /**
  * Created by zhaoruixuan on 2017/5/2.
+ * 对ams的hook
+ * 对ActivityManagerNative的gDefault变量进行hook
  */
 public class IActivityManagerHook extends ProxyHook{
 

@@ -11,6 +11,7 @@ import com.earthgee.library.util.IWindowManagerCompat;
 
 /**
  * Created by zhaoruixuan on 2017/4/27.
+ * hook window服务
  */
 public class IWindowManagerBinderHook extends BinderHook{
 

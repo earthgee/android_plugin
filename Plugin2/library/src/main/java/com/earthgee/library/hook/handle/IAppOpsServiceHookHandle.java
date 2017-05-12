@@ -8,6 +8,7 @@ import com.earthgee.library.util.IAppOpsServiceCompat;
 
 /**
  * Created by zhaoruixuan on 2017/4/27.
+ * 替换包名
  */
 public class IAppOpsServiceHookHandle extends BaseHookHandle{
     public IAppOpsServiceHookHandle(Context hostContext) {

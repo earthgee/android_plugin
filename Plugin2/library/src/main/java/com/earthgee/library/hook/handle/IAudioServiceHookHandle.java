@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 
 /**
  * Created by zhaoruixuan on 2017/4/25.
+ * 替换了包名
  */
 public class IAudioServiceHookHandle extends BaseHookHandle{
 

@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 
 /**
  * Created by zhaoruixuan on 2017/4/25.
+ * 应用被加载进来时应该会在sdcard/Android/data下mkdir一个以包名为名字的目录 在这里做替换为mHostContext.getPackageName()+"/Plugin/"+pluginPackageName
  */
 public class IMountServiceHookHandle extends BaseHookHandle{
     public IMountServiceHookHandle(Context hostContext) {

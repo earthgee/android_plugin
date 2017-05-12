@@ -8,6 +8,7 @@ import com.earthgee.library.util.IPhoneSubInfoCompat;
 
 /**
  * Created by zhaoruixuan on 2017/4/27.
+ * 替换包名
  */
 public class IPhoneSubInfoHookHandle extends BaseHookHandle{
     public IPhoneSubInfoHookHandle(Context hostContext) {

@@ -12,7 +12,6 @@ import com.earthgee.library.util.ISubCompat;
  */
 public class ISubBinderHook extends BinderHook{
 
-
     private final static String SERVICE_NAME = "isub";
 
     public ISubBinderHook(Context hostContext) {

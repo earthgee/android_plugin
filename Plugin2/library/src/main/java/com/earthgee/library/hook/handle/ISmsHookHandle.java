@@ -8,6 +8,7 @@ import com.earthgee.library.util.ISmsCompat;
 
 /**
  * Created by zhaoruixuan on 2017/4/27.
+ * 替换包名
  */
 public class ISmsHookHandle extends BaseHookHandle{
     public ISmsHookHandle(Context hostContext) {

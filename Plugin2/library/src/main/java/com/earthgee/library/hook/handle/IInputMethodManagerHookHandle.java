@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 
 /**
  * Created by zhaoruixuan on 2017/4/27.
+ * 修复包名
  */
 public class IInputMethodManagerHookHandle extends BaseHookHandle{
     public IInputMethodManagerHookHandle(Context hostContext) {
