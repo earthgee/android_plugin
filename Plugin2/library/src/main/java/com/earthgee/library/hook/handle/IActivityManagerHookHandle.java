@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 
 /**
  * Created by zhaoruixuan on 2017/5/2.
+ * AMS hook
  */
 public class IActivityManagerHookHandle extends BaseHookHandle{
     public IActivityManagerHookHandle(Context hostContext) {
@@ -92,12 +93,14 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         sHookedMethodHandlers.put("serviceDoneExecuting", new serviceDoneExecuting(mHostContext));
     }
 
+    //对startActivity方法进行hook
     private static class startActivity extends ReplaceCallingPackageHookedMethodHandler{
 
         public startActivity(Context hostContext) {
             super(hostContext);
         }
 
+        //设置替换intent的classloader
         private void setIntentClassLoader(Intent intent,ClassLoader classLoader){
             try{
                 Bundle mExtras=intent.getExtras();
@@ -114,12 +117,15 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
             }
         }
 
+        //对intent中的Component做替换,替换插件的为本地的
         protected boolean doReplaceIntentForStartActivityAPILow(Object[] args) throws RemoteException{
             int intentOfArgIndex=findFirstIntentInArgs(args);
             if(args!=null&&args.length>1&&intentOfArgIndex>=0){
                 Intent intent= (Intent) args[intentOfArgIndex];
                 ActivityInfo activityInfo=resolveActivity(intent);
+                //如果是插件中的activity
                 if(activityInfo!=null&&isPackagePlugin(activityInfo.packageName)){
+                    //选择代替的本地插桩activity
                     ComponentName component=selectProxyActivity(intent);
                     if(component!=null){
                         Intent newIntent=new Intent();
@@ -187,6 +193,7 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         }
     }
 
+    //同startActivity
     private static class startActivityAsUser extends startActivity {
 
         public startActivityAsUser(Context hostContext) {
@@ -211,7 +218,7 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
             Bundle options, int userId) throws RemoteException;*/
     }
 
-
+    //同startActivity
     private static class startActivityAsCaller extends startActivity {
 
         public startActivityAsCaller(Context hostContext) {
@@ -400,6 +407,7 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         //FIXME 先不修改。
     }
 
+    //在方法参数中找到intent
     private static int findFirstIntentInArgs(Object[] args){
         if(args!=null&&args.length>0){
             int i=0;
@@ -412,6 +420,35 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         }
         return -1;
     }
+
+    private static class registerReceiver extends ReplaceCallingPackageHookedMethodHandler{
+
+        public registerReceiver(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class broadcastIntent extends ReplaceCallingPackageHookedMethodHandler{
+
+        public broadcastIntent(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class unbroadcastIntent extends ReplaceCallingPackageHookedMethodHandler{
+
+        public unbroadcastIntent(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+
 
     private static ActivityInfo resolveActivity(Intent intent) throws RemoteException{
         return PluginManager.getInstance().resolveActivityInfo(intent,0);
@@ -561,6 +598,243 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         //FIXME I don't know what function of this,just hook it.
         //通过token拿包名？搞不懂，不改。
     }
+
+    private static class getServices extends ReplaceCallingPackageHookedMethodHandler{
+
+        public getServices(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class getProcessesInErrorState extends ReplaceCallingPackageHookedMethodHandler{
+
+        public getProcessesInErrorState(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class getContentProvider extends ReplaceCallingPackageHookedMethodHandler{
+
+        public getContentProvider(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class getContentProviderExternal extends getContentProvider{
+
+        public getContentProviderExternal(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class removeContentProviderExternal extends ReplaceCallingPackageHookedMethodHandler{
+
+        public removeContentProviderExternal(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class publishContentProviders extends ReplaceCallingPackageHookedMethodHandler{
+
+        public publishContentProviders(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class getRunningServiceControlPanel extends ReplaceCallingPackageHookedMethodHandler{
+
+        public getRunningServiceControlPanel(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class startService extends ReplaceCallingPackageHookedMethodHandler{
+
+        public startService(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class stopService extends ReplaceCallingPackageHookedMethodHandler{
+
+        public stopService(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class stopServiceToken extends ReplaceCallingPackageHookedMethodHandler{
+
+        public stopServiceToken(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class setServiceForeground extends ReplaceCallingPackageHookedMethodHandler{
+
+        public setServiceForeground(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class bindService extends ReplaceCallingPackageHookedMethodHandler{
+
+        public bindService(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class publishService extends ReplaceCallingPackageHookedMethodHandler{
+
+        public publishService(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class unbindFinished extends ReplaceCallingPackageHookedMethodHandler{
+
+        public unbindFinished(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class peekService extends ReplaceCallingPackageHookedMethodHandler{
+
+        public peekService(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class bindBackupAgent extends ReplaceCallingPackageHookedMethodHandler{
+
+        public bindBackupAgent(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class backupAgentCreated extends ReplaceCallingPackageHookedMethodHandler{
+
+        public backupAgentCreated(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class unbindBackupAgent extends ReplaceCallingPackageHookedMethodHandler{
+
+        public unbindBackupAgent(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class killApplicationProcess extends ReplaceCallingPackageHookedMethodHandler{
+
+        public killApplicationProcess(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    public static class getIntentSender extends ReplaceCallingPackageHookedMethodHandler{
+
+        public getIntentSender(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class clearApplicationUserData extends ReplaceCallingPackageHookedMethodHandler{
+
+        public clearApplicationUserData(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class handleIncomingUser extends ReplaceCallingPackageHookedMethodHandler{
+
+        public handleIncomingUser(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class grantUriPermission extends ReplaceCallingPackageHookedMethodHandler{
+
+        public grantUriPermission(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class getPersistedUriPermissions extends ReplaceCallingPackageHookedMethodHandler{
+
+        public getPersistedUriPermissions(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class killBackgroundProcesses extends ReplaceCallingPackageHookedMethodHandler{
+
+        public killBackgroundProcesses(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+    private static class forceStopPackage extends ReplaceCallingPackageHookedMethodHandler{
+
+        public forceStopPackage(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
+
+
+    
 
 }
 

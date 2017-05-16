@@ -14,6 +14,7 @@ import java.util.Map;
 
 /**
  * Created by zhaoruixuan on 2017/5/2.
+ * 运行中插件activity管理,manifest插桩导致每个进程可运行的activity数量有限
  */
 public class RunningActivities {
 
@@ -37,6 +38,7 @@ public class RunningActivities {
         }
     }
 
+    //在插件activity启动之前调用
     public static void beforeStartActivity(){
         synchronized (mRunningActivityList){
             for(RunningActivityRecord record:mRunningActivityList.values()){
@@ -53,6 +55,7 @@ public class RunningActivities {
         }
     }
 
+    //销毁选择，根据索引选择
     private static final Comparator<RunningActivityRecord> sRunningActivityRecordComparator = new Comparator<RunningActivityRecord>() {
         @Override
         public int compare(RunningActivityRecord lhs, RunningActivityRecord rhs) {
@@ -74,6 +77,7 @@ public class RunningActivities {
         }
     };
 
+    //当带flag的activity超过一个进程可容纳最大容量时，销毁前面的acitivty
     private static void doFinshIt(Map<Integer,RunningActivityRecord> runningActivityRecordMap){
         if(runningActivityRecordMap!=null
                 &&runningActivityRecordMap.size()>= PluginManager.STUB_NO_ACTIVITY_MAX_NUM-1){

@@ -57,6 +57,7 @@ public class PluginPatchManager {
             return true;
         }
 
+        //重新连接
         PluginManager.getInstance().connectToService();
         initInner();
         mDelayIntent=intent;

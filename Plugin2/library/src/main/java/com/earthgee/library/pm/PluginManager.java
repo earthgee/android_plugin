@@ -43,6 +43,7 @@ public class PluginManager implements ServiceConnection{
 
     public static final String AUTHORITY_NAME= BuildConfig.AUTHORITY_NAME;
 
+    //单进程单flag可容纳最大activity数
     public static final int STUB_NO_ACTIVITY_MAX_NUM=4;
 
     private List<WeakReference<ServiceConnection>> sServiceConnection=
