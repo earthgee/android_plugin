@@ -40,6 +40,7 @@ public class PluginManager implements ServiceConnection{
 
     public static final String ACTION_PACKAGE_ADDED="com.earthgee.plugin.PACKAGE_ADDED";
     public static final String ACTION_PACKAGE_REMOVED="com.eathgee.plugin.PACKAGE_REMOVED";
+    public static final String ACTION_SHORTCUT_PROXY="com.earthgee.plugin.ACTION_SHORTCUT_PROXY";
 
     public static final String AUTHORITY_NAME= BuildConfig.AUTHORITY_NAME;
 
@@ -542,6 +543,20 @@ public class PluginManager implements ServiceConnection{
         }catch (RemoteException e){
             throw e;
         }catch (Exception e){
+        }
+    }
+
+    public void waitForConnected(){
+        if(isConnected()){
+            return;
+        }else {
+            try{
+                synchronized (mWaitLock){
+                    mWaitLock.wait();
+                }
+            }catch (InterruptedException e){
+
+            }
         }
     }
 

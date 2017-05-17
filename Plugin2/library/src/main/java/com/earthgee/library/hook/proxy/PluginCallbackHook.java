@@ -16,6 +16,7 @@ import java.util.List;
 
 /**
  * Created by zhaoruixuan on 2017/5/5.
+ * 将ActivityThread中的mH中的callback换掉 换成PluginCallback hook AMS处理后的过程 以更换要启动的activity为plugin
  */
 public class PluginCallbackHook extends Hook{
     private List<PluginCallback> mCallbacks=new ArrayList<>(1);

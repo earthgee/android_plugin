@@ -833,8 +833,98 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         //todo
     }
 
+    private static class getRunningAppProcesses extends ReplaceCallingPackageHookedMethodHandler{
 
-    
+        public getRunningAppProcesses(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private static class getRunningExternalApplications extends ReplaceCallingPackageHookedMethodHandler{
+
+        public getRunningExternalApplications(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private static class getMyMemoryState extends ReplaceCallingPackageHookedMethodHandler{
+
+        public getMyMemoryState(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private static class crashApplication extends ReplaceCallingPackageHookedMethodHandler{
+
+        public crashApplication(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private static class grantUriPermissionFromOwner extends ReplaceCallingPackageHookedMethodHandler{
+
+        public grantUriPermissionFromOwner(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private static class checkGrantUriPermission extends ReplaceCallingPackageHookedMethodHandler{
+
+        public checkGrantUriPermission(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private static class startActivities extends ReplaceCallingPackageHookedMethodHandler{
+
+        public startActivities(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private static class getPackageScreenCompatMode extends ReplaceCallingPackageHookedMethodHandler{
+
+        public getPackageScreenCompatMode(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private static class setPackageScreenCompatMode extends ReplaceCallingPackageHookedMethodHandler{
+
+        public setPackageScreenCompatMode(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private static class getPackageAskScreenCompat extends ReplaceCallingPackageHookedMethodHandler{
+
+        public getPackageAskScreenCompat(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private static class setPackageAskScreenCompat extends ReplaceCallingPackageHookedMethodHandler{
+
+        public setPackageAskScreenCompat(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private static class navigateUpTo extends ReplaceCallingPackageHookedMethodHandler{
+
+        public navigateUpTo(Context hostContext) {
+            super(hostContext);
+        }
+    }
+
+    private class serviceDoneExecuting extends ReplaceCallingPackageHookedMethodHandler{
+
+        public serviceDoneExecuting(Context hostContext) {
+            super(hostContext);
+        }
+
+        //todo
+    }
 
 }
 

@@ -51,6 +51,7 @@ public class PluginProcessManager {
     private static WeakHashMap<Integer,Context> mFakedContext=new WeakHashMap<>(1);
     private static Object mServiceCache=null;
 
+    //是否是插件的进程
     public static final boolean isPluginProcess(Context context){
         String currentPorcessName=getCurrentProcessName(context);
         if(TextUtils.equals(currentPorcessName,context.getPackageName())){
@@ -61,6 +62,7 @@ public class PluginProcessManager {
         return !sProcessList.contains(currentPorcessName);
     }
 
+    //找到目前的进程名字
     public static String getCurrentProcessName(Context context){
         if(context==null){
             return sCurrentProcessName;
@@ -85,6 +87,7 @@ public class PluginProcessManager {
         return sCurrentProcessName;
     }
 
+    //注意getPackageInfo已经被hook过了 所以这里找出所有插件组件的进程(包名)
     private static void initProcessList(Context context){
         try{
             if(sProcessList.size()>0){

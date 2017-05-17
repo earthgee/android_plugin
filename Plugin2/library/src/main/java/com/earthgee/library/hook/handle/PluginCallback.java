@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import com.earthgee.library.core.PluginProcessManager;
 import com.earthgee.library.hook.proxy.IPackageManagerHook;
 import com.earthgee.library.pm.PluginManager;
 import com.earthgee.library.reflect.FieldUtils;
+import com.earthgee.library.stub.ShortCutProxyActivity;
 
 /**
  * Created by zhaoruixuan on 2017/5/5.
@@ -196,6 +198,7 @@ public class PluginCallback implements Handler.Callback{
         return mEnable;
     }
 
+    //Handler回调此方法
     @Override
     public boolean handleMessage(Message msg) {
         long b=System.currentTimeMillis();
@@ -233,6 +236,7 @@ public class PluginCallback implements Handler.Callback{
             Intent targetIntent=stubIntent.getParcelableExtra(Env.EXTRA_TARGET_INTENT);
 
             if(targetIntent!=null&&!isShortcutProxyActivity(stubIntent)){
+                //防止context获得的context还是旧的
                 IPackageManagerHook.fixContextPackageManager(mHostContext);
                 ComponentName targetComponentName=targetIntent.resolveActivity(mHostContext.getPackageManager());
                 ActivityInfo targetActivityInfo=PluginManager.getInstance().getActivityInfo(targetComponentName,0);
@@ -303,7 +307,23 @@ public class PluginCallback implements Handler.Callback{
     }
 
     private boolean isShortcutProxyActivity(Intent targetIntent){
-        return false;
+        try{
+            if(PluginManager.ACTION_SHORTCUT_PROXY.equalsIgnoreCase(targetIntent.getAction())){
+                return true;
+            }
+            PackageManager pm=mHostContext.getPackageManager();
+            ResolveInfo info=pm.resolveActivity(targetIntent,0);
+            if(info!=null){
+                String name=info.activityInfo.name;
+                if(name!=null&&name.startsWith(".")){
+                    name=info.activityInfo.packageName+info.activityInfo.name;
+                }
+                return ShortCutProxyActivity.class.getName().equals(name);
+            }
+            return false;
+        }catch (Exception e){
+            return false;
+        }
     }
 
     private void setIntentClassLoader(Intent intent,ClassLoader classLoader){
