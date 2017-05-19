@@ -546,6 +546,17 @@ public class PluginManager implements ServiceConnection{
         }
     }
 
+    public void onActivityCreated(ActivityInfo stubInfo,ActivityInfo targetInfo) throws RemoteException{
+        try{
+            if(mPluginManager!=null){
+                mPluginManager.onActivityCreated(stubInfo, targetInfo);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+    }
+
     public void waitForConnected(){
         if(isConnected()){
             return;
@@ -558,6 +569,14 @@ public class PluginManager implements ServiceConnection{
 
             }
         }
+    }
+
+    public void onActivityOnNewIntent(ActivityInfo stubInfo,ActivityInfo targetInfo,Intent intent) throws RemoteException{
+        //todo
+    }
+
+    public void onActivityDestory(ActivityInfo stubInfo,ActivityInfo targetInfo) throws RemoteException{
+        //todo
     }
 
 }

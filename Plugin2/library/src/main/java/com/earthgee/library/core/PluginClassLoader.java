@@ -7,6 +7,7 @@ import dalvik.system.DexClassLoader;
 
 /**
  * Created by zhaoruixuan on 2017/5/9.
+ *  插件的classloader
  */
 public class PluginClassLoader extends DexClassLoader{
 

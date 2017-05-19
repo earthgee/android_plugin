@@ -1,6 +1,7 @@
 package com.earthgee.library.am;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 
 import com.earthgee.library.pm.PluginManager;
@@ -104,6 +105,13 @@ public class RunningActivities {
                 mRunningSingleTaskActivityList.put(value.index,value);
             }
         }
+    }
+
+    public static void onActivityOnNewIntent(Activity activity, ActivityInfo targetInfo, ActivityInfo stubInfo, Intent intent){
+    }
+
+    public static void onActivityDestory(Activity activity){
+        //todo
     }
 
     private static int findMaxIndex(){

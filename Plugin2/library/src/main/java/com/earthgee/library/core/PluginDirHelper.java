@@ -56,10 +56,6 @@ public class PluginDirHelper {
                 ,"data/"+pluginInfoPackageName));
     }
 
-    public static String getPluginNativeLibraryDir(Context context,String pluginInfoPackageName){
-        return enforceDirExists(new File(makePluginBaseDir(context, pluginInfoPackageName),"lib"));
-    }
-
     public static String getPluginSignatureDir(Context context,String pluginInfoPackageName){
         return enforceDirExists(new File(makePluginBaseDir(context,pluginInfoPackageName),"Signature/"));
     }
@@ -85,6 +81,49 @@ public class PluginDirHelper {
         String dataDir=new File(Environment.getDataDirectory(),"data/").getPath();
         return new File(dataDir,context.getPackageName()).getPath();
     }
+
+    //存放插件dex包的目录
+    public static String getPluginDalvikCacheDir(Context context,String pluginInfoPackageName){
+        return enforceDirExists(new File(makePluginBaseDir(context,pluginInfoPackageName),"dalvik-cache"));
+    }
+
+    //存放插件so包的目录
+    public static String getPluginNativeLibraryDir(Context context,String pluginInfoPackageName){
+        return enforceDirExists(new File(makePluginBaseDir(context, pluginInfoPackageName),"lib"));
+    }
+
+    //查找apk文件所在目录
+    public static String getPluginApkDir(Context context,String pluginInfoPackageName){
+        return enforceDirExists(new File(makePluginBaseDir(context,pluginInfoPackageName),"apk"));
+    }
+
+    //查找插件apk文件所在
+    public static String getPluginApkFile(Context context,String pluginInfoPackageName){
+        return new File(getPluginApkDir(context,pluginInfoPackageName),"base-1.apk").getPath();
+    }
+
+    //清理dex包所在目录
+    public static void cleanOptimizedDirectory(String optimizedDirectory){
+        try{
+            File dir=new File(optimizedDirectory);
+            if(dir.exists()&&dir.isDirectory()){
+                File[] files=dir.listFiles();
+                if(files!=null&&files.length>0){
+                    for(File f:files){
+                        f.delete();
+                    }
+                }
+            }
+
+            if(dir.exists()&&dir.isFile()){
+                dir.delete();
+                dir.mkdirs();
+            }
+        }catch (Exception e){
+        }
+    }
+
+
 
 }
 

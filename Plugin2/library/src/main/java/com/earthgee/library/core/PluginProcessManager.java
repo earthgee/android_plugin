@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.ComponentInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -24,12 +25,14 @@ import com.earthgee.library.stub.ActivityStub;
 import com.earthgee.library.stub.ServiceStub;
 import com.earthgee.library.util.ActivityThreadCompat;
 import com.earthgee.library.util.CompatibilityInfoCompat;
+import com.earthgee.library.util.ProcessCompat;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -176,6 +179,11 @@ public class PluginProcessManager {
         return sApplicationCache.get(packageName);
     }
 
+    /**
+     * 获取ContextWrapper对应的mBase,即ContextImpl
+     * @param c
+     * @return
+     */
     private static Context getBaseContext(Context c){
         if(c instanceof ContextWrapper){
             return ((ContextWrapper)c).getBaseContext();
@@ -183,6 +191,7 @@ public class PluginProcessManager {
         return c;
     }
 
+    //必须跳过的服务
     private static List<String> sSkipService=new ArrayList<>();
 
     static {
@@ -208,6 +217,7 @@ public class PluginProcessManager {
     private static void fakeSystemServiceInner(Context hostContext,Context targetContext){
         try{
             Context baseContext=getBaseContext(targetContext);
+            //此context是否已做过处理
             if(mFakedContext.containsValue(baseContext)){
                 return;
             }else if(mServiceCache!=null){
@@ -226,7 +236,7 @@ public class PluginProcessManager {
             }
             Object SYSTEM_SERVICE_MAP=null;
             try{
-                SYSTEM_SERVICE_MAP=FieldUtils.readStaticField(baseContext.getClass(),"SYETEM_SERVICE_MAP");
+                SYSTEM_SERVICE_MAP=FieldUtils.readStaticField(baseContext.getClass(),"SYSTEM_SERVICE_MAP");
             }catch (Exception e){
             }
             if(SYSTEM_SERVICE_MAP==null){
@@ -280,6 +290,12 @@ public class PluginProcessManager {
         }
     }
 
+    /**
+     * 这里为了解决某些插件调用系统服务时，系统服务必须要求要以host包名的身份去调用的问题。
+     * 也就是在这里检查所有的binder hook都生效了
+     * @param hostContext
+     * @param targetContext
+     */
     public static void fakeSystemService(Context hostContext,Context targetContext){
         if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1&&
                 !TextUtils.equals(hostContext.getPackageName(),targetContext.getPackageName())){
@@ -287,6 +303,7 @@ public class PluginProcessManager {
         }
     }
 
+    //根据插件包名获取对应的classloader
     public static ClassLoader getPluginClassLoader(String pkg) throws Exception{
         ClassLoader classLoader=sPluginClassLoaderCache.get(pkg);
         if(classLoader==null){
@@ -298,6 +315,7 @@ public class PluginProcessManager {
         return sPluginClassLoaderCache.get(pkg);
     }
 
+    //将插件对应的LoadedApk加入ActivityThread中，并创建对应classloader
     public static void preLoadedApk(Context hostContext, ComponentInfo pluginInfo) throws Exception{
         if(pluginInfo==null&&hostContext==null){
             return;
@@ -338,7 +356,7 @@ public class PluginProcessManager {
                         }catch (Exception e){
                         }
                         if(classLoader==null){
-                            PluginDirHelper.clearOptimizedDirectory(optimizedDirectory);
+                            PluginDirHelper.cleanOptimizedDirectory(optimizedDirectory);
                             classLoader=new PluginClassLoader(apk,optimizedDirectory,libraryPath,hostContext.getClassLoader().getParent());
                         }
                         synchronized (loadedApk){
@@ -354,6 +372,12 @@ public class PluginProcessManager {
         }
     }
 
+    public static void registerStaticReceiver(Context context, ApplicationInfo pluginApplicationInfo, ClassLoader cl) throws Exception{
+//        List<ActivityInfo> infos=PluginManager.getInstance().getReceivers(pluginApplicationInfo.packageName,0);
+//        if(infos!=null&&infos.size()>0){
+//            CharSequence myPname=null;
+//        }
+    }
 }
 
 

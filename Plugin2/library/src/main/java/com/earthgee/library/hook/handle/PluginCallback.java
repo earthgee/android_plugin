@@ -252,7 +252,7 @@ public class PluginCallback implements Handler.Callback{
                         PluginManager.getInstance().reportMyProcessName(stubActivityInfo.processName,targetActivityInfo.processName,
                                 targetActivityInfo.packageName);
                     }
-                    PluginProcessManager.preLoadApk(mHostContext,targetActivityInfo);
+                    PluginProcessManager.preLoadedApk(mHostContext,targetActivityInfo);
                     ClassLoader pluginClassLoader=PluginProcessManager.getPluginClassLoader(targetComponentName.getPackageName());
                     setIntentClassLoader(targetIntent,pluginClassLoader);
                     setIntentClassLoader(stubIntent,pluginClassLoader);

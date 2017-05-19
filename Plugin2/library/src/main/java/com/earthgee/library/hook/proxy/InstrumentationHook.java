@@ -15,6 +15,7 @@ import java.util.List;
 
 /**
  * Created by zhaoruixuan on 2017/5/8.
+ * 通过反射将ActivityThread中的mInstrumentation替换掉
  */
 public class InstrumentationHook extends Hook{
 

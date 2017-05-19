@@ -145,7 +145,6 @@ public class HookFactory {
         installHook(new PluginCallbackHook(context),classLoader);
         installHook(new InstrumentationHook(context),classLoader);
         installHook(new LibCoreHook(context),classLoader);
-        //installHook(new SQLiteDatabaseHook(context),classLoader);
         installHook(new IDisplayManagerBinderHook(context),classLoader);
     }
 
