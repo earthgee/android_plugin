@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 
 /**
  * Created by zhaoruixuan on 2017/5/9.
+ * hook libcore(插件内部文件的管理) i/o重定向
  */
 public class LibCoreHookHandle extends BaseHookHandle{
     public LibCoreHookHandle(Context hostContext) {
@@ -43,8 +44,11 @@ public class LibCoreHookHandle extends BaseHookHandle{
 
         public BaseLibCore(Context hostContext) {
             super(hostContext);
+            // /data/data目录
             mDataDir=new File(Environment.getDataDirectory(),"data/").getPath();
+            // 宿主程序/data/data目录
             mHostDataDir= PluginDirHelper.getContextDataDir(hostContext);
+            //宿主程序包名
             mHostPkg=hostContext.getPackageName();
         }
 
@@ -65,6 +69,7 @@ public class LibCoreHookHandle extends BaseHookHandle{
             }
         }
 
+        //当插件访问“/data/data/插件包名/xxx”时，需要把路径替换成“/data/data/插件宿主包名/Plugin/插件包名/data/插件包名/xxx”
         private String tryReplacePath(String tarDir){
             if(tarDir!=null&&tarDir.length()>mDataDir.length()&&
                     !TextUtils.equals(tarDir, mDataDir) && tarDir.startsWith(mDataDir)){
