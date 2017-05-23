@@ -5,6 +5,7 @@ package com.earthgee.library;
 
 interface IApplicationCallback {
 
+    //回调方法
     Bundle onCallback(in Bundle extra);
 
 }

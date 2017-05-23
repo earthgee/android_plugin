@@ -27,6 +27,7 @@ import java.util.Set;
 
 /**
  * Created by zhaoruixuan on 2017/4/17.
+ * 包解析器 通过反射
  */
 public class PackageParserApi21 extends PackageParser{
 
@@ -51,6 +52,7 @@ public class PackageParserApi21 extends PackageParser{
     }
 
     private void initClasses() throws Exception{
+        //系统相关class
         sPackageParserClass=Class.forName("android.content.pm.PackageParser");
         sActivityClass=Class.forName("android.content.pm.PackageParser$Activity");
         sServiceClass=Class.forName("android.content.pm.PackageParser$Service");
@@ -70,6 +72,7 @@ public class PackageParserApi21 extends PackageParser{
         }
     }
 
+    //通过插件文件和flag解析出Package
     @Override
     public void parsePackage(File file, int flags) throws Exception {
         mPackageParser=sPackageParserClass.newInstance();
@@ -82,6 +85,7 @@ public class PackageParserApi21 extends PackageParser{
         method.invoke(mPackageParser,mPackage,flags);
     }
 
+    //生成ActivityInfo
     @Override
     public ActivityInfo generateActivityInfo(Object activity, int flags) throws Exception {
         Method method=MethodUtils.getAccessibleMethod(sPackageParserClass,"generateActivityInfo",sActivityClass,int.class);
@@ -203,6 +207,7 @@ public class PackageParserApi21 extends PackageParser{
         return (List) FieldUtils.readField(mPackage,"instrumentation");
     }
 
+    //获得插件包名
     @Override
     public String getPackageName() throws Exception {
         return (String) FieldUtils.readField(mPackage,"packageName");

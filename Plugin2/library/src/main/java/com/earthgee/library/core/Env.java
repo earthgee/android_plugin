@@ -11,5 +11,7 @@ public class Env {
     public static final String EXTRA_TARGET_INTENT_URI="com.earthgee.plugin2.OldIntent.Uri";
     public static final String EXTRA_TARGET_INFO="com.earthgee.plugin2.OldInfo";
     public static final String EXTRA_STUB_INFO="com.earthgee.plugin2.NewInfo";
+    public static final String EXTRA_TYPE="com.earthgee.plugin2.EXTRA_TYPE";
+    public static final String EXTRA_ACTION="com.earthgee.plugin2.EXTRA_ACTION";
 
 }

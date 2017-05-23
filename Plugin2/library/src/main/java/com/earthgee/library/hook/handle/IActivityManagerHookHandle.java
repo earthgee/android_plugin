@@ -1,15 +1,18 @@
 package com.earthgee.library.hook.handle;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
+import com.earthgee.library.PluginManagerService;
 import com.earthgee.library.PluginPatchManager;
 import com.earthgee.library.am.RunningActivities;
 import com.earthgee.library.core.Env;
@@ -17,6 +20,8 @@ import com.earthgee.library.core.PluginProcessManager;
 import com.earthgee.library.hook.BaseHookHandle;
 import com.earthgee.library.pm.PluginManager;
 import com.earthgee.library.reflect.FieldUtils;
+import com.earthgee.library.util.ActivityManagerCompat;
+import com.earthgee.library.util.ActivityManagerNativeCompat;
 
 import java.lang.reflect.Method;
 
@@ -770,10 +775,85 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         //todo
     }
 
+    //当使用PendingIntent系方法时会调到这里
     public static class getIntentSender extends ReplaceCallingPackageHookedMethodHandler{
 
         public getIntentSender(Context hostContext) {
             super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            final int index=1;
+            if(args!=null&&args.length>index&&args[index]!=null&&args[index] instanceof String){
+                String callerPackage= (String) args[index];
+                String originPackageName=mHostContext.getPackageName();
+                if(!TextUtils.equals(callerPackage,originPackageName)){
+                    args[index]=originPackageName;
+                }
+            }
+
+            final int index5=5;
+            boolean hasReplaceIntent=false;
+            if(args!=null&&args.length>index5&&args[index5]!=null){
+                int type= (int) args[0];
+                if(args[index5] instanceof Intent){
+                    Intent intent= (Intent) args[index5];
+                    Intent replaced=replace(type,intent);
+                    if(replaced!=null){
+                        args[index5]=replaced;
+                        hasReplaceIntent=true;
+                    }
+                }else if(args[index5] instanceof Intent[]){
+                    Intent[] intents= (Intent[]) args[index5];
+                    if(intents!=null&&intents.length>0){
+                        for(int i=0;i<intents.length;i++){
+                            Intent replaced=replace(type,intents[i]);
+                            if(replaced!=null){
+                                intents[i]=replaced;
+                                hasReplaceIntent=true;
+                            }
+                        }
+                        args[index5]=intents;
+                    }
+                }
+            }
+
+            final int index7=7;
+            if(hasReplaceIntent&&args!=null&&args.length>index7){
+                if(args[index7] instanceof Integer){
+                    args[index7]= PendingIntent.FLAG_UPDATE_CURRENT;
+                }
+                args[0]=ActivityManagerCompat.INTENT_SENDER_SERVICE;
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+
+        private Intent replace(int type,Intent intent) throws RemoteException{
+            if(type== ActivityManagerCompat.INTENT_SENDER_SERVICE){
+                ServiceInfo a=resolveService(intent);
+                if(a!=null&&isPackagePlugin(a.packageName)){
+                    Intent newIntent=new Intent(mHostContext, PluginManagerService.class);
+                    newIntent.putExtra(Env.EXTRA_TARGET_INTENT,intent);
+                    newIntent.putExtra(Env.EXTRA_TYPE,type);
+                    newIntent.putExtra(Env.EXTRA_ACTION,"PendingIntent");
+                    return newIntent;
+                }
+            }else if(type==ActivityManagerCompat.INTENT_SENDER_ACTIVITY){
+                ActivityInfo a=resolveActivity(intent);
+                if(a!=null&&isPackagePlugin(a.packageName)){
+                    Intent newIntent=new Intent(mHostContext,PluginManagerService.class);
+                    newIntent.putExtra(Env.EXTRA_TARGET_INTENT,intent);
+                    newIntent.putExtra(Env.EXTRA_TYPE,type);
+                    newIntent.putExtra(Env.EXTRA_ACTION,"PendingIntent");
+                    return newIntent;
+                }
+            }
+            return null;
+        }
+
+        public static void handlePendingIntent(final Context context, Intent intent){
+
         }
 
         //todo

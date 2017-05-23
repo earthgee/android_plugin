@@ -19,6 +19,7 @@ import java.util.Map;
  */
 public abstract class BaseActivityManagerService {
 
+    //service回调client的列表
     private RemoteCallbackList<IApplicationCallback> mRemoteCallbackList;
 
     protected Context mHostContext;

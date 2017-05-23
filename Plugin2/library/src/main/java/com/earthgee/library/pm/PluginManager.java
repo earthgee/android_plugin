@@ -64,13 +64,14 @@ public class PluginManager implements ServiceConnection{
         sServiceConnection.add(new WeakReference<ServiceConnection>(sc));
     }
 
+    //插件pms开始工作
     public void init(Context hostContext){
         mHostContext=hostContext;
         connectToService();
     }
 
     /**
-     * 启动插件解析service
+     * start,bind插件解析service
      */
     public void connectToService(){
         if(mPluginManager==null){

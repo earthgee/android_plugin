@@ -64,6 +64,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         mActivityManagerService = new MyActivityManagerService(mContext);
     }
 
+    //由于此服务和宿主进程在一个进程内
     public void onCreate() {
         new Thread() {
             @Override
@@ -73,6 +74,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         }.start();
     }
 
+    //加载插件信息
     private void onCreateInner() {
         loadAllPlugin(mContext);
         loadHostRequestPermission();
@@ -85,6 +87,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         }
     }
 
+    //将所有host进程请求的权限保存下来
     private void loadHostRequestPermission() {
         try {
             mHostRequestedPermission.clear();
@@ -104,6 +107,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
      * @param context
      */
     private void loadAllPlugin(Context context) {
+        //找到所有插件apk文件
         ArrayList<File> apkFiles = null;
         try {
             apkFiles = new ArrayList<>();
@@ -121,8 +125,10 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         }
 
         if (apkFiles != null && apkFiles.size() > 0) {
+            //针对单个apk文件
             for (File pluginFile : apkFiles) {
                 try {
+                    //在这个类中缓存插件组件信息
                     PluginPackageParser pluginPackageParser = new PluginPackageParser(mContext, pluginFile);
                     //插件签名目录下的签名构建
                     Signature[] signatures = readSignatures(pluginPackageParser.getPackageName());
@@ -150,6 +156,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         }
     }
 
+    //读取签名文件并生成签名字节流
     private Signature[] readSignatures(String packageName) {
         List<String> files = PluginDirHelper.getPluginSignatureFiles(mContext, packageName);
         List<Signature> signatures = new ArrayList<>(files.size());
@@ -171,6 +178,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         return signatures.toArray(new Signature[signatures.size()]);
     }
 
+    //将从插件中解析出的签名信息写到对应的文件中
     private void saveSignatures(PackageInfo pkgInfo) {
         if (pkgInfo != null && pkgInfo.signatures != null) {
             int i = 0;

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.earthgee.library.hook.handle.IActivityManagerHookHandle;
 import com.earthgee.library.pm.IPluginManagerImpl;
 
 /**
@@ -14,6 +15,7 @@ import com.earthgee.library.pm.IPluginManagerImpl;
  */
 public class PluginManagerService extends Service{
 
+    //binder server端对象
     private IPluginManagerImpl mPluginPackageManager;
 
     @Override
@@ -24,6 +26,7 @@ public class PluginManagerService extends Service{
         mPluginPackageManager.onCreate();
     }
 
+    //提高此service所在进程的优先级
     private void keepAlive(){
         try{
             Notification notification=new Notification();
@@ -52,6 +55,7 @@ public class PluginManagerService extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        //将所有pendingIntent转到这里来
         IActivityManagerHookHandle.getIntentSender.handlePendingIntent(this,intent);
         return super.onStartCommand(intent, flags, startId);
     }

@@ -82,6 +82,7 @@ public abstract class PackageParser {
 
     public abstract void writeSignature(Signature[] signatures) throws Exception;
 
+    //根据系统版本选择合适的包解析器
     public static PackageParser newPluginParser(Context context) throws Exception{
         if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.LOLLIPOP_MR1){
             if("1".equals(SystemPropertiesCompat.

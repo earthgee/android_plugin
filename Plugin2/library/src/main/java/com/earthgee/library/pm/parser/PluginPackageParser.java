@@ -32,26 +32,41 @@ import java.util.TreeMap;
  */
 public class PluginPackageParser {
 
+    //插件apk文件
     private final File mPluginFile;
+    //包解析器
     private final PackageParser mParser;
     private final String mPackageName;
     private final Context mHostContext;
     private final PackageInfo mHostPackageInfo;
 
+    //activity信息缓存 Object(Package::Activity Service Content Provider Receiver)
     private Map<ComponentName,Object> mActivityObjCache=new TreeMap<>(new ComponentNameComparator());
+    //service信息缓存
     private Map<ComponentName,Object> mServiceObjCache=new TreeMap<>(new ComponentNameComparator());
+    //contentprovider信息缓存
     private Map<ComponentName,Object> mProviderObjCache =new TreeMap<>(new ComponentNameComparator());
+    //broadcast receiver信息缓存
     private Map<ComponentName,Object> mReceiverObjCache=new TreeMap<>(new ComponentNameComparator());
+    //instrumentation信息缓存
     private Map<ComponentName,Object> mInstrumentationObjCache=new TreeMap<>(new ComponentNameComparator());
+    //权限信息缓存
     private Map<ComponentName,Object> mPermissionsObjCache=new TreeMap<>(new ComponentNameComparator());
+    //权限组信息缓存
     private Map<ComponentName,Object> mPermissionGroupObjCache=new TreeMap<>(new ComponentNameComparator());
+    //请求权限缓存
     private ArrayList<String> mRequestPermissionsCache=new ArrayList<>();
 
+    //activity intentFilter缓存信息
     private Map<ComponentName,List<IntentFilter>> mActivityIntentFilterCache=new TreeMap<>(new ComponentNameComparator());
+    //service intentFilter缓存信息
     private Map<ComponentName,List<IntentFilter>> mServiceIntentFilterCache=new TreeMap<>(new ComponentNameComparator());
+    //provider intentFilter缓存信息
     private Map<ComponentName,List<IntentFilter>> mProviderIntentFilterCache=new TreeMap<>(new ComponentNameComparator());
+    //receiver intentFilter缓存信息
     private Map<ComponentName,List<IntentFilter>> mReceiverIntentFilterCache=new TreeMap<>(new ComponentNameComparator());
 
+    //component-->组件信息 映射
     private Map<ComponentName,ActivityInfo> mActivityInfoCache=new TreeMap<>(new ComponentNameComparator());
     private Map<ComponentName,ServiceInfo> mServiceInfoCache=new TreeMap<>(new ComponentNameComparator());
     private Map<ComponentName,ProviderInfo> mProviderInfoCache=new TreeMap<>(new ComponentNameComparator());
@@ -64,13 +79,18 @@ public class PluginPackageParser {
         mHostContext=hostContext;
         mPluginFile=pluginFile;
         mParser=PackageParser.newPluginParser(hostContext);
+        //解析插件文件
         mParser.parsePackage(pluginFile,0);
+        //获得插件包名
         mPackageName=mParser.getPackageName();
         mHostPackageInfo=mHostContext.getPackageManager().
                 getPackageInfo(mHostContext.getPackageName(), 0);
 
+        //获得所有activity信息
         List datas=mParser.getActivities();
+        //Activity
         for(Object data:datas){
+            //构造activity的ComponentName
             ComponentName componentName=new ComponentName(mPackageName,mParser.readNameFromComponent(data));
             synchronized (mActivityObjCache){
                 mActivityObjCache.put(componentName,data);
@@ -197,6 +217,7 @@ public class PluginPackageParser {
         }
     }
 
+    //修复applicationInfo中缺失的内容
     private ApplicationInfo fixApplicationInfo(ApplicationInfo applicationInfo){
         if(applicationInfo.sourceDir==null){
             applicationInfo.sourceDir=mPluginFile.getPath();

@@ -68,6 +68,7 @@ public class PluginHelper implements ServiceConnection{
         }
 
         try{
+            //如果是插件的进程 就打开hook(插件进程的hook?)
             if(PluginProcessManager.isPluginProcess(baseContext)){
                 PluginProcessManager.setHookEnable(true);
             }else {
@@ -76,7 +77,9 @@ public class PluginHelper implements ServiceConnection{
         }catch (Throwable e){
         }
 
+        //自定义插件包管理器
         try{
+            //当插件包服务处理后，回调
             PluginManager.getInstance().addServiceConnection(PluginHelper.this);
             PluginManager.getInstance().init(baseContext);
         }catch (Throwable e){
@@ -142,6 +145,7 @@ public class PluginHelper implements ServiceConnection{
         }
     }
 
+    //开启hook(host进程的hook)
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         PluginProcessManager.setHookEnable(true,true);
