@@ -15,6 +15,7 @@ import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.content.pm.Signature;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.RemoteException;
@@ -25,10 +26,12 @@ import com.earthgee.library.IPackageDataObserver;
 import com.earthgee.library.IPluginManager;
 import com.earthgee.library.am.BaseActivityManagerService;
 import com.earthgee.library.am.MyActivityManagerService;
+import com.earthgee.library.core.PluginClassLoader;
 import com.earthgee.library.core.PluginDirHelper;
 import com.earthgee.library.pm.parser.IntentMatcher;
 import com.earthgee.library.pm.parser.PackageParser;
 import com.earthgee.library.pm.parser.PluginPackageParser;
+import com.earthgee.library.util.PackageManagerCompat;
 import com.earthgee.library.util.Utils;
 
 import java.io.File;
@@ -477,7 +480,26 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
     @Override
     public void deleteApplicationCacheFiles(String packageName, IPackageDataObserver
             observer) throws RemoteException {
+        boolean success=false;
+        try{
+            if(TextUtils.isEmpty(packageName)){
+                return;
+            }
 
+            PluginPackageParser parser=mPluginCache.get(packageName);
+            if(parser==null){
+                return;
+            }
+            ApplicationInfo applicationInfo=parser.getApplicationInfo(0);
+            Utils.deleteDir(new File(applicationInfo.dataDir,"caches").getName());
+            success=true;
+        }catch (Exception e){
+            handleException(e);
+        }finally {
+            if(observer!=null){
+                observer.onRemoveCompleted(packageName,success);
+            }
+        }
     }
 
     @Override
@@ -504,8 +526,103 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         return null;
     }
 
+    //从sd卡上安装插件
     @Override
     public int installPackage(String filepath, int flags) throws RemoteException {
+        String apkfile=null;
+        try{
+            //获得插件package info
+            PackageManager pm=mContext.getPackageManager();
+            PackageInfo info=pm.getPackageArchiveInfo(filepath,0);
+            if(info==null){
+                return PackageManagerCompat.INSTALL_FAILED_INVALID_APK;
+            }
+
+            //获得插件apk的寄宿在host的目录
+            apkfile=PluginDirHelper.getPluginApkFile(mContext,info.packageName);
+            //允许覆盖替换
+            if((flags&PackageManagerCompat.INSTALL_REPLACE_EXISTING)!=0){
+                //停止运行插件进程
+                forceStopPackage(info.packageName);
+                //清除插件缓存目录
+                if(mPluginCache.containsKey(info.packageName)){
+                    deleteApplicationCacheFiles(info.packageName,null);
+                }
+                //删掉插件apk文件
+                new File(apkfile).delete();
+                //新文件copy
+                Utils.copyFile(filepath,apkfile);
+                //解析插件文件
+                PluginPackageParser parser=new PluginPackageParser(mContext,new File(apkfile));
+                //签名信息保存
+                parser.collectCertificates(0);
+                PackageInfo pkgInfo=parser.getPackageInfo(PackageManager.GET_PERMISSIONS|PackageManager.GET_SIGNATURES);
+                if(pkgInfo!=null&&pkgInfo.requestedPermissions!=null&&pkgInfo.requestedPermissions.length>0){
+                    for(String requestedPermission:pkgInfo.requestedPermissions){
+                        boolean b=false;
+                        try{
+                            b=pm.getPermissionInfo(requestedPermission,0)!=null;
+                        }catch (PackageManager.NameNotFoundException e){
+                        }
+                        if(!mHostRequestedPermission.contains(requestedPermission)&&b){
+                            new File(apkfile).delete();
+                            return PackageManagerCompat.INSTALL_FAILED_NO_REQUESTEDPERMISSION;
+                        }
+                    }
+                }
+                saveSignatures(pkgInfo);
+                //移动so库
+                if(copyNativeLibs(mContext,apkfile,parser.getApplicationInfo(0))<0){
+                    new File(apkfile).delete();
+                    return PackageManagerCompat.INSTALL_FAILED_NOT_SUPPORT_ABI;
+                }
+
+                //移动dex包(no)
+                dexOpt(mContext,apkfile,parser);
+                mPluginCache.put(parser.getPackageName(),parser);
+                sendInstalledBroadcast(info.packageName);
+                return PackageManagerCompat.INSTALL_SUCCEEDED;
+            }else{
+                if(mPluginCache.containsKey(info.packageName)){
+                    return PackageManagerCompat.INSTALL_FAILED_ALREADY_EXISTS;
+                }else{
+                    forceStopPackage(info.packageName);
+                    new File(apkfile).delete();
+                    Utils.copyFile(filepath,apkfile);
+                    PluginPackageParser parser=new PluginPackageParser(mContext,new File(apkfile));
+                    parser.collectCertificates(0);
+                    PackageInfo pkgInfo=parser.getPackageInfo(PackageManager.GET_PERMISSIONS|PackageManager.GET_SIGNATURES);
+                    if(pkgInfo!=null&&pkgInfo.requestedPermissions!=null&&pkgInfo.requestedPermissions.length>0){
+                        for(String requestedPermission:pkgInfo.requestedPermissions){
+                            boolean b=false;
+                            try{
+                                b=pm.getPermissionInfo(requestedPermission,0)!=null;
+                            }catch (PackageManager.NameNotFoundException e){
+                            }
+                            if(!mHostRequestedPermission.contains(requestedPermission)&&b){
+                                new File(apkfile).delete();
+                                return PackageManagerCompat.INSTALL_FAILED_NO_REQUESTEDPERMISSION;
+                            }
+                        }
+                    }
+                    saveSignatures(pkgInfo);
+                    if(copyNativeLibs(mContext,apkfile,parser.getApplicationInfo(0))<0){
+                        new File(apkfile).delete();
+                        return PackageManagerCompat.INSTALL_FAILED_NOT_SUPPORT_ABI;
+                    }
+                    dexOpt(mContext,apkfile,parser);
+                    mPluginCache.put(parser.getPackageName(),parser);
+                    sendInstalledBroadcast(info.packageName);
+                    return PackageManagerCompat.INSTALL_SUCCEEDED;
+                }
+            }
+        }catch (Exception e){
+            if(apkfile!=null){
+                new File(apkfile).delete();
+            }
+            handleException(e);
+            return PackageManagerCompat.INSTALL_FAILED_INTERNAL_ERROR;
+        }
         return 0;
     }
 
@@ -634,6 +751,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         return null;
     }
 
+    //杀掉有查找包名组件的对应进程
     @Override
     public boolean killBackgroundProcesses(String packageName) throws RemoteException {
         ActivityManager am= (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
@@ -662,6 +780,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         return killBackgroundProcesses(pluginPackageName);
     }
 
+    //注册回调
     @Override
     public boolean registerApplicationCallback(IApplicationCallback callback) throws
             RemoteException {
@@ -749,6 +868,25 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
             remoteException.setStackTrace(e.getStackTrace());
         }
         throw remoteException;
+    }
+
+    private int copyNativeLibs(Context context,String apkfile,ApplicationInfo applicationInfo) throws Exception{
+        String nativeLibraryDir=PluginDirHelper.getPluginNativeLibraryDir(context,applicationInfo.packageName);
+        //todo
+        return NativeLibraryHelperCompat.copyNativeBinaries(new File(apkfile),new File(nativeLibraryDir));
+    }
+
+    private void dexOpt(Context hostContext,String apkFile,PluginPackageParser parser) throws Exception{
+        String packageName=parser.getPackageName();
+        String optimizedDirectory=PluginDirHelper.getPluginDalvikCacheDir(hostContext,packageName);
+        String libraryPath=PluginDirHelper.getPluginNativeLibraryDir(hostContext,packageName);
+        ClassLoader classLoader=new PluginClassLoader(apkFile,optimizedDirectory,libraryPath,hostContext.getClassLoader());
+    }
+    
+    private void sendInstalledBroadcast(String packageName){
+        Intent intent=new Intent(PluginManager.ACTION_PACKAGE_ADDED);
+        intent.setData(Uri.parse("package://"+packageName));
+        mContext.sendBroadcast(intent);
     }
 
 }

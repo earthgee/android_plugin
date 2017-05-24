@@ -2,6 +2,7 @@ package com.earthgee.library.util;
 
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -15,6 +16,7 @@ import java.util.WeakHashMap;
 
 /**
  * Created by zhaoruixuan on 2017/5/3.
+ * TypedArray 缓存
  */
 public class AttributeCache {
 
@@ -54,6 +56,23 @@ public class AttributeCache {
         public Entry(Context c,TypedArray ta){
             context=c;
             array=ta;
+        }
+    }
+
+    public void removePackage(String packageName){
+        synchronized (this){
+            mPackages.remove(packageName);
+        }
+    }
+
+    public void updateConfiguration(Configuration config){
+        synchronized (this){
+            int changes=mConfiguration.updateFrom(config);
+            if((changes&~(ActivityInfo.CONFIG_FONT_SCALE|
+                    ActivityInfo.CONFIG_KEYBOARD_HIDDEN|
+                    ActivityInfo.CONFIG_ORIENTATION))!=0){
+                mPackages.clear();
+            }
         }
     }
 

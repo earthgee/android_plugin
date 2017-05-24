@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
+import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 
@@ -36,6 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by zhaoruixuan on 2017/4/11.
@@ -369,6 +371,55 @@ public class PluginProcessManager {
                     ProcessCompat.setArgV0(pluginInfo.processName);
                 }
             }
+        }
+        if(found){
+            preMakeApplication(hostContext,pluginInfo);
+        }
+    }
+
+    private static AtomicBoolean mExec=new AtomicBoolean(false);
+    private static Handler sHandle=new Handler(Looper.getMainLooper());
+
+    private static void preMakeApplication(Context hostContext,ComponentInfo pluginInfo){
+        try{
+            final Object loadedApk=sPluginLoadedApkCache.get(pluginInfo.packageName);
+            if(loadedApk!=null){
+                Object mApplication=FieldUtils.readField(loadedApk,"mApplication");
+                if(mApplication!=null){
+                    return;
+                }
+
+                if(Looper.getMainLooper()!=Looper.myLooper()){
+                    final Object lock=new Object();
+                    mExec.set(false);
+                    sHandle.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try{
+                                MethodUtils.invokeMethod(loadedApk,"makeApplication",false,ActivityThreadCompat.getInstrumentation());
+                            }catch (Exception e){
+                            }finally {
+                                mExec.set(true);
+                                synchronized (lock){
+                                    lock.notifyAll();
+                                }
+                            }
+
+                        }
+                    });
+                    if(!mExec.get()){
+                        synchronized (lock){
+                            try{
+                                lock.wait();
+                            }catch (InterruptedException e){
+                            }
+                        }
+                    }
+                }else{
+                    MethodUtils.invokeMethod(loadedApk,"makeApplication",false,ActivityThreadCompat.getInstrumentation());
+                }
+            }
+        }catch (Exception e){
         }
     }
 

@@ -19,6 +19,7 @@ import java.util.Set;
 
 /**
  * Created by zhaoruixuan on 2017/5/3.
+ * 除host进程外运行中的进程信息
  */
 public class RunningProcessList {
 

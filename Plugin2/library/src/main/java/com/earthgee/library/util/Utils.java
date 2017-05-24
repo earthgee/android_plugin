@@ -2,6 +2,9 @@ package com.earthgee.library.util;
 
 import com.earthgee.library.core.PluginDirHelper;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,6 +28,33 @@ public class Utils {
 
     public static void deleteDir(String file){
         deleteFile(new File(file));
+    }
+
+    public static void copyFile(String src,String dst) throws IOException{
+        BufferedInputStream in=null;
+        BufferedOutputStream out=null;
+        try{
+            in=new BufferedInputStream(new FileInputStream(src));
+            out=new BufferedOutputStream(new FileOutputStream(dst));
+            byte[] buffer=new byte[8192];
+            int read=0;
+            while((read=in.read(buffer))!=-1){
+                out.write(buffer,0,read);
+            }
+        }finally {
+            if(in!=null){
+                try{
+                    in.close();
+                }catch (Exception e){
+                }
+            }
+            if(out!=null){
+                try{
+                    out.close();
+                }catch (Exception e){
+                }
+            }
+        }
     }
 
     private static void deleteFile(File file){

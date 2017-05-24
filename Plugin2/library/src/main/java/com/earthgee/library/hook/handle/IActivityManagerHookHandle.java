@@ -9,6 +9,8 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
@@ -776,6 +778,7 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
     }
 
     //当使用PendingIntent系方法时会调到这里
+    //将所有pendingIntent中转到PluginManagerService 在onStartCommand做分发 待插件安装后再统一处理
     public static class getIntentSender extends ReplaceCallingPackageHookedMethodHandler{
 
         public getIntentSender(Context hostContext) {
@@ -853,10 +856,58 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         }
 
         public static void handlePendingIntent(final Context context, Intent intent){
-
+            try{
+                if(intent!=null&&"PendingIntent".equals(intent.getStringExtra(Env.EXTRA_ACTION))){
+                    int type=intent.getIntExtra(Env.EXTRA_TYPE,-1);
+                    final Intent actionIntent=intent.getParcelableExtra(Env.EXTRA_TARGET_INTENT);
+                    final Handler handle=new Handler(Looper.getMainLooper());
+                    if(type==ActivityManagerCompat.INTENT_SENDER_SERVICE&&actionIntent!=null){
+                        final Runnable r=new Runnable() {
+                            @Override
+                            public void run() {
+                                try{
+                                    context.startService(actionIntent);
+                                }catch (Throwable e){
+                                }
+                            }
+                        };
+                        new Thread(""){
+                            @Override
+                            public void run() {
+                                try{
+                                    PluginManager.getInstance().waitForConnected();
+                                    handle.post(r);
+                                }catch (Exception e){
+                                }
+                            }
+                        }.start();
+                    }else if(type==ActivityManagerCompat.INTENT_SENDER_ACTIVITY&&actionIntent!=null){
+                        actionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        final Runnable r=new Runnable() {
+                            @Override
+                            public void run() {
+                                try{
+                                    context.startActivity(actionIntent);
+                                }catch (Throwable e){
+                                }
+                            }
+                        };
+                        new Thread(""){
+                            @Override
+                            public void run() {
+                                try{
+                                    PluginManager.getInstance().waitForConnected();
+                                    handle.post(r);
+                                }catch (Exception e){
+                                }
+                            }
+                        }.start();
+                    }
+                }
+            }catch (Exception e){
+            }
         }
 
-        //todo
     }
 
     private static class clearApplicationUserData extends ReplaceCallingPackageHookedMethodHandler{

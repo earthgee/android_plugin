@@ -145,6 +145,7 @@ public class PluginHelper implements ServiceConnection{
         }
     }
 
+    //PluginManagerService bind成功
     //开启hook(host进程的hook)
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {

@@ -6,6 +6,7 @@ import android.content.pm.ProviderInfo;
 import android.content.pm.ServiceInfo;
 import android.os.RemoteException;
 
+import com.earthgee.library.IApplicationCallback;
 import com.earthgee.library.pm.IPluginManagerImpl;
 import com.earthgee.library.reflect.FieldUtils;
 import com.earthgee.library.util.AttributeCache;
@@ -156,6 +157,12 @@ public class MyActivityManagerService extends BaseActivityManagerService{
     @Override
     public void onReportMyProcessName(int callingPid, int callingUid, String stubProcessName, String targetProcessName, String targetPkg) {
         mRunningProcessList.setProcessName(callingPid,stubProcessName,targetProcessName,targetPkg);
+    }
+
+    @Override
+    public boolean registerApplicationCallback(int callingPid, int callingUid, IApplicationCallback callback) {
+        boolean b=super.registerApplicationCallback(callingPid, callingUid, callback);
+        mRunningProcessList.addItem(callingPid,callingUid);
     }
 }
 

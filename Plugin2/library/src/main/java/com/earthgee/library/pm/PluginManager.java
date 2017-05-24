@@ -85,8 +85,10 @@ public class PluginManager implements ServiceConnection{
         }
     }
 
+    //IPluginManager binder java端代理对象
     private IPluginManager mPluginManager;
 
+    //PluginManagerService绑定成功
     @Override
     public void onServiceConnected(final ComponentName name, final IBinder service) {
         mPluginManager=IPluginManager.Stub.asInterface(service);
@@ -95,6 +97,7 @@ public class PluginManager implements ServiceConnection{
             public void run() {
                 try {
                     mPluginManager.waitForReady();
+                    //向service注册一个回调，并且通知自建AMS进程的启动
                     mPluginManager.registerApplicationCallback(new IApplicationCallback.Stub(){
                         @Override
                         public Bundle onCallback(Bundle extra) throws RemoteException {

@@ -44,6 +44,24 @@ public abstract class BaseActivityManagerService {
     public void onPkgInstalled(Map<String,PluginPackageParser> pluginCache,PluginPackageParser parser,String packageName) throws RemoteException{
     }
 
+    private static class ProcessCookie{
+        private final int pid;
+        private final int uid;
+
+        private ProcessCookie(int pid,int uid){
+            this.pid=pid;
+            this.uid=uid;
+        }
+    }
+
+    public boolean registerApplicationCallback(int callingPid,int callingUid,IApplicationCallback callback){
+        return mRemoteCallbackList.register(callback,new ProcessCookie(callingPid,callingUid));
+    }
+
+    public boolean unregisterApplicationCallback(int callingPid,int callingUid,IApplicationCallback callback){
+        return mRemoteCallbackList.unregister(callback);
+    }
+
     public void onCreate(IPluginManagerImpl pluginManagerImpl) throws Exception{
         if(mRemoteCallbackList==null){
             mRemoteCallbackList=new MyRemoteCallbackList();
