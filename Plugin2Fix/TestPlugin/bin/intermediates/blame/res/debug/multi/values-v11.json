@@ -1,0 +1,417 @@
+[
+    {
+        "outputFile": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\res\\merged\\debug\\values-v11\\values-v11.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endLine": 4,
+                    "endColumn": 12,
+                    "endOffset": 191
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\res\\values-v11\\styles.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 177,
+                        "endLine": 8,
+                        "endColumn": 12,
+                        "endOffset": 313
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 5,
+                    "startColumn": 4,
+                    "startOffset": 196,
+                    "endLine": 10,
+                    "endColumn": 12,
+                    "endOffset": 610
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 239,
+                        "endLine": 9,
+                        "endColumn": 12,
+                        "endOffset": 653
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 11,
+                    "startColumn": 4,
+                    "startOffset": 615,
+                    "endLine": 16,
+                    "endColumn": 12,
+                    "endOffset": 1035
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 10,
+                        "startColumn": 4,
+                        "startOffset": 658,
+                        "endLine": 15,
+                        "endColumn": 12,
+                        "endOffset": 1078
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 17,
+                    "startColumn": 4,
+                    "startOffset": 1040,
+                    "endLine": 22,
+                    "endColumn": 12,
+                    "endOffset": 1463
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 16,
+                        "startColumn": 4,
+                        "startOffset": 1083,
+                        "endLine": 21,
+                        "endColumn": 12,
+                        "endOffset": 1506
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 23,
+                    "startColumn": 4,
+                    "startOffset": 1468,
+                    "endLine": 28,
+                    "endColumn": 12,
+                    "endOffset": 1889
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 22,
+                        "startColumn": 4,
+                        "startOffset": 1511,
+                        "endLine": 27,
+                        "endColumn": 12,
+                        "endOffset": 1932
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 29,
+                    "startColumn": 4,
+                    "startOffset": 1894,
+                    "endLine": 34,
+                    "endColumn": 12,
+                    "endOffset": 2316
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 28,
+                        "startColumn": 4,
+                        "startOffset": 1937,
+                        "endLine": 33,
+                        "endColumn": 12,
+                        "endOffset": 2359
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 35,
+                    "startColumn": 4,
+                    "startOffset": 2321,
+                    "endLine": 40,
+                    "endColumn": 12,
+                    "endOffset": 2741
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 34,
+                        "startColumn": 4,
+                        "startOffset": 2364,
+                        "endLine": 39,
+                        "endColumn": 12,
+                        "endOffset": 2784
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 41,
+                    "startColumn": 4,
+                    "startOffset": 2746,
+                    "endColumn": 88,
+                    "endOffset": 2830
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 42,
+                        "startColumn": 4,
+                        "startOffset": 2968,
+                        "endColumn": 88,
+                        "endOffset": 3052
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 42,
+                    "startColumn": 4,
+                    "startOffset": 2835,
+                    "endColumn": 100,
+                    "endOffset": 2931
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 43,
+                        "startColumn": 4,
+                        "startOffset": 3057,
+                        "endColumn": 100,
+                        "endOffset": 3153
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 43,
+                    "startColumn": 4,
+                    "startOffset": 2936,
+                    "endLine": 47,
+                    "endColumn": 12,
+                    "endOffset": 3339
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 44,
+                        "startColumn": 4,
+                        "startOffset": 3158,
+                        "endLine": 48,
+                        "endColumn": 12,
+                        "endOffset": 3561
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 48,
+                    "startColumn": 4,
+                    "startOffset": 3344,
+                    "endLine": 52,
+                    "endColumn": 12,
+                    "endOffset": 3759
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 49,
+                        "startColumn": 4,
+                        "startOffset": 3566,
+                        "endLine": 53,
+                        "endColumn": 12,
+                        "endOffset": 3981
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 53,
+                    "startColumn": 4,
+                    "startOffset": 3764,
+                    "endLine": 54,
+                    "endColumn": 12,
+                    "endOffset": 3866
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 56,
+                        "startColumn": 4,
+                        "startOffset": 4165,
+                        "endLine": 57,
+                        "endColumn": 12,
+                        "endOffset": 4267
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 55,
+                    "startColumn": 4,
+                    "startOffset": 3871,
+                    "endLine": 56,
+                    "endColumn": 12,
+                    "endOffset": 3995
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 58,
+                        "startColumn": 4,
+                        "startOffset": 4272,
+                        "endLine": 59,
+                        "endColumn": 12,
+                        "endOffset": 4396
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 57,
+                    "startColumn": 4,
+                    "startOffset": 4000,
+                    "endLine": 59,
+                    "endColumn": 12,
+                    "endOffset": 4177
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\DroidPlugin.Libraries\\DroidPlugin\\unspecified\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 2,
+                        "startColumn": 4,
+                        "startOffset": 55,
+                        "endLine": 4,
+                        "endColumn": 12,
+                        "endOffset": 232
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 60,
+                    "startColumn": 4,
+                    "startOffset": 4182,
+                    "endLine": 62,
+                    "endColumn": 12,
+                    "endOffset": 4360
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\DroidPlugin.Libraries\\DroidPlugin\\unspecified\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 5,
+                        "startColumn": 4,
+                        "startOffset": 237,
+                        "endLine": 7,
+                        "endColumn": 12,
+                        "endOffset": 415
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 63,
+                    "startColumn": 4,
+                    "startOffset": 4365,
+                    "endColumn": 70,
+                    "endOffset": 4431
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 62,
+                        "startColumn": 4,
+                        "startOffset": 4580,
+                        "endColumn": 70,
+                        "endOffset": 4646
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 64,
+                    "startColumn": 4,
+                    "startOffset": 4436,
+                    "endColumn": 82,
+                    "endOffset": 4514
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 63,
+                        "startColumn": 4,
+                        "startOffset": 4651,
+                        "endColumn": 82,
+                        "endOffset": 4729
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 65,
+                    "startColumn": 4,
+                    "startOffset": 4519,
+                    "endLine": 115,
+                    "endColumn": 12,
+                    "endOffset": 8222
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 64,
+                        "startColumn": 4,
+                        "startOffset": 4734,
+                        "endLine": 114,
+                        "endColumn": 12,
+                        "endOffset": 8437
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 116,
+                    "startColumn": 4,
+                    "startOffset": 8227,
+                    "endLine": 167,
+                    "endColumn": 12,
+                    "endOffset": 12070
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 115,
+                        "startColumn": 4,
+                        "startOffset": 8442,
+                        "endLine": 166,
+                        "endColumn": 12,
+                        "endOffset": 12285
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 168,
+                    "startColumn": 4,
+                    "startOffset": 12075,
+                    "endColumn": 90,
+                    "endOffset": 12161
+                },
+                "from": {
+                    "file": "C:\\android_wp\\DroidPlugin-master\\DroidPlugin-master\\project\\TestPlugin\\bin\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\values-v11\\values-v11.xml",
+                    "position": {
+                        "startLine": 169,
+                        "startColumn": 4,
+                        "startOffset": 12469,
+                        "endColumn": 90,
+                        "endOffset": 12555
+                    }
+                }
+            }
+        ]
+    }
+]

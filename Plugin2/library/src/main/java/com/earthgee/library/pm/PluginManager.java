@@ -53,6 +53,10 @@ public class PluginManager implements ServiceConnection{
     private static PluginManager instance=null;
     private Context mHostContext;
 
+    public Context getHostContext(){
+        return mHostContext;
+    }
+
     public static PluginManager getInstance(){
         if(instance==null){
             instance=new PluginManager();

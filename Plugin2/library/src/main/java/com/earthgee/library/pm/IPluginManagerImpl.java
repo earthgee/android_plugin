@@ -31,6 +31,7 @@ import com.earthgee.library.core.PluginDirHelper;
 import com.earthgee.library.pm.parser.IntentMatcher;
 import com.earthgee.library.pm.parser.PackageParser;
 import com.earthgee.library.pm.parser.PluginPackageParser;
+import com.earthgee.library.util.NativeLibraryHelperCompat;
 import com.earthgee.library.util.PackageManagerCompat;
 import com.earthgee.library.util.Utils;
 
@@ -221,6 +222,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         }
     }
 
+    //根据插件包名获得PackageInfo
     @Override
     public PackageInfo getPackageInfo(String packageName, int flags) throws RemoteException {
         waitForReady();
@@ -362,6 +364,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         return null;
     }
 
+    //获得所有插件包PackageInfo
     @Override
     public List<PackageInfo> getInstallPackages(int flags) throws RemoteException {
         waitForReadyInner();
@@ -872,7 +875,6 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
 
     private int copyNativeLibs(Context context,String apkfile,ApplicationInfo applicationInfo) throws Exception{
         String nativeLibraryDir=PluginDirHelper.getPluginNativeLibraryDir(context,applicationInfo.packageName);
-        //todo
         return NativeLibraryHelperCompat.copyNativeBinaries(new File(apkfile),new File(nativeLibraryDir));
     }
 
@@ -882,7 +884,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         String libraryPath=PluginDirHelper.getPluginNativeLibraryDir(hostContext,packageName);
         ClassLoader classLoader=new PluginClassLoader(apkFile,optimizedDirectory,libraryPath,hostContext.getClassLoader());
     }
-    
+
     private void sendInstalledBroadcast(String packageName){
         Intent intent=new Intent(PluginManager.ACTION_PACKAGE_ADDED);
         intent.setData(Uri.parse("package://"+packageName));
