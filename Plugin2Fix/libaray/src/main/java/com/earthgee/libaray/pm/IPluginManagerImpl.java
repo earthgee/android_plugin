@@ -215,6 +215,19 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public ActivityInfo getActivityInfo(ComponentName className, int flags) throws RemoteException {
+        waitForReadyInner();
+        try{
+            String pkg=className.getPackageName();
+            if(pkg!=null){
+                enforcePluginFileExists();
+                PluginPackageParser parser=mPluginCache.get(className.getPackageName());
+                if(parser!=null){
+                    return 
+                }
+            }
+        }catch (Exception e){
+            handleException(e);
+        }
         return null;
     }
 

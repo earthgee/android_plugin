@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
@@ -218,6 +219,27 @@ public class PluginManager implements ServiceConnection{
         }catch (Exception e){
         }
 
+        return null;
+    }
+
+    public ActivityInfo resolveActivityInfo(Intent intent,int flags) throws RemoteException{
+        try {
+            if (mPluginManager != null) {
+                if (intent.getComponent() != null) {
+                    return mPluginManager.getActivityInfo(intent.getComponent(), flags);
+                } else {
+                    ResolveInfo resolveInfo = mPluginManager.resolveIntent(intent, intent.resolveTypeIfNeeded(mHostContext.getContentResolver()), flags);
+                    if (resolveInfo != null && resolveInfo.activityInfo != null) {
+                        return resolveInfo.activityInfo;
+                    }
+                }
+            } else {
+            }
+            return null;
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
         return null;
     }
 

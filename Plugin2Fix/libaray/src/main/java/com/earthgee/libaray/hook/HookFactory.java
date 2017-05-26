@@ -2,6 +2,7 @@ package com.earthgee.libaray.hook;
 
 import android.content.Context;
 
+import com.earthgee.libaray.hook.proxy.IActivityManagerHook;
 import com.earthgee.libaray.hook.proxy.IPackageManagerHook;
 
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ public class HookFactory {
 
     public final void installHook(Context context, ClassLoader classLoader) throws Exception {
         installHook(new IPackageManagerHook(context),classLoader);
+        installHook(new IActivityManagerHook(context),classLoader);
     }
 
 }
