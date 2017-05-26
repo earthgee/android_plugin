@@ -15,9 +15,6 @@ public class PluginApplication extends Application{
     public void onCreate() {
         super.onCreate();
         PluginHelper.getInstance().applicationOnCreate(getBaseContext());
-        //todo
-        //先放在这里
-        PluginManager.getInstance().init(getBaseContext());
     }
 
     @Override

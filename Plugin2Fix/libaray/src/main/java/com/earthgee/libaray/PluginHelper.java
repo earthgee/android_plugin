@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+import com.earthgee.libaray.core.PluginProcessManager;
+import com.earthgee.libaray.pm.PluginManager;
+
 /**
  * Created by zhaoruixuan on 2017/5/25.
  */
@@ -33,9 +36,26 @@ public class PluginHelper implements ServiceConnection{
         MyCrashHandler.getInstance().register(baseContext);
     }
 
+    private void initPlugin(Context baseContext){
+        try{
+            PluginPatchManager.getInstance().init(baseContext);
+            PluginProcessManager.installHook(baseContext);
+        }catch (Exception e){
+        }
+
+        //todo
+
+        try {
+            PluginManager.getInstance().addServiceConnection(PluginHelper.this);
+            PluginManager.getInstance().init(baseContext);
+        } catch (Throwable e) {
+        }
+
+    }
+
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-
+        PluginProcessManager.setHookEnable(true, true);
     }
 
     @Override

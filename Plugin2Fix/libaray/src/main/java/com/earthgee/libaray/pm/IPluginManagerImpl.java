@@ -27,6 +27,7 @@ import com.earthgee.libaray.core.PluginDirHelper;
 import com.earthgee.libaray.helper.NativeLibraryHelperCompat;
 import com.earthgee.libaray.helper.PackageManagerCompat;
 import com.earthgee.libaray.helper.Utils;
+import com.earthgee.libaray.pm.parser.IntentMatcher;
 import com.earthgee.libaray.pm.parser.PluginPackageParser;
 
 import java.io.File;
@@ -239,6 +240,13 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public List<ResolveInfo> queryIntentActivities(Intent intent, String resolvedType, int flags) throws RemoteException {
+        waitForReady();
+        try{
+            enforcePluginFileExists();
+            return IntentMatcher.resolveActivityIntent(mContext,mPluginCache,intent,resolvedType,flags);
+        }catch (Exception e){
+            handleException(e);
+        }
         return null;
     }
 

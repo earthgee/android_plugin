@@ -300,6 +300,31 @@ public class PluginPackageParser {
         }
     }
 
+    public List<ActivityInfo> getActivities(){
+        return new ArrayList<>(mActivityInfoCache.values());
+    }
+
+    public List<IntentFilter> getActivityIntentFilter(ComponentName className){
+        synchronized (mActivityIntentFilterCache){
+            return mActivityIntentFilterCache.get(className);
+        }
+    }
+
+    public ActivityInfo getActivityInfo(ComponentName className, int flags) throws Exception {
+        Object data;
+        synchronized (mActivityObjCache) {
+            data = mActivityObjCache.get(className);
+        }
+        if (data != null) {
+            ActivityInfo activityInfo = mParser.generateActivityInfo(data, flags);
+            fixApplicationInfo(activityInfo.applicationInfo);
+            if (TextUtils.isEmpty(activityInfo.processName)) {
+                activityInfo.processName = activityInfo.packageName;
+            }
+            return activityInfo;
+        }
+        return null;
+    }
 
 }
 

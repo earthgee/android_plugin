@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -206,6 +207,18 @@ public class PluginManager implements ServiceConnection{
             throw e;
         }catch (Exception e){
         }
+    }
+
+    public List<ResolveInfo> queryIntentActivities(Intent intent,String resolvedType,int flags) throws RemoteException{
+        try{
+            if(mPluginManager!=null&&intent!=null){
+                return mPluginManager.queryIntentActivities(intent, resolvedType, flags);
+            }
+        }catch (RemoteException e){
+        }catch (Exception e){
+        }
+
+        return null;
     }
 
 }
