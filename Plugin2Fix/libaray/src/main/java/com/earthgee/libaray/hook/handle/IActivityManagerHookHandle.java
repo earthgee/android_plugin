@@ -38,6 +38,9 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
             if(args!=null&&args.length>1&&intentOfArgIndex>=0){
                 Intent intent= (Intent) args[intentOfArgIndex];
                 ActivityInfo activityInfo=resolveActivity(intent);
+                if(activityInfo!=null&&isPackagePlugin(activityInfo.packageName)){
+                    
+                }
             }
         }
 

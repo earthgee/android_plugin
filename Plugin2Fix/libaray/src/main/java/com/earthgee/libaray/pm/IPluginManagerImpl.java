@@ -222,7 +222,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
                 enforcePluginFileExists();
                 PluginPackageParser parser=mPluginCache.get(className.getPackageName());
                 if(parser!=null){
-                    return 
+                    return parser.getActivityInfo(className,flags);
                 }
             }
         }catch (Exception e){
@@ -248,6 +248,16 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public ResolveInfo resolveIntent(Intent intent, String resolvedType, int flags) throws RemoteException {
+        waitForReadyInner();
+        try{
+            enforcePluginFileExists();
+            List<ResolveInfo> infos=IntentMatcher.resolveIntent(mContext,mPluginCache,intent,resolvedType,flags);
+            if(infos!=null&&infos.size()>0){
+                return IntentMatcher.findBest(infos);
+            }
+        }catch (Exception e){
+            handleException(e);
+        }
         return null;
     }
 

@@ -21,6 +21,7 @@ import com.earthgee.libaray.reflect.FieldUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -304,10 +305,55 @@ public class PluginPackageParser {
         return new ArrayList<>(mActivityInfoCache.values());
     }
 
+    public List<ServiceInfo> getServices() throws Exception {
+        return new ArrayList<ServiceInfo>(mServiceInfoCache.values());
+    }
+
+    public List<ProviderInfo> getProviders() throws Exception {
+        return new ArrayList<ProviderInfo>(mProviderInfoCache.values());
+    }
+
+    public List<ActivityInfo> getReceivers() throws Exception {
+        return new ArrayList<ActivityInfo>(mReceiversInfoCache.values());
+    }
+
     public List<IntentFilter> getActivityIntentFilter(ComponentName className){
         synchronized (mActivityIntentFilterCache){
             return mActivityIntentFilterCache.get(className);
         }
+    }
+
+    public List<IntentFilter> getServiceIntentFilter(ComponentName className) {
+        synchronized (mServiceIntentFilterCache) {
+            return mServiceIntentFilterCache.get(className);
+        }
+    }
+
+    public List<IntentFilter> getProviderIntentFilter(ComponentName className) {
+        synchronized (mProviderObjCache) {
+            return mProviderIntentFilterCache.get(className);
+        }
+    }
+
+    public Map<ActivityInfo, List<IntentFilter>> getReceiverIntentFilter() {
+        synchronized (mReceiverIntentFilterCache) {
+            Map<ActivityInfo, List<IntentFilter>> map = new HashMap<ActivityInfo, List<IntentFilter>>();
+            for (ComponentName componentName : mReceiverIntentFilterCache.keySet()) {
+                map.put(mReceiversInfoCache.get(componentName), mReceiverIntentFilterCache.get(componentName));
+            }
+            return map;
+        }
+    }
+
+    public List<IntentFilter> getReceiverIntentFilter(ActivityInfo info) {
+        synchronized (mReceiverIntentFilterCache) {
+            for (ComponentName componentName : mReceiverIntentFilterCache.keySet()) {
+                if (TextUtils.equals(info.name, mReceiversInfoCache.get(componentName).name)) {
+                    return mReceiverIntentFilterCache.get(componentName);
+                }
+            }
+        }
+        return null;
     }
 
     public ActivityInfo getActivityInfo(ComponentName className, int flags) throws Exception {
@@ -317,6 +363,54 @@ public class PluginPackageParser {
         }
         if (data != null) {
             ActivityInfo activityInfo = mParser.generateActivityInfo(data, flags);
+            fixApplicationInfo(activityInfo.applicationInfo);
+            if (TextUtils.isEmpty(activityInfo.processName)) {
+                activityInfo.processName = activityInfo.packageName;
+            }
+            return activityInfo;
+        }
+        return null;
+    }
+
+    public ServiceInfo getServiceInfo(ComponentName className, int flags) throws Exception {
+        Object data;
+        synchronized (mServiceObjCache) {
+            data = mServiceObjCache.get(className);
+        }
+        if (data != null) {
+            ServiceInfo serviceInfo = mParser.generateServiceInfo(data, flags);
+            fixApplicationInfo(serviceInfo.applicationInfo);
+            if (TextUtils.isEmpty(serviceInfo.processName)) {
+                serviceInfo.processName = serviceInfo.packageName;
+            }
+            return serviceInfo;
+        }
+        return null;
+    }
+
+    public ProviderInfo getProviderInfo(ComponentName className, int flags) throws Exception {
+        Object data;
+        synchronized (mProviderObjCache) {
+            data = mProviderObjCache.get(className);
+        }
+        if (data != null) {
+            ProviderInfo providerInfo = mParser.generateProviderInfo(data, flags);
+            fixApplicationInfo(providerInfo.applicationInfo);
+            if (TextUtils.isEmpty(providerInfo.processName)) {
+                providerInfo.processName = providerInfo.packageName;
+            }
+            return providerInfo;
+        }
+        return null;
+    }
+
+    public ActivityInfo getReceiverInfo(ComponentName className, int flags) throws Exception {
+        Object data;
+        synchronized (mReceiversObjCache) {
+            data = mReceiversObjCache.get(className);
+        }
+        if (data != null) {
+            ActivityInfo activityInfo = mParser.generateReceiverInfo(data, flags);
             fixApplicationInfo(activityInfo.applicationInfo);
             if (TextUtils.isEmpty(activityInfo.processName)) {
                 activityInfo.processName = activityInfo.packageName;
