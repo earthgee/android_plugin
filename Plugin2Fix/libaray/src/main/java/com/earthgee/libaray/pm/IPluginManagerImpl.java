@@ -16,6 +16,7 @@ import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.content.pm.Signature;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Build;
 import android.os.RemoteException;
 import android.text.TextUtils;
@@ -23,12 +24,16 @@ import android.text.TextUtils;
 import com.earthgee.libaray.IApplicationCallback;
 import com.earthgee.libaray.IPackageDataObserver;
 import com.earthgee.libaray.IPluginManager;
+import com.earthgee.libaray.am.BaseActivityManagerService;
+import com.earthgee.libaray.am.MyActivityManagerService;
 import com.earthgee.libaray.core.PluginDirHelper;
 import com.earthgee.libaray.helper.NativeLibraryHelperCompat;
 import com.earthgee.libaray.helper.PackageManagerCompat;
 import com.earthgee.libaray.helper.Utils;
 import com.earthgee.libaray.pm.parser.IntentMatcher;
 import com.earthgee.libaray.pm.parser.PluginPackageParser;
+
+import org.w3c.dom.NamedNodeMap;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -58,10 +63,13 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
     private AtomicBoolean mHasLoadedOk=new AtomicBoolean(false);
     private final Object mLock=new Object();
 
+    private BaseActivityManagerService mActivityManagerService;
+
     private Map<String,Signature[]> mSignatureCache=new HashMap<>(10);
 
     public IPluginManagerImpl(Context context){
         mContext=context;
+        mActivityManagerService=new MyActivityManagerService(mContext);
     }
 
     public void onCreate(){
@@ -138,7 +146,10 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
             }
         }
 
-        //todo
+        try{
+            mActivityManagerService.onCreate(IPluginManagerImpl.this);
+        }catch (Exception e){
+        }
     }
 
     private void enforcePluginFileExists() throws RemoteException{
@@ -210,7 +221,9 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public boolean isPluginPackage(String packageName) throws RemoteException {
-        return false;
+        waitForReadyInner();
+        enforcePluginFileExists();
+        return mPluginCache.containsKey(packageName);
     }
 
     @Override
@@ -415,8 +428,6 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
                 }
                 dexOpt(mContext,apkfile,parser);
                 mPluginCache.put(parser.getPackageName(), parser);
-                //todo
-                //mActivityManagerService.onPkgInstalled(mPluginCache, parser, parser.getPackageName());
                 sendInstalledBroadcast(info.packageName);
                 return PackageManagerCompat.INSTALL_SUCCEEDED;
             } else {
@@ -450,8 +461,6 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
                     }
                     dexOpt(mContext,apkfile,parser);
                     mPluginCache.put(parser.getPackageName(), parser);
-                    //todo
-                    //mActivityManagerService.onPkgInstalled(mPluginCache, parser, parser.getPackageName());
                     sendInstalledBroadcast(info.packageName);
                     return PackageManagerCompat.INSTALL_SUCCEEDED;
                 }
@@ -477,7 +486,6 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
                     parser=mPluginCache.remove(packageName);
                 }
                 Utils.deleteDir(PluginDirHelper.makePluginBaseDir(mContext,packageName));
-                //todo
                 mSignatureCache.remove(packageName);
                 sendUninstalledBroadcast(packageName);
                 return PackageManagerCompat.DELETE_SUCCEEDED;
@@ -500,16 +508,80 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public int checkSignatures(String pkg1, String pkg2) throws RemoteException {
-        return 0;
+        PackageManager pm=mContext.getPackageManager();
+        Signature[] signatures1=new Signature[0];
+        try{
+            signatures1=getSignature(pkg1,pm);
+        }catch (PackageManager.NameNotFoundException e){
+            return PackageManager.SIGNATURE_UNKNOWN_PACKAGE;
+        }
+
+        Signature[] signatures2=new Signature[0];
+        try {
+            signatures2=getSignature(pkg2,pm);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        boolean pkg1Signed = signatures1 != null && signatures1.length > 0;
+        boolean pkg2Signed = signatures2 != null && signatures2.length > 0;
+
+        if (!pkg1Signed && !pkg2Signed) {
+            return PackageManager.SIGNATURE_NEITHER_SIGNED;
+        } else if (!pkg1Signed && pkg2Signed) {
+            return PackageManager.SIGNATURE_FIRST_NOT_SIGNED;
+        } else if (pkg1Signed && !pkg2Signed) {
+            return PackageManager.SIGNATURE_SECOND_NOT_SIGNED;
+        } else {
+            if (signatures1.length == signatures2.length) {
+                for (int i = 0; i < signatures1.length; i++) {
+                    Signature s1 = signatures1[i];
+                    Signature s2 = signatures2[i];
+                    if (!Arrays.equals(s1.toByteArray(), s2.toByteArray())) {
+                        return PackageManager.SIGNATURE_NO_MATCH;
+                    }
+                }
+                return PackageManager.SIGNATURE_MATCH;
+            } else {
+                return PackageManager.SIGNATURE_NO_MATCH;
+            }
+        }
+    }
+
+    private Signature[] getSignature(String pkg,PackageManager pm) throws RemoteException,PackageManager.NameNotFoundException{
+        PackageInfo info=getPackageInfo(pkg,PackageManager.GET_SIGNATURES);
+        if(info==null){
+            info=pm.getPackageInfo(pkg,PackageManager.GET_SIGNATURES);
+        }
+        if(info==null){
+            throw new PackageManager.NameNotFoundException();
+        }
+        return info.signatures;
+    }
+
+    //this api for activity manager
+    @Override
+    public ActivityInfo selectStubActivityInfo(ActivityInfo pluginInfo) throws RemoteException {
+        return mActivityManagerService.selectStubActivityInfo(Binder.getCallingPid(),Binder.getCallingUid(),pluginInfo);
     }
 
     @Override
-    public ActivityInfo selectStubActivityInfo(ActivityInfo targetInfo) throws RemoteException {
-        return null;
-    }
+    public ActivityInfo selectStubActivityInfoByIntent(Intent intent) throws RemoteException {
+        ActivityInfo ai=null;
+        if(intent.getComponent()!=null){
+            ai=getActivityInfo(intent.getComponent(),0);
+        }else{
+            ResolveInfo resolveInfo=resolveIntent
+                    (intent,intent.resolveTypeIfNeeded(mContext.getContentResolver()),0);
+            if(resolveInfo!=null&&resolveInfo.activityInfo!=null){
+                ai=resolveInfo.activityInfo;
+            }
+        }
 
-    @Override
-    public ActivityInfo selectStubActivityInfoByIntent(Intent targetIntent) throws RemoteException {
+        if(ai!=null){
+            return selectStubActivityInfo(ai);
+        }
+
         return null;
     }
 
@@ -535,12 +607,16 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public List<String> getPackageNameByPid(int pid) throws RemoteException {
+        List<String> packageNameByProcessName=mActivityManagerService.getPackageNamesByPid(pid);
+        if(packageNameByProcessName!=null){
+            return new ArrayList<>(packageNameByProcessName);
+        }
         return null;
     }
 
     @Override
     public String getProcessNameByPid(int pid) throws RemoteException {
-        return null;
+        return mActivityManagerService.getProcessNameByPid(pid);
     }
 
     @Override

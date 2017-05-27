@@ -2,6 +2,7 @@ package com.earthgee.libaray.hook.handle;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
 
@@ -25,7 +26,49 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
 
     @Override
     protected void init() {
+        sHookedMethodHandlers.put("getPackageInfo",new getPackageInfo(mHostContext));
         sHookedMethodHandlers.put("queryIntentActivities",new queryIntentActivities(mHostContext));
+    }
+
+    private class getPackageInfo extends HookedMethodHandler{
+
+        public getPackageInfo(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if(args!=null){
+                final int index0=0,index1=1;
+                String packageName=null;
+                if(args.length>index0){
+                    if(args[index0]!=null&&args[index0] instanceof String){
+                        packageName= (String) args[index0];
+                    }
+                }
+
+                int flags=0;
+                if(args.length>index1){
+                    if(args[index1]!=null&&args[index1] instanceof Integer){
+                        flags= (int) args[index1];
+                    }
+                }
+
+                if(packageName!=null){
+                    PackageInfo packageInfo=null;
+                    try{
+                        packageInfo=PluginManager.getInstance().getPackageInfo(packageName,flags);
+                    }catch (Exception e){
+                    }
+
+                    if(packageInfo!=null){
+                        setFakedResult(packageInfo);
+                        return true;
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
     }
 
     //在系统查询后加上插件的信息
