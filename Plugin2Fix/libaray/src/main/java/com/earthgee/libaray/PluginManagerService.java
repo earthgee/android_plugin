@@ -49,6 +49,7 @@ public class PluginManagerService extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        //todo
         return super.onStartCommand(intent, flags, startId);
     }
 }

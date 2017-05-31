@@ -4,8 +4,11 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.RemoteException;
+import android.text.TextUtils;
 
+import com.earthgee.libaray.IApplicationCallback;
 import com.earthgee.libaray.helper.AttributeCache;
+import com.earthgee.libaray.helper.Utils;
 import com.earthgee.libaray.pm.IPluginManagerImpl;
 import com.earthgee.libaray.reflect.FieldUtils;
 
@@ -122,6 +125,11 @@ public class MyActivityManagerService extends BaseActivityManagerService{
         return null;
     }
 
+    @Override
+    public List<String> getPackageNamesByPid(int pid) {
+        return null;
+    }
+
     private static final Comparator<ActivityManager.RunningAppProcessInfo> sProcessComparator = new Comparator<ActivityManager.RunningAppProcessInfo>() {
         @Override
         public int compare(ActivityManager.RunningAppProcessInfo lhs, ActivityManager.RunningAppProcessInfo rhs) {
@@ -135,7 +143,27 @@ public class MyActivityManagerService extends BaseActivityManagerService{
         }
     };
 
-//    private void runProcessGC(){
+    @Override
+    public boolean registerApplicationCallback(int callingPid, int callingUid, IApplicationCallback callback) {
+        boolean b=super.registerApplicationCallback(callingPid, callingUid, callback);
+        mRunningProcessList.addItem(callingPid,callingUid);
+        //插件进程不会走这里
+        if(callingPid==android.os.Process.myPid()){
+            String stubProcessName= Utils.getProcessName(mHostContext,callingPid);
+            String targetProcessName=Utils.getProcessName(mHostContext,callingPid);
+            String targetPkg=mHostContext.getPackageName();
+            mRunningProcessList.setProcessName(callingPid,stubProcessName,targetProcessName,targetPkg);
+        }
+        if(TextUtils.equals(mHostContext.getPackageName(),Utils.getProcessName(mHostContext,callingPid))){
+            String stubProcessName=mHostContext.getPackageName();
+            String targetProcessName=mHostContext.getPackageName();
+            String targetPkg=mHostContext.getPackageName();
+            mRunningProcessList.setProcessName(callingPid,stubProcessName,targetProcessName,targetPkg);
+        }
+        return b;
+    }
+
+    //    private void runProcessGC(){
 //        if(mHostContext==null){
 //            return;
 //        }

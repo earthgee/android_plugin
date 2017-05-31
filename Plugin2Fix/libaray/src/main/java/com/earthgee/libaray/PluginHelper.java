@@ -43,7 +43,15 @@ public class PluginHelper implements ServiceConnection{
         }catch (Exception e){
         }
 
-        //todo
+        //插件程序启动后pluginservicemanager已启动
+        try{
+            if(PluginProcessManager.isPluginProcess(baseContext)){
+                PluginProcessManager.setHookEnable(true);
+            }else{
+                PluginProcessManager.setHookEnable(false);
+            }
+        }catch (Exception e){
+        }
 
         try {
             PluginManager.getInstance().addServiceConnection(PluginHelper.this);

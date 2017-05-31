@@ -649,8 +649,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public boolean registerApplicationCallback(IApplicationCallback callback) throws RemoteException {
-        //todo
-        return false;
+        return mActivityManagerService.registerApplicationCallback(Binder.getCallingPid(),Binder.getCallingUid(),callback);
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.content.pm.ComponentInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ServiceInfo;
+import android.os.RemoteException;
 import android.text.TextUtils;
 
 import com.earthgee.libaray.pm.PluginManager;
@@ -31,7 +32,9 @@ public class RunningProcessList {
     private class ProcessItem{
         private String stubProcessName;
         private String targetProcessName;
+        //进程pid
         private int pid;
+        //进程uid
         private int uid;
         private long startTime;
 
@@ -62,6 +65,7 @@ public class RunningProcessList {
         private Map<String, Set<ServiceInfo>> serviceInfosMap = new HashMap<String, Set<ServiceInfo>>(4);
     }
 
+    //key=pid
     private Map<Integer,ProcessItem> items=new HashMap<>();
 
     public String getStubProcessByTarget(ComponentInfo targetInfo){
@@ -116,6 +120,78 @@ public class RunningProcessList {
             }
         }
         return false;
+    }
+
+    boolean isProcessRunning(String stubProcessName){
+        for(ProcessItem processItem:items.values()){
+            if(TextUtils.equals(stubProcessName,processItem.stubProcessName)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    boolean isPkgEmpty(String stubProcessName){
+        for(ProcessItem item:items.values()){
+            if(TextUtils.equals(stubProcessName,item.stubProcessName)){
+                return item.pkgs.size()<=0;
+            }
+        }
+        return true;
+    }
+
+    boolean isPkgCanRunInProcess(String packageName,String stubProcessName,String targetProcessName) throws RemoteException{
+        for(ProcessItem item:items.values()){
+            if(TextUtils.equals(stubProcessName,item.stubProcessName)){
+                if(!TextUtils.isEmpty(item.targetProcessName)&&!TextUtils.equals(item.targetProcessName,targetProcessName)){
+                    continue;
+                }
+
+                if(item.pkgs.contains(packageName)){
+                    return true;
+                }
+
+                boolean signed=false;
+                for(String pkg:item.pkgs){
+                    if(PluginManager.getInstance().checkSignatures(packageName,pkg)==PackageManager.SIGNATURE_MATCH){
+                        signed=true;
+                        break;
+                    }
+                }
+                if(signed){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //每个进程接受到service bind成功会调到这里
+    void addItem(int pid,int uid){
+        ProcessItem item=items.get(pid);
+        if(item==null){
+            item=new ProcessItem();
+            item.pid=pid;
+            item.uid=uid;
+            item.startTime=System.currentTimeMillis();
+            items.put(pid,item);
+        }else{
+            item.pid=pid;
+            item.uid=uid;
+            item.startTime=System.currentTimeMillis();
+        }
+    }
+
+    void setProcessName(int pid,String stubProcessName,String targetProcessName,String targetPkg){
+        ProcessItem item=items.get(pid);
+        if(item!=null){
+            if(!item.pkgs.contains(targetPkg)){
+                item.pkgs.add(targetPkg);
+            }
+            item.targetProcessName=targetProcessName;
+            item.stubProcessName=stubProcessName;
+        }
     }
 
 }

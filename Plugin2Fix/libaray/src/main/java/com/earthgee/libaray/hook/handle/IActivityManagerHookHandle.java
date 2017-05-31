@@ -8,14 +8,19 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Process;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
+import com.earthgee.libaray.PluginPatchManager;
+import com.earthgee.libaray.am.RunningActivities;
 import com.earthgee.libaray.core.Env;
+import com.earthgee.libaray.core.PluginProcessManager;
 import com.earthgee.libaray.hook.BaseHookHandle;
 import com.earthgee.libaray.hook.HookedMethodHandler;
 import com.earthgee.libaray.pm.PluginManager;
+import com.earthgee.libaray.reflect.FieldUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -64,9 +69,61 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
             return true;
         }
 
+        private void setIntentClassLoader(Intent intent,ClassLoader classLoader){
+            try{
+                Bundle mExtras= (Bundle) FieldUtils.readField(intent,"mExtras");
+                if(mExtras!=null){
+                    mExtras.setClassLoader(classLoader);
+                }else{
+                    Bundle value=new Bundle();
+                    value.setClassLoader(classLoader);
+                    FieldUtils.writeField(intent,"mExtras",value);
+                }
+            }catch (Exception e){
+            }finally {
+                intent.setExtrasClassLoader(classLoader);
+            }
+        }
+
+        protected boolean doReplaceIntentForStartActivityAPIHigh(Object[] args) throws RemoteException{
+            int intentOfArgIndex=findFirstIntentIndexInArgs(args);
+            if(args!=null&&args.length>1&&intentOfArgIndex>=0){
+                Intent intent= (Intent) args[intentOfArgIndex];
+                if(!PluginPatchManager.getInstance().canStartPluginActivity(intent)){
+                    PluginPatchManager.getInstance().startPluginActivity(intent);
+                    return false;
+                }
+
+                ActivityInfo activityInfo=resolveActivity(intent);
+                if(activityInfo!=null&&isPackagePlugin(activityInfo.packageName)){
+                    ComponentName component=selectProxyActivity(intent);
+                    if(component!=null){
+                        Intent newIntent=new Intent();
+                        try{
+                            ClassLoader pluginClassLoader= PluginProcessManager.getPluginClassLoader(component.getPackageName());
+                            setIntentClassLoader(newIntent,pluginClassLoader);
+                        }catch (Exception e){
+                        }
+                        newIntent.setComponent(component);
+                        newIntent.putExtra(Env.EXTRA_TARGET_INTENT,intent);
+                        newIntent.setFlags(intent.getFlags());
+
+                        String callingPackage= (String) args[1];
+                        if(TextUtils.equals(mHostContext.getPackageName(),callingPackage)){
+                            newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        }
+
+                        args[intentOfArgIndex]=newIntent;
+                        args[1]=mHostContext.getPackageName();
+                    }
+                }
+            }
+            return true;
+        }
+
         @Override
         protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
-            //todo
+            RunningActivities.beforeStartActivity();
             boolean bRet=true;
             if(Build.VERSION.SDK_INT< Build.VERSION_CODES.JELLY_BEAN_MR2){
                 bRet=doReplaceIntentForStartActivityAPILow(args);
@@ -160,6 +217,8 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         }
         return null;
     }
+
+
 
 }
 

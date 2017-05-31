@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
+import com.earthgee.libaray.BuildConfig;
 import com.earthgee.libaray.IApplicationCallback;
 import com.earthgee.libaray.IPluginManager;
 import com.earthgee.libaray.PluginManagerService;
@@ -31,6 +32,10 @@ public class PluginManager implements ServiceConnection{
 
     public static final String ACTION_PACKAGE_ADDED = "com.morgoo.droidplugin.PACKAGE_ADDED";
     public static final String ACTION_PACKAGE_REMOVED = "com.morgoo.droidplugin.PACKAGE_REMOVED";
+
+    public static final String STUB_AUTHORITY_NAME = BuildConfig.AUTHORITY_NAME;
+
+    public static final int STUB_NO_ACTIVITY_MAX_NUM = 4;
 
     private Context mHostContext;
     private static PluginManager sInstance = null;

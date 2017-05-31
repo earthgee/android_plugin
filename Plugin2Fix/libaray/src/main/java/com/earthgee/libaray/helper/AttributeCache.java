@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.WeakHashMap;
 
 /**
- * TODO: This should be better integrated into the system so it doesn't need
+ *  This should be better integrated into the system so it doesn't need
  * special calls from the activity manager to clear it.
  */
 public final class AttributeCache {

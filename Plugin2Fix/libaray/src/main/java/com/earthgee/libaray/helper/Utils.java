@@ -1,5 +1,8 @@
 package com.earthgee.libaray.helper;
 
+import android.app.ActivityManager;
+import android.content.Context;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -7,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by zhaoruixuan on 2017/5/25.
@@ -93,4 +97,46 @@ public class Utils {
         }
     }
 
+    public static String getProcessName(Context context,int pid){
+        ActivityManager am= (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> raps=am.getRunningAppProcesses();
+        for(ActivityManager.RunningAppProcessInfo rap:raps){
+            if(rap!=null&&rap.pid==pid){
+                return rap.processName;
+            }
+        }
+        return null;
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

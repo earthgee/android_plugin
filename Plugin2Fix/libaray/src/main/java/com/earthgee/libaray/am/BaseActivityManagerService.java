@@ -48,6 +48,11 @@ public abstract class BaseActivityManagerService {
         return null;
     }
 
+    public boolean registerApplicationCallback(int callingPid,int callingUid,IApplicationCallback callback){
+        //todo
+        return mRemoteCallbackList.register(callback,null);
+    }
+
 }
 
 
