@@ -43,8 +43,51 @@ public class IPackageManagerHook extends ProxyHook{
         }
     }
 
+    public static void fixContextPackageManager(Context context){
+        try{
+            Object currentActivityThread=ActivityThreadCompat.currentActivityThread();
+            Object newPm=FieldUtils.readField(currentActivityThread,"sPackageManager");
+            PackageManager pm=context.getPackageManager();
+            Object mPM=FieldUtils.readField(pm,"mPM");
+            if(mPM!=newPm){
+                FieldUtils.writeField(pm,"mPM",newPm);
+            }
+        }catch (Exception e){
+        }
+    }
+
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

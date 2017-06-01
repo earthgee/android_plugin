@@ -257,6 +257,18 @@ public class PluginManager implements ServiceConnection{
         return null;
     }
 
+    public ResolveInfo resolveIntent(Intent intent,String resolvedType,int flags) throws RemoteException{
+        try{
+            if(mPluginManager!=null&&intent!=null){
+                return mPluginManager.resolveIntent(intent, resolvedType, flags);
+            }
+        }catch (RemoteException e){
+            throw e;
+        }catch (Exception e){
+        }
+        return null;
+    }
+
     public ActivityInfo resolveActivityInfo(Intent intent,int flags) throws RemoteException{
         try {
             if (mPluginManager != null) {
@@ -331,6 +343,33 @@ public class PluginManager implements ServiceConnection{
         }
     }
 
+    public ActivityInfo getActivityInfo(ComponentName className, int flags) throws PackageManager.NameNotFoundException, RemoteException {
+
+        try {
+            if (className == null) {
+                return null;
+            }
+            if (mPluginManager != null && className != null) {
+                return mPluginManager.getActivityInfo(className, flags);
+            } else {
+            }
+        } catch (RemoteException e) {
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public void reportMyProcessName(String stubProcessName, String targetProcessName, String targetPkg) throws RemoteException {
+        try {
+            if (mPluginManager != null) {
+                mPluginManager.reportMyProcessName(stubProcessName, targetProcessName, targetPkg);
+            } else {
+            }
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
+    }
 
 }
 

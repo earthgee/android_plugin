@@ -58,6 +58,7 @@ public class HookFactory {
     public final void installHook(Context context, ClassLoader classLoader) throws Exception {
         installHook(new IPackageManagerHook(context),classLoader);
         installHook(new IActivityManagerHook(context),classLoader);
+        installHook(new PluginCallbackHook(context),classLoader);
     }
 
 }

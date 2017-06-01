@@ -48,6 +48,9 @@ public abstract class BaseActivityManagerService {
         return null;
     }
 
+    public void onReportMyProcessName(int callingPid, int callingUid, String stubProcessName, String targetProcessName, String targetPkg) {
+    }
+
     public boolean registerApplicationCallback(int callingPid,int callingUid,IApplicationCallback callback){
         //todo
         return mRemoteCallbackList.register(callback,null);

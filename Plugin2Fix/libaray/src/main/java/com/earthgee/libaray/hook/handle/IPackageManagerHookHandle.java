@@ -28,6 +28,7 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
     protected void init() {
         sHookedMethodHandlers.put("getPackageInfo",new getPackageInfo(mHostContext));
         sHookedMethodHandlers.put("queryIntentActivities",new queryIntentActivities(mHostContext));
+        sHookedMethodHandlers.put("resolveIntent",new resolveIntent(mHostContext));
     }
 
     private class getPackageInfo extends HookedMethodHandler{
@@ -124,7 +125,83 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
         }
     }
 
+    private class resolveIntent extends HookedMethodHandler{
+
+        public resolveIntent(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if (args != null) {
+                final int index0 = 0, index1 = 1, index2 = 2;
+                Intent intent = null;
+                if (args.length > index0) {
+                    if (args[index0] instanceof Intent) {
+                        intent = (Intent) args[index0];
+                    }
+                }
+
+                String resolvedType = null;
+                if (args.length > index1) {
+                    if (args[index1] instanceof String) {
+                        resolvedType = (String) args[index1];
+                    }
+                }
+
+                Integer flags = 0;
+                if (args.length > index2) {
+                    if (args[index2] instanceof Integer) {
+                        flags = (Integer) args[index2];
+                    }
+                }
+
+                if (intent != null) {
+                    ResolveInfo info = PluginManager.getInstance().resolveIntent(intent, resolvedType, flags);
+                    if (info != null) {
+                        setFakedResult(info);
+                        return true;
+                    }
+                }
+
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

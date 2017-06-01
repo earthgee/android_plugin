@@ -684,7 +684,8 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public void reportMyProcessName(String stubProcessName, String targetProcessName, String targetPkg) throws RemoteException {
-
+        mActivityManagerService.onReportMyProcessName(Binder.getCallingPid(),Binder.getCallingUid(),
+                stubProcessName,targetProcessName,targetPkg);
     }
 
     @Override

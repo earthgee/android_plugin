@@ -22,32 +22,29 @@
 
 package com.earthgee.libaray.helper;
 
-import com.earthgee.libaray.reflect.MethodUtils;
 
-import java.lang.reflect.InvocationTargetException;
+import com.earthgee.libaray.reflect.FieldUtils;
 
 /**
  * Created by Andy Zhang(zhangyong232@gmail.com) on 2015/5/1.
  */
-public class ActivityManagerNativeCompat {
+public class CompatibilityInfoCompat {
 
     private static Class sClass;
 
-    public static Class Class() throws ClassNotFoundException {
+    private static Class getMyClass() throws ClassNotFoundException {
         if (sClass == null) {
-            sClass = Class.forName("android.app.ActivityManagerNative");
+            sClass = Class.forName("android.content.res.CompatibilityInfo");
         }
         return sClass;
     }
 
-    public static final Class activityThreadClass() throws ClassNotFoundException {
-        if (sClass == null) {
-            sClass = Class.forName("android.app.ActivityThread");
-        }
-        return sClass;
-    }
+    private static Object sDefaultCompatibilityInfo;
 
-    public static Object getDefault() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        return MethodUtils.invokeStaticMethod(Class(), "getDefault");
+    public static Object DEFAULT_COMPATIBILITY_INFO() throws IllegalAccessException, ClassNotFoundException {
+        if (sDefaultCompatibilityInfo==null) {
+            sDefaultCompatibilityInfo = FieldUtils.readStaticField(getMyClass(), "DEFAULT_COMPATIBILITY_INFO");
+        }
+        return sDefaultCompatibilityInfo;
     }
 }

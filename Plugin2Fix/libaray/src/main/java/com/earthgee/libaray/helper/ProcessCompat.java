@@ -27,27 +27,22 @@ import com.earthgee.libaray.reflect.MethodUtils;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Created by Andy Zhang(zhangyong232@gmail.com) on 2015/5/1.
+ * Created by Andy Zhang(zhangyong232@gmail.com) on 2015/3/14.
  */
-public class ActivityManagerNativeCompat {
+public class ProcessCompat {
 
-    private static Class sClass;
-
-    public static Class Class() throws ClassNotFoundException {
-        if (sClass == null) {
-            sClass = Class.forName("android.app.ActivityManagerNative");
+    public static final void setArgV0(String name) {
+        try {
+            MethodUtils.invokeStaticMethod(Class.forName("android.os.Process"), "setArgV0", name);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
-        return sClass;
-    }
-
-    public static final Class activityThreadClass() throws ClassNotFoundException {
-        if (sClass == null) {
-            sClass = Class.forName("android.app.ActivityThread");
-        }
-        return sClass;
-    }
-
-    public static Object getDefault() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        return MethodUtils.invokeStaticMethod(Class(), "getDefault");
+//        android.os.Process.setArgV0(name);
     }
 }
