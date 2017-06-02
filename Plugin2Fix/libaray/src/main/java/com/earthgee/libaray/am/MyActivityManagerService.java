@@ -168,6 +168,11 @@ public class MyActivityManagerService extends BaseActivityManagerService{
         mRunningProcessList.setProcessName(callingPid,stubProcessName,targetProcessName,targetPkg);
     }
 
+    @Override
+    public void onActivityCreated(int callingPid, int callingUid, ActivityInfo stubInfo, ActivityInfo targetInfo) {
+        mRunningProcessList.addActivityInfo(callingPid,callingUid,stubInfo,targetInfo);
+    }
+
     //    private void runProcessGC(){
 //        if(mHostContext==null){
 //            return;

@@ -7,6 +7,7 @@ import com.earthgee.libaray.helper.ActivityManagerNativeCompat;
 import com.earthgee.libaray.helper.ActivityThreadCompat;
 import com.earthgee.libaray.hook.BaseHookHandle;
 import com.earthgee.libaray.hook.Hook;
+import com.earthgee.libaray.hook.handle.PluginCallback;
 import com.earthgee.libaray.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
@@ -20,7 +21,7 @@ public class PluginCallbackHook extends Hook{
 
     private List<PluginCallback> mCallbacks=new ArrayList<>();
 
-    protected PluginCallbackHook(Context hostContext) {
+    public PluginCallbackHook(Context hostContext) {
         super(hostContext);
     }
 

@@ -56,6 +56,9 @@ public abstract class BaseActivityManagerService {
         return mRemoteCallbackList.register(callback,null);
     }
 
+    public void onActivityCreated(int callingPid, int callingUid, ActivityInfo stubInfo, ActivityInfo targetInfo) {
+    }
+
 }
 
 

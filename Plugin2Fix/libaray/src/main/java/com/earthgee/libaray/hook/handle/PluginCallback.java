@@ -6,10 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
 import com.earthgee.libaray.core.Env;
+import com.earthgee.libaray.core.PluginClassLoader;
 import com.earthgee.libaray.core.PluginProcessManager;
 import com.earthgee.libaray.hook.proxy.IPackageManagerHook;
 import com.earthgee.libaray.pm.PluginManager;
@@ -246,12 +249,59 @@ public class PluginCallback implements Handler.Callback{
                                 targetActivityInfo.processName,targetActivityInfo.packageName);
                     }
                     PluginProcessManager.preLoadApk(mHostContext,targetActivityInfo);
+                    ClassLoader pluginClassLoader= PluginProcessManager.getPluginClassLoader(targetComponentName.getPackageName());
+                    setIntentClassLoader(targetIntent,pluginClassLoader);
+                    setIntentClassLoader(stubIntent,pluginClassLoader);
+
+                    boolean success=false;
+                    try{
+                        targetIntent.putExtra(Env.EXTRA_TARGET_INFO,targetActivityInfo);
+                        if(stubActivityInfo!=null){
+                            targetIntent.putExtra(Env.EXTRA_STUB_INFO,stubActivityInfo);
+                        }
+                        success=true;
+                    }catch (Exception e){
+                    }
+
+                    //todo
+                    if(!success){
+                        Intent newTargetIntent=new Intent();
+                        newTargetIntent.setComponent(targetIntent.getComponent());
+                        newTargetIntent.putExtra(Env.EXTRA_TARGET_INFO,targetActivityInfo);
+                        if(stubActivityInfo!=null){
+                            newTargetIntent.putExtra(Env.EXTRA_STUB_INFO,stubActivityInfo);
+                        }
+                        FieldUtils.writeDeclaredField(msg.obj,"intent",newTargetIntent);
+                    }else{
+                        FieldUtils.writeDeclaredField(msg.obj,"intent",targetIntent);
+                    }
+                    FieldUtils.writeDeclaredField(msg.obj,"activityInfo",targetActivityInfo);
                 }
             }
         }catch (Exception e){
         }
 
+        if(mCallback!=null){
+            return mCallback.handleMessage(msg);
+        }else{
+            return false;
+        }
+    }
 
+    private void setIntentClassLoader(Intent intent,ClassLoader classLoader){
+        try{
+            Bundle mExtras= (Bundle) FieldUtils.readField(intent,"mExtras");
+            if(mExtras!=null){
+                mExtras.setClassLoader(classLoader);
+            }else{
+                Bundle value=new Bundle();
+                value.setClassLoader(classLoader);
+                FieldUtils.writeField(intent,"mExtras",value);
+            }
+        }catch (Exception e){
+        }finally {
+
+        }
     }
 
 }

@@ -11,11 +11,14 @@ import android.text.TextUtils;
 
 import com.earthgee.libaray.pm.PluginManager;
 
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created by zhaoruixuan on 2017/5/27.
@@ -23,10 +26,18 @@ import java.util.Set;
 public class RunningProcessList {
 
     private Context mHostContext;
+    private static final Collator sCollator = Collator.getInstance();
 
     public void setContext(Context context) {
         this.mHostContext = context;
     }
+
+    private static Comparator sComponentInfoComparator = new Comparator<ComponentInfo>() {
+        @Override
+        public int compare(ComponentInfo lhs, ComponentInfo rhs) {
+            return sCollator.compare(lhs.name, rhs.name);
+        }
+    };
 
     //正在运行的进程item
     private class ProcessItem{
@@ -63,6 +74,25 @@ public class RunningProcessList {
         //正在运行的插件ServiceInfo与代理ServiceInfo的映射
         //key=代理ServiceInfo.name, value=插件的ServiceInfo.name,
         private Map<String, Set<ServiceInfo>> serviceInfosMap = new HashMap<String, Set<ServiceInfo>>(4);
+
+        private void addActivityInfo(String stubActivityName,ActivityInfo info){
+            if(!targetActivityInfos.containsKey(info.name)){
+                targetActivityInfos.put(info.name,info);
+            }
+
+            if(!pkgs.contains(info.packageName)){
+                pkgs.add(info.packageName);
+            }
+
+            Set<ActivityInfo> list=activityInfosMap.get(stubActivityName);
+            if(list==null){
+                list=new TreeSet<>(sComponentInfoComparator);
+                list.add(info);
+                activityInfosMap.put(stubActivityName,list);
+            }else{
+                list.add(info);
+            }
+        }
     }
 
     //key=pid
@@ -192,6 +222,25 @@ public class RunningProcessList {
             item.targetProcessName=targetProcessName;
             item.stubProcessName=stubProcessName;
         }
+    }
+
+    void addActivityInfo(int pid,int uid,ActivityInfo stubInfo,ActivityInfo targetInfo){
+        ProcessItem item=items.get(pid);
+        if (TextUtils.isEmpty(targetInfo.processName)) {
+            targetInfo.processName=targetInfo.packageName;
+        }
+        if(item==null){
+            item=new ProcessItem();
+            item.pid=pid;
+            item.uid=uid;
+            items.put(pid,item);
+        }
+        item.stubProcessName=stubInfo.processName;
+        if(!item.pkgs.contains(targetInfo.packageName)){
+            item.pkgs.add(targetInfo.packageName);
+        }
+        item.targetProcessName=targetInfo.processName;
+        item.addActivityInfo(stubInfo.name,targetInfo);
     }
 
 }

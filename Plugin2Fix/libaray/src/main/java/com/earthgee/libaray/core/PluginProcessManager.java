@@ -259,7 +259,7 @@ PluginProcessManager {
                         @Override
                         public void run() {
                             try{
-                                MethodUtils.invokeMethod(loadedApk,"makeApplication",false,)
+                                MethodUtils.invokeMethod(loadedApk,"makeApplication",false,ActivityThreadCompat.getInstrumentation());
                             }catch (Exception e){
                             }finally {
                                 mExec.set(true);
@@ -277,6 +277,8 @@ PluginProcessManager {
                             }
                         }
                     }
+                }else{
+                    MethodUtils.invokeMethod(loadedApk,"makeApplication",false,ActivityThreadCompat.getInstrumentation());
                 }
             }
         }catch (Exception e){

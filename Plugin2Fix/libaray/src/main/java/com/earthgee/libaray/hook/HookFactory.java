@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.earthgee.libaray.hook.proxy.IActivityManagerHook;
 import com.earthgee.libaray.hook.proxy.IPackageManagerHook;
+import com.earthgee.libaray.hook.proxy.InstrumentationHook;
+import com.earthgee.libaray.hook.proxy.PluginCallbackHook;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +61,7 @@ public class HookFactory {
         installHook(new IPackageManagerHook(context),classLoader);
         installHook(new IActivityManagerHook(context),classLoader);
         installHook(new PluginCallbackHook(context),classLoader);
+        installHook(new InstrumentationHook(context),classLoader);
     }
 
 }

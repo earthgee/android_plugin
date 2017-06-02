@@ -659,7 +659,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public void onActivityCreated(ActivityInfo stubInfo, ActivityInfo targetInfo) throws RemoteException {
-
+        mActivityManagerService.onActivityCreated(Binder.getCallingPid(), Binder.getCallingUid(), stubInfo, targetInfo);
     }
 
     @Override

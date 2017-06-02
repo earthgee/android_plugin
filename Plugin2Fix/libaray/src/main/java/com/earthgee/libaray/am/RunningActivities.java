@@ -87,6 +87,37 @@ public class RunningActivities {
         }
     }
 
+    public static void onActivityCreate(Activity activity,
+                                        ActivityInfo targetActivityInfo,
+                                        ActivityInfo stubActivityInfo){
+        synchronized (mRunningActivityList){
+            RunningActivityRecord value=new
+                    RunningActivityRecord(activity,targetActivityInfo,stubActivityInfo,findMaxIndex()+1);
+            mRunningActivityList.put(activity,value);
+            if(targetActivityInfo.launchMode==ActivityInfo.LAUNCH_MULTIPLE){
+                mRunningSingleStandardActivityList.put(value.index,value);
+            }else if(targetActivityInfo.launchMode==ActivityInfo.LAUNCH_SINGLE_TOP) {
+                mRunningSingleTopActivityList.put(value.index, value);
+            }else if (targetActivityInfo.launchMode == ActivityInfo.LAUNCH_SINGLE_TASK) {
+                mRunningSingleTaskActivityList.put(value.index, value);
+            } else if (targetActivityInfo.launchMode == ActivityInfo.LAUNCH_SINGLE_INSTANCE) {
+                mRunningSingleInstanceActivityList.put(value.index, value);
+            }
+        }
+    }
+
+    private static int findMaxIndex(){
+        int max=0;
+        synchronized (mRunningActivityList){
+            for(RunningActivityRecord record:mRunningActivityList.values()){
+                if(max<record.index){
+                    max=record.index;
+                }
+            }
+        }
+        return max;
+    }
+
 }
 
 
