@@ -95,6 +95,7 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
                 }
 
                 ActivityInfo activityInfo=resolveActivity(intent);
+                //是插件的组件进行hook
                 if(activityInfo!=null&&isPackagePlugin(activityInfo.packageName)){
                     ComponentName component=selectProxyActivity(intent);
                     if(component!=null){

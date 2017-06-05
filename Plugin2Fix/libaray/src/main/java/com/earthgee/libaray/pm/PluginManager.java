@@ -33,6 +33,8 @@ public class PluginManager implements ServiceConnection{
     public static final String ACTION_PACKAGE_ADDED = "com.morgoo.droidplugin.PACKAGE_ADDED";
     public static final String ACTION_PACKAGE_REMOVED = "com.morgoo.droidplugin.PACKAGE_REMOVED";
 
+    public static final String EXTRA_APP_PERSISTENT = "com.morgoo.droidplugin.EXTRA_APP_PERSISTENT";
+
     public static final String STUB_AUTHORITY_NAME = BuildConfig.AUTHORITY_NAME;
 
     public static final int STUB_NO_ACTIVITY_MAX_NUM = 4;

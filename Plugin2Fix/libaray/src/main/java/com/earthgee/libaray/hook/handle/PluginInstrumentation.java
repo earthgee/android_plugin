@@ -165,8 +165,6 @@ public class PluginInstrumentation extends Instrumentation{
             }
         }catch (Exception e){
         }
-
-
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

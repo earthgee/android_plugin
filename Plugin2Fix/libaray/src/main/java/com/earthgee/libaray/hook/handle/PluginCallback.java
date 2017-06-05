@@ -263,7 +263,6 @@ public class PluginCallback implements Handler.Callback{
                     }catch (Exception e){
                     }
 
-                    //todo
                     if(!success){
                         Intent newTargetIntent=new Intent();
                         newTargetIntent.setComponent(targetIntent.getComponent());

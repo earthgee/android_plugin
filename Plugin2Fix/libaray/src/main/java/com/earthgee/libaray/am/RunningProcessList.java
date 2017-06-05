@@ -2,7 +2,9 @@ package com.earthgee.libaray.am;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.ComponentInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ServiceInfo;
@@ -195,6 +197,70 @@ public class RunningProcessList {
             }
         }
         return false;
+    }
+
+    boolean isPlugin(int pid){
+        ProcessItem item=items.get(pid);
+        if(item!=null){
+            return !TextUtils.isEmpty(item.stubProcessName)&&!TextUtils.isEmpty(item.targetProcessName);
+        }
+        return false;
+    }
+
+    //是否是持久化的app
+    public boolean isPersistentApplication(int pid){
+        for(ProcessItem processItem:items.values()){
+            if(processItem.pid==pid){
+                if(processItem.targetActivityInfos!=null&&processItem.targetActivityInfos.size()>0){
+                    for(ActivityInfo info:processItem.targetActivityInfos.values()){
+                        if((info.applicationInfo.flags& ApplicationInfo.FLAG_PERSISTENT)!=0){
+                            return true;
+                        }
+                    }
+                }
+
+                if (processItem.targetProviderInfos != null && processItem.targetProviderInfos.size() > 0) {
+                    for (ProviderInfo info : processItem.targetProviderInfos.values()) {
+                        if ((info.applicationInfo.flags & ApplicationInfo.FLAG_PERSISTENT) != 0) {
+                            return true;
+                        }
+                    }
+                }
+
+                if (processItem.targetServiceInfos != null && processItem.targetServiceInfos.size() > 0) {
+                    for (ServiceInfo info : processItem.targetServiceInfos.values()) {
+                        if ((info.applicationInfo.flags & ApplicationInfo.FLAG_PERSISTENT) != 0) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    int getActivityCountByPid(int pid){
+        ProcessItem item=items.get(pid);
+        return item!=null?item.targetActivityInfos.size():0;
+    }
+
+    int getServiceCountByPid(int pid){
+        ProcessItem item=items.get(pid);
+        return item!=null?item.targetServiceInfos.size():0;
+    }
+
+    int getProviderCountByPid(int pid){
+        ProcessItem item=items.get(pid);
+        return item!=null?item.targetProviderInfos.size():0;
+    }
+
+    List<String> getStubServiceByPid(int pid){
+        ProcessItem item=items.get(pid);
+        if(item!=null&&item.serviceInfosMap!=null&&item.serviceInfosMap.size()>0){
+            return new ArrayList<>(item.serviceInfosMap.keySet());
+        }
+        return null;
     }
 
     //每个进程接受到service bind成功会调到这里

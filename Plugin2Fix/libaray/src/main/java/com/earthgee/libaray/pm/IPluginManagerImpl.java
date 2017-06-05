@@ -654,7 +654,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public boolean unregisterApplicationCallback(IApplicationCallback callback) throws RemoteException {
-        return false;
+        return mActivityManagerService.unregisterApplicationCallback(Binder.getCallingPid(), Binder.getCallingUid(), callback);
     }
 
     @Override
@@ -765,6 +765,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
 
     public void onDestory(){
+        mActivityManagerService.onDestory();
         //todo
     }
 
