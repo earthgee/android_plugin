@@ -1,7 +1,9 @@
 package com.earthgee.libaray.hook.handle;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
@@ -29,6 +31,7 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
         sHookedMethodHandlers.put("getPackageInfo",new getPackageInfo(mHostContext));
         sHookedMethodHandlers.put("queryIntentActivities",new queryIntentActivities(mHostContext));
         sHookedMethodHandlers.put("resolveIntent",new resolveIntent(mHostContext));
+        sHookedMethodHandlers.put("getActivityInfo",new getActivityInfo(mHostContext));
     }
 
     private class getPackageInfo extends HookedMethodHandler{
@@ -164,6 +167,32 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
                     }
                 }
 
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class getActivityInfo extends HookedMethodHandler{
+
+        public getActivityInfo(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if(args!=null){
+                final int index0=0,index1=1;
+                if(args.length>=2
+                        &&args[index0] instanceof ComponentName
+                        &&args[index1] instanceof Integer){
+                    ComponentName className= (ComponentName) args[index0];
+                    int flags= (int) args[index1];
+                    ActivityInfo info=PluginManager.getInstance().getActivityInfo(className,flags);
+                    if(info!=null){
+                        setFakedResult(info);
+                        return true;
+                    }
+                }
             }
             return super.beforeInvoke(receiver, method, args);
         }

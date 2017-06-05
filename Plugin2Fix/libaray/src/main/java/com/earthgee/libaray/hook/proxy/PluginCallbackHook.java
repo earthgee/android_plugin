@@ -47,7 +47,7 @@ public class PluginCallbackHook extends Hook{
     @Override
     protected void onInstall(ClassLoader classLoader) throws Exception {
         Object target= ActivityThreadCompat.currentActivityThread();
-        Class ActivityThreadClass= ActivityManagerNativeCompat.activityThreadClass();
+        Class ActivityThreadClass= ActivityThreadCompat.activityThreadClass();
 
         Field mHField= FieldUtils.getField(ActivityThreadClass,"mH");
         Handler handler= (Handler) FieldUtils.readField(mHField,target);
