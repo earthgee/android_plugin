@@ -2,6 +2,7 @@ package com.earthgee.libaray.am;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ServiceInfo;
 import android.os.Bundle;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
@@ -57,6 +58,7 @@ public abstract class BaseActivityManagerService {
 
     public abstract ActivityInfo selectStubActivityInfo(int callingPid, int callingUid, ActivityInfo targetInfo) throws RemoteException;
     public abstract List<String> getPackageNamesByPid(int pid);
+    public abstract ServiceInfo selectStubServiceInfo(int callingPid, int callingUid, ServiceInfo targetInfo) throws RemoteException;
 
     public String getProcessNameByPid(int pid) {
         return null;

@@ -154,6 +154,10 @@ public class RunningProcessList {
         return false;
     }
 
+    boolean isStubInfoUsed(ServiceInfo stubInfo){
+        return false;
+    }
+
     boolean isProcessRunning(String stubProcessName){
         for(ProcessItem processItem:items.values()){
             if(TextUtils.equals(stubProcessName,processItem.stubProcessName)){

@@ -251,6 +251,19 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public ServiceInfo getServiceInfo(ComponentName className, int flags) throws RemoteException {
+        waitForReadyInner();
+        try{
+            String pkg=className.getPackageName();
+            if(pkg!=null){
+                enforcePluginFileExists();
+                PluginPackageParser parser=mPluginCache.get(className.getPackageName());
+                if(parser!=null){
+                    return parser.getServiceInfo(className,flags);
+                }
+            }
+        }catch (Exception e){
+            handleException(e);
+        }
         return null;
     }
 
@@ -585,13 +598,27 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
         return null;
     }
 
+
     @Override
     public ServiceInfo selectStubServiceInfo(ServiceInfo targetInfo) throws RemoteException {
-        return null;
+        return mActivityManagerService.selectStubServiceInfo(Binder.getCallingPid(),Binder.getCallingUid(),targetInfo);
     }
 
     @Override
-    public ServiceInfo selectStubServiceInfoByIntent(Intent targetIntent) throws RemoteException {
+    public ServiceInfo selectStubServiceInfoByIntent(Intent intent) throws RemoteException {
+        ServiceInfo ai = null;
+        if (intent.getComponent() != null) {
+            ai = getServiceInfo(intent.getComponent(), 0);
+        } else {
+            ResolveInfo resolveInfo = resolveIntent(intent, intent.resolveTypeIfNeeded(mContext.getContentResolver()), 0);
+            if (resolveInfo.serviceInfo != null) {
+                ai = resolveInfo.serviceInfo;
+            }
+        }
+
+        if (ai != null) {
+            return selectStubServiceInfo(ai);
+        }
         return null;
     }
 

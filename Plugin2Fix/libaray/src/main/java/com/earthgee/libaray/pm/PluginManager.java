@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.pm.ServiceInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -383,6 +384,53 @@ public class PluginManager implements ServiceConnection{
             throw e;
         } catch (Exception e) {
         }
+    }
+
+    public ServiceInfo resolveServiceInfo(Intent intent, int flags) throws RemoteException {
+        try {
+            if (mPluginManager != null) {
+                if (intent.getComponent() != null) {
+                    return mPluginManager.getServiceInfo(intent.getComponent(), flags);
+                } else {
+                    ResolveInfo resolveInfo = mPluginManager.resolveIntent(intent, intent.resolveTypeIfNeeded(mHostContext.getContentResolver()), flags);
+                    if (resolveInfo != null && resolveInfo.serviceInfo != null) {
+                        return resolveInfo.serviceInfo;
+                    }
+                }
+            } else {
+            }
+            return null;
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public ServiceInfo selectStubServiceInfo(ServiceInfo pluginInfo) throws RemoteException {
+        try {
+            if (mPluginManager != null) {
+                return mPluginManager.selectStubServiceInfo(pluginInfo);
+            } else {
+            }
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public ServiceInfo selectStubServiceInfo(Intent pluginInfo) throws RemoteException {
+        try {
+            if (mPluginManager != null) {
+                return mPluginManager.selectStubServiceInfoByIntent(pluginInfo);
+            } else {
+            }
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
+        return null;
     }
 
 }

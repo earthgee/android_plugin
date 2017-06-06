@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
@@ -25,6 +26,7 @@ import com.earthgee.libaray.reflect.FieldUtils;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by zhaoruixuan on 2017/5/26.
@@ -38,6 +40,7 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
     protected void init() {
         sHookedMethodHandlers.put("startActivity",new startActivity(mHostContext));
         sHookedMethodHandlers.put("getRunningAppProcesses",new getRunningAppProcesses(mHostContext));
+        sHookedMethodHandlers.put("startService",new startService(mHostContext));
     }
 
     //todo replace pacakge name
@@ -219,7 +222,70 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         return null;
     }
 
+    private static class startService extends HookedMethodHandler{
 
+        private ServiceInfo info=null;
+
+        public startService(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            info=replaceFirstServiceIntentOfArgs(args);
+            return super.beforeInvoke(receiver, method, args);
+        }
+
+        @Override
+        protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
+            if(invokeResult instanceof ComponentName){
+                if(info!=null){
+                    setFakedResult(new ComponentName(info.packageName,info.name));
+                }
+            }
+            info=null;
+            super.afterInvoke(receiver, method, args, invokeResult);
+        }
+    }
+
+    private static ServiceInfo replaceFirstServiceIntentOfArgs(Object[] args) throws RemoteException{
+        int intentOfArgIndex=findFirstIntentIndexInArgs(args);
+        if(args!=null&&args.length>1&&intentOfArgIndex>=0){
+            Intent intent= (Intent) args[intentOfArgIndex];
+            ServiceInfo serviceInfo=resolveService(intent);
+            if(serviceInfo!=null&&isPackagePlugin(serviceInfo.packageName)){
+                ServiceInfo proxyService=selectProxyService(intent);
+                if(proxyService!=null){
+                    Intent newIntent=new Intent();
+                    newIntent.setAction(proxyService.name+new Random().nextInt());
+                    newIntent.setClassName(proxyService.packageName,proxyService.name);
+                    newIntent.putExtra(Env.EXTRA_TARGET_INTENT,intent);
+                    newIntent.setFlags(intent.getFlags());
+                    args[intentOfArgIndex]=newIntent;
+                    return serviceInfo;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static ServiceInfo resolveService(Intent intent) throws RemoteException{
+        return PluginManager.getInstance().resolveServiceInfo(intent,0);
+    }
+
+    private static ServiceInfo selectProxyService(Intent intent) {
+        try {
+            if (intent != null) {
+                ServiceInfo proxyInfo = PluginManager.getInstance().selectStubServiceInfo(intent);
+                if (proxyInfo != null) {
+                    return proxyInfo;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }
 

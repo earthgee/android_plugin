@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ServiceInfo;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
@@ -120,6 +121,52 @@ public class MyActivityManagerService extends BaseActivityManagerService {
                             mRunningProcessList.setTargetProcessName(stubInfo, targetInfo);
                             return stubInfo;
                         }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public ServiceInfo selectStubServiceInfo(int callingPid, int callingUid, ServiceInfo targetInfo) throws RemoteException {
+        runProcessGC();
+
+        String stubProcessName1=mRunningProcessList.getStubProcessByTarget(targetInfo);
+        if(stubProcessName1!=null){
+            List<ServiceInfo> stubInfos=mStaticProcessList.getServiceInfoForProcessName(stubProcessName1);
+            for(ServiceInfo stubInfo:stubInfos){
+                if(!mRunningProcessList.isStubInfoUsed(stubInfo)){
+                    mRunningProcessList.setTargetProcessName(stubInfo,targetInfo);
+                    return stubInfo;
+                }
+            }
+        }
+
+        List<String> stubProcessNames=mStaticProcessList.getProcessNames();
+        for(String stubProcessName:stubProcessNames){
+            List<ServiceInfo> stubInfos=mStaticProcessList.getServiceInfoForProcessName(stubProcessName);
+            if(mRunningProcessList.isProcessRunning(stubProcessName)){
+                if(mRunningProcessList.isPkgEmpty(stubProcessName)){
+                    for(ServiceInfo stubInfo:stubInfos){
+                        if(!mRunningProcessList.isStubInfoUsed(stubInfo)){
+                            mRunningProcessList.setTargetProcessName(stubInfo,targetInfo);
+                            return stubInfo;
+                        }
+                    }
+                }else if(mRunningProcessList.isPkgCanRunInProcess(targetInfo.packageName,stubProcessName,targetInfo.processName)){
+                    for(ServiceInfo stubInfo:stubInfos){
+                        if(!mRunningProcessList.isStubInfoUsed(stubInfo)){
+                            mRunningProcessList.setTargetProcessName(stubInfo,targetInfo);
+                            return stubInfo;
+                        }
+                    }
+                }
+            }else{
+                for(ServiceInfo stubInfo:stubInfos){
+                    if(!mRunningProcessList.isStubInfoUsed(stubInfo)){
+                        mRunningProcessList.setTargetProcessName(stubInfo,targetInfo);
+                        return stubInfo;
                     }
                 }
             }

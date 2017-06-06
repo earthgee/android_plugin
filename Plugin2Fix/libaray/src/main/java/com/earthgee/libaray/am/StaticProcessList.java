@@ -198,6 +198,13 @@ public class StaticProcessList {
         return activityInfos;
     }
 
+    List<ServiceInfo> getServiceInfoForProcessName(String processName){
+        ProcessItem item=items.get(processName);
+        ArrayList<ServiceInfo> serviceInfos=new ArrayList<>(item.serviceInfos.values());
+        Collections.sort(serviceInfos,sComponentInfoComparator);
+        return serviceInfos;
+    }
+
     List<String> getProcessNames(){
         return new ArrayList<>(items.keySet());
     }
