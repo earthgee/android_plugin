@@ -2,6 +2,7 @@ package com.earthgee.libaray.hook.handle;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.IServiceConnection;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.Process;
 import android.os.RemoteException;
 import android.text.TextUtils;
@@ -22,6 +24,8 @@ import com.earthgee.libaray.hook.BaseHookHandle;
 import com.earthgee.libaray.hook.HookedMethodHandler;
 import com.earthgee.libaray.pm.PluginManager;
 import com.earthgee.libaray.reflect.FieldUtils;
+import com.earthgee.libaray.reflect.MethodUtils;
+import com.earthgee.libaray.stub.ServicesManager;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -41,6 +45,8 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         sHookedMethodHandlers.put("startActivity",new startActivity(mHostContext));
         sHookedMethodHandlers.put("getRunningAppProcesses",new getRunningAppProcesses(mHostContext));
         sHookedMethodHandlers.put("startService",new startService(mHostContext));
+        sHookedMethodHandlers.put("stopService",new stopService(mHostContext));
+        sHookedMethodHandlers.put("bindService",new bindService(mHostContext));
     }
 
     //todo replace pacakge name
@@ -205,6 +211,18 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         return -1;
     }
 
+    private static int findServiceConnectionIndex(Method method){
+        Class<?>[] parameterTypes=method.getParameterTypes();
+        if(parameterTypes!=null&&parameterTypes.length>0){
+            for(int index=0;index<parameterTypes.length;index++){
+                if(parameterTypes[index]!=null&&TextUtils.equals(parameterTypes[index].getSimpleName(),"IServiceConnection")){
+                    return index;
+                }
+            }
+        }
+        return -1;
+    }
+
     private static boolean isPackagePlugin(String packageName) throws RemoteException{
         return PluginManager.getInstance().isPluginPackage(packageName);
     }
@@ -286,6 +304,65 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         }
         return null;
     }
+
+    private static class stopService extends HookedMethodHandler{
+
+        public stopService(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            int index=1;
+            if(args!=null&&args.length>index&&args[index] instanceof Intent){
+                Intent intent= (Intent) args[index];
+                ServiceInfo info= resolveService(intent);
+                if(info!=null&&isPackagePlugin(info.packageName)){
+                    int re= ServicesManager.getDefault().stopService(mHostContext,intent);
+                    setFakedResult(re);
+                    return true;
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private abstract static class MyIServiceConnection extends IServiceConnection.Stub{
+        protected final ServiceInfo mInfo;
+
+        private MyIServiceConnection(ServiceInfo info){
+            mInfo=info;
+        }
+    }
+
+    private static class bindService extends HookedMethodHandler{
+
+        public bindService(Context hostContext) {
+            super(hostContext);
+        }
+
+        private ServiceInfo info=null;
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            info=replaceFirstServiceIntentOfArgs(args);
+            int index=findServiceConnectionIndex(method);
+            if(info!=null&&index>=0){
+                final Object oldIServiceConnection=args[index];
+                args[index]=new MyIServiceConnection(info) {
+                    @Override
+                    public void connected(ComponentName name, IBinder service) throws RemoteException {
+                         try{
+                             MethodUtils.invokeMethod(oldIServiceConnection,"connected",new ComponentName(mInfo.packageName,mInfo.name),service);
+                         }catch (Exception e){
+                         }
+                    }
+                };
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
 
 }
 

@@ -433,6 +433,28 @@ public class PluginManager implements ServiceConnection{
         return null;
     }
 
+    public void onServiceCreated(ServiceInfo stubInfo, ServiceInfo targetInfo) throws RemoteException {
+        try {
+            if (mPluginManager != null) {
+                mPluginManager.onServiceCreated(stubInfo, targetInfo);
+            } else {
+            }
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
+    }
+
+    public void onServiceDestory(ServiceInfo stubInfo, ServiceInfo targetInfo) {
+        try {
+            if (mPluginManager != null) {
+                mPluginManager.onServiceDestory(stubInfo, targetInfo);
+            } else {
+            }
+        } catch (Exception e) {
+        }
+    }
+
 }
 
 

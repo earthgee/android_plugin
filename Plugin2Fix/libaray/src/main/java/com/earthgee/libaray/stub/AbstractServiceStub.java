@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.Process;
 import android.support.annotation.Nullable;
 
 /**
@@ -26,7 +27,7 @@ public class AbstractServiceStub extends Service{
     @Override
     public void onDestroy() {
         try{
-            mCreator.onDestory();
+            mCreator.onDestroy();
         }catch (Exception e){
         }
         super.onDestroy();
@@ -48,6 +49,7 @@ public class AbstractServiceStub extends Service{
                     if(!ServicesManager.getDefault().hasServiceRunning()){
                         stopSelf(startId);
                         boolean stopService=getApplication().stopService(intent);
+                    }else{
                     }
                 }
             }else{
@@ -56,6 +58,26 @@ public class AbstractServiceStub extends Service{
         }catch (Exception e){
         }
         super.onStart(intent, startId);
+    }
+
+    private void startKillSelf(){
+        if(isRunning){
+            try{
+                new Thread(){
+                    @Override
+                    public void run() {
+                        synchronized (sLock){
+                            try{
+                                sLock.wait();
+                            }catch (Exception e){
+                            }
+                            Process.killProcess(Process.myPid());
+                        }
+                    }
+                }.start();
+            }catch (Exception e){
+            }
+        }
     }
 
     @Nullable

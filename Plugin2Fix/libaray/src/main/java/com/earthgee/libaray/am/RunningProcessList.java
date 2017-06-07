@@ -1,5 +1,6 @@
 package com.earthgee.libaray.am;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
@@ -77,6 +78,23 @@ public class RunningProcessList {
         //key=代理ServiceInfo.name, value=插件的ServiceInfo.name,
         private Map<String, Set<ServiceInfo>> serviceInfosMap = new HashMap<String, Set<ServiceInfo>>(4);
 
+        private void updatePkgs() {
+            ArrayList<String> newList = new ArrayList<String>();
+            for (ActivityInfo info : targetActivityInfos.values()) {
+                newList.add(info.packageName);
+            }
+
+            for (ServiceInfo info : targetServiceInfos.values()) {
+                newList.add(info.packageName);
+            }
+
+            for (ProviderInfo info : targetProviderInfos.values()) {
+                newList.add(info.packageName);
+            }
+            pkgs.clear();
+            pkgs.addAll(newList);
+        }
+
         private void addActivityInfo(String stubActivityName,ActivityInfo info){
             if(!targetActivityInfos.containsKey(info.name)){
                 targetActivityInfos.put(info.name,info);
@@ -94,6 +112,40 @@ public class RunningProcessList {
             }else{
                 list.add(info);
             }
+        }
+
+        private void addServiceInfo(String stubServiceName,ServiceInfo info){
+            if(!targetServiceInfos.containsKey(info.name)){
+                targetServiceInfos.put(info.name,info);
+
+                if(!pkgs.contains(info.packageName)){
+                    pkgs.add(info.packageName);
+                }
+
+                Set<ServiceInfo> list=serviceInfosMap.get(stubServiceName);
+                if(list==null){
+                    list=new TreeSet<>(sComponentInfoComparator);
+                    list.add(info);
+                    serviceInfosMap.put(stubServiceName,list);
+                }else{
+                    list.add(info);
+                }
+            }
+        }
+
+        void removeServiceInfo(String stubServiceName,ServiceInfo targetInfo){
+            targetServiceInfos.remove(targetInfo.name);
+            if(stubServiceName==null){
+                for(Set<ServiceInfo> set:serviceInfosMap.values()){
+                    set.remove(targetInfo);
+                }
+            }else{
+                Set<ServiceInfo> list=serviceInfosMap.get(stubServiceName);
+                if(list!=null){
+                    list.remove(targetInfo);
+                }
+            }
+            updatePkgs();
         }
     }
 
@@ -311,6 +363,39 @@ public class RunningProcessList {
         }
         item.targetProcessName=targetInfo.processName;
         item.addActivityInfo(stubInfo.name,targetInfo);
+    }
+
+    void addServiceInfo(int pid,int uid,ServiceInfo stubInfo,ServiceInfo targetInfo){
+        ProcessItem item=items.get(pid);
+        if(TextUtils.isEmpty(targetInfo.processName)){
+            targetInfo.processName=targetInfo.packageName;
+        }
+        if(item==null){
+            item=new ProcessItem();
+            item.pid=pid;
+            item.uid=uid;
+            items.put(pid,item);
+        }
+        item.stubProcessName=stubInfo.processName;
+        if(!item.pkgs.contains(targetInfo.packageName)){
+            item.pkgs.add(targetInfo.packageName);
+        }
+        item.targetProcessName=targetInfo.processName;
+        item.addServiceInfo(stubInfo.name,targetInfo);
+    }
+
+    void removeServiceInfo(int pid,int uid,ServiceInfo stubInfo,ServiceInfo targetInfo){
+        ProcessItem item=items.get(pid);
+        if(TextUtils.isEmpty(targetInfo.processName)){
+            targetInfo.processName=targetInfo.packageName;
+        }
+        if(item!=null){
+            if(stubInfo!=null){
+                item.removeServiceInfo(stubInfo.name,targetInfo);
+            }else{
+                item.removeServiceInfo(null,targetInfo);
+            }
+        }
     }
 
 }

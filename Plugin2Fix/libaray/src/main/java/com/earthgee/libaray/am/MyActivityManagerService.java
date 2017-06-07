@@ -222,6 +222,17 @@ public class MyActivityManagerService extends BaseActivityManagerService {
         mRunningProcessList.addActivityInfo(callingPid, callingUid, stubInfo, targetInfo);
     }
 
+    @Override
+    public void onServiceCreated(int callingPid, int callingUid, ServiceInfo stubInfo, ServiceInfo targetInfo) {
+        mRunningProcessList.addServiceInfo(callingPid,callingUid,stubInfo,targetInfo);
+    }
+
+    @Override
+    public void onServiceDestory(int callingPid, int callingUid, ServiceInfo stubInfo, ServiceInfo targetInfo) {
+        mRunningProcessList.removeServiceInfo(callingPid, callingUid, stubInfo, targetInfo);
+        runProcessGC();
+    }
+
     private void runProcessGC() {
         if (mHostContext == null) {
             return;

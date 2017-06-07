@@ -92,6 +92,12 @@ public abstract class BaseActivityManagerService {
     public void onActivityCreated(int callingPid, int callingUid, ActivityInfo stubInfo, ActivityInfo targetInfo) {
     }
 
+    public void onServiceCreated(int callingPid, int callingUid, ServiceInfo stubInfo, ServiceInfo targetInfo) {
+    }
+
+    public void onServiceDestory(int callingPid, int callingUid, ServiceInfo stubInfo, ServiceInfo targetInfo) {
+    }
+
     public void onDestory(){
         mRemoteCallbackList.kill();
         mRemoteCallbackList=null;
