@@ -307,11 +307,11 @@ public class MyActivityManagerService extends BaseActivityManagerService {
 //        return new ArrayList<String>(mRunningProcessList.getPackageNameByPid(pid));
 //    }
 //
-//    @Override
-//    public String getProcessNameByPid(int pid) {
-//        //todo
-//        return mRunningProcessList.getTargetProcessNameByPid(pid);
-//    }
+    @Override
+    public String getProcessNameByPid(int pid) {
+        //todo
+        return mRunningProcessList.getTargetProcessNameByPid(pid);
+    }
 
 
     @Override

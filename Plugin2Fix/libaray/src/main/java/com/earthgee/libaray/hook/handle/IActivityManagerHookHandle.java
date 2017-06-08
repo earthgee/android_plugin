@@ -47,6 +47,7 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         sHookedMethodHandlers.put("startService",new startService(mHostContext));
         sHookedMethodHandlers.put("stopService",new stopService(mHostContext));
         sHookedMethodHandlers.put("bindService",new bindService(mHostContext));
+        sHookedMethodHandlers.put("registerReceiver",new registerReceiver(mHostContext));
     }
 
     //todo replace pacakge name
@@ -363,8 +364,57 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         }
     }
 
+    private static class registerReceiver extends HookedMethodHandler{
+
+        public registerReceiver(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.ICE_CREAM_SANDWICH){
+                if(args!=null&&args.length>0){
+                    for(int index=0;index<args.length;index++){
+                        if(args[index] instanceof String){
+                            String callerPackage= (String) args[index];
+                            if(isPackagePlugin(callerPackage)){
+                                args[index]=mHostContext.getPackageName();
+                            }
+                        }
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+    }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

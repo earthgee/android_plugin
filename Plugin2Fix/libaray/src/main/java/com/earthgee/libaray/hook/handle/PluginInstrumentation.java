@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.earthgee.libaray.am.RunningActivities;
 import com.earthgee.libaray.core.Env;
@@ -103,7 +104,13 @@ public class PluginInstrumentation extends Instrumentation{
             super.callApplicationOnCreate(app);
         }
 
-        //todo
+        if(enable){
+            try{
+                Log.d("earthgee2","register static");
+                PluginProcessManager.registerStaticReceiver(app,app.getApplicationInfo(),app.getClassLoader());
+            }catch (Exception e){
+            }
+        }
     }
 
     private void fixBaseContextImplOpsPackage(Context context) throws IllegalAccessException {

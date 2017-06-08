@@ -3,6 +3,7 @@ package com.earthgee.libaray.pm;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
@@ -453,6 +454,32 @@ public class PluginManager implements ServiceConnection{
             }
         } catch (Exception e) {
         }
+    }
+
+    public List<ActivityInfo> getReceivers(String packageName, int flags) throws RemoteException {
+        try {
+            if (mPluginManager != null) {
+                return mPluginManager.getReceivers(packageName, flags);
+            } else {
+            }
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public List<IntentFilter> getReceiverIntentFilter(ActivityInfo info) throws RemoteException {
+        try {
+            if (mPluginManager != null) {
+                return mPluginManager.getReceiverIntentFilter(info);
+            } else {
+            }
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
+        return null;
     }
 
 }

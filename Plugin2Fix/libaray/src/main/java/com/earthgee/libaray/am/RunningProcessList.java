@@ -9,6 +9,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ServiceInfo;
+import android.os.Process;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
@@ -396,6 +397,11 @@ public class RunningProcessList {
                 item.removeServiceInfo(null,targetInfo);
             }
         }
+    }
+
+    String getTargetProcessNameByPid(int pid){
+        ProcessItem item=items.get(pid);
+        return item!=null?item.targetProcessName:null;
     }
 
 }

@@ -3,9 +3,12 @@ package com.earthgee.libaray.core;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.ComponentInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -15,6 +18,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.earthgee.libaray.helper.ActivityThreadCompat;
 import com.earthgee.libaray.helper.CompatibilityInfoCompat;
@@ -285,7 +289,56 @@ PluginProcessManager {
         }
     }
 
+    public static void registerStaticReceiver(Context context, ApplicationInfo pluginApplicationInfo,ClassLoader cl) throws Exception{
+        List<ActivityInfo> infos=PluginManager.getInstance().getReceivers(pluginApplicationInfo.packageName,0);
+        if(infos!=null&&infos.size()>0){
+            CharSequence myPname=null;
+            try{
+                myPname=PluginManager.getInstance().getProcessNameByPid(android.os.Process.myPid());
+            }catch (Exception e){
+            }
+            for(ActivityInfo info:infos){
+                Log.d("earthgee2","processName="+info.processName+",mypname="+myPname);
+                if(TextUtils.equals(info.processName,myPname)){
+                    List<IntentFilter> filters=PluginManager.getInstance().getReceiverIntentFilter(info);
+                    for(IntentFilter filter:filters){
+                        BroadcastReceiver receiver= (BroadcastReceiver) cl.loadClass(info.name).newInstance();
+                        context.registerReceiver(receiver,filter);
+                    }
+                }
+            }
+        }
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

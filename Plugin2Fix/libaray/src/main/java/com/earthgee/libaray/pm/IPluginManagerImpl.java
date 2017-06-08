@@ -511,12 +511,38 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public List<ActivityInfo> getReceivers(String packageName, int flags) throws RemoteException {
-        return null;
+        try{
+            if(packageName!=null){
+                PluginPackageParser parser=mPluginCache.get(packageName);
+                if(parser!=null){
+                    return new ArrayList<>(parser.getReceivers());
+                }
+            }
+        }catch (Exception e){
+            handleException(e);
+        }
+        return new ArrayList<ActivityInfo>(0);
     }
 
     @Override
     public List<IntentFilter> getReceiverIntentFilter(ActivityInfo info) throws RemoteException {
-        return null;
+        try {
+            String pkg = info.packageName;
+            if (pkg != null) {
+                PluginPackageParser parser = mPluginCache.get(info.packageName);
+                if (parser != null) {
+                    List<IntentFilter> filters = parser.getReceiverIntentFilter(info);
+                    if (filters != null && filters.size() > 0) {
+                        return new ArrayList<IntentFilter>(filters);
+                    }
+                }
+            }
+            return new ArrayList<IntentFilter>(0);
+        } catch (Exception e) {
+            RemoteException remoteException = new RemoteException();
+            remoteException.setStackTrace(e.getStackTrace());
+            throw remoteException;
+        }
     }
 
     @Override
