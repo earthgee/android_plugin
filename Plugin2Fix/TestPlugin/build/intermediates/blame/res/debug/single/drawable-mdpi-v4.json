@@ -1,11 +1,11 @@
 [
     {
-        "merged": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\abc_list_focused_holo.9.png",
-        "source": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\drawable-mdpi-v4\\abc_list_focused_holo.9.png"
-    },
-    {
         "merged": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\abc_tab_indicator_mtrl_alpha.9.png",
         "source": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\drawable-mdpi-v4\\abc_tab_indicator_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\abc_list_focused_holo.9.png",
+        "source": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\drawable-mdpi-v4\\abc_list_focused_holo.9.png"
     },
     {
         "merged": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\abc_list_divider_mtrl_alpha.9.png",
@@ -96,16 +96,16 @@
         "source": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\drawable-mdpi-v4\\abc_scrubber_control_off_mtrl_alpha.png"
     },
     {
-        "merged": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\abc_ic_star_half_black_36dp.png",
-        "source": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\drawable-mdpi-v4\\abc_ic_star_half_black_36dp.png"
+        "merged": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\abc_ic_menu_copy_mtrl_am_alpha.png",
+        "source": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\drawable-mdpi-v4\\abc_ic_menu_copy_mtrl_am_alpha.png"
     },
     {
         "merged": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\abc_textfield_search_default_mtrl_alpha.9.png",
         "source": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\drawable-mdpi-v4\\abc_textfield_search_default_mtrl_alpha.9.png"
     },
     {
-        "merged": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\abc_ic_menu_copy_mtrl_am_alpha.png",
-        "source": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\drawable-mdpi-v4\\abc_ic_menu_copy_mtrl_am_alpha.png"
+        "merged": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\abc_ic_star_half_black_36dp.png",
+        "source": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\drawable-mdpi-v4\\abc_ic_star_half_black_36dp.png"
     },
     {
         "merged": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\abc_scrubber_control_to_pressed_mtrl_005.png",

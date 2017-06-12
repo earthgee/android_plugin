@@ -8,6 +8,7 @@ import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.os.Bundle;
@@ -480,6 +481,44 @@ public class PluginManager implements ServiceConnection{
         } catch (Exception e) {
         }
         return null;
+    }
+
+    public ProviderInfo resolveContentProvider(String name, Integer flags) throws RemoteException {
+        try {
+            if (mPluginManager != null && name != null) {
+                return mPluginManager.resolveContentProvider(name, flags);
+            } else {
+            }
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public ProviderInfo selectStubProviderInfo(String name) throws RemoteException {
+        try {
+            if (mPluginManager != null) {
+                return mPluginManager.selectStubProviderInfo(name);
+            } else {
+            }
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public void onProviderCreated(ProviderInfo stubInfo, ProviderInfo targetInfo) throws RemoteException {
+        try {
+            if (mPluginManager != null) {
+                mPluginManager.onProviderCreated(stubInfo, targetInfo);
+            } else {
+            }
+        } catch (RemoteException e) {
+            throw e;
+        } catch (Exception e) {
+        }
     }
 
 }

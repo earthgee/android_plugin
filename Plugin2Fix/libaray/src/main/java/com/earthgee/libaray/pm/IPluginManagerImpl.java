@@ -362,6 +362,20 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public ProviderInfo resolveContentProvider(String name, int flags) throws RemoteException {
+        waitForReadyInner();
+        try{
+            enforcePluginFileExists();
+            for(PluginPackageParser pluginPackageParser:mPluginCache.values()){
+                List<ProviderInfo> providerInfos=pluginPackageParser.getProviders();
+                for(ProviderInfo providerInfo:providerInfos){
+                    if(TextUtils.equals(providerInfo.authority,name)){
+                        return providerInfo;
+                    }
+                }
+            }
+        }catch (Exception e){
+            handleException(e);
+        }
         return null;
     }
 
@@ -655,7 +669,8 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public ProviderInfo selectStubProviderInfo(String name) throws RemoteException {
-        return null;
+        ProviderInfo targetInfo=resolveContentProvider(name,0);
+        return mActivityManagerService.selectStubProviderInfo(Binder.getCallingPid(),Binder.getCallingUid(),targetInfo);
     }
 
     @Override
@@ -732,7 +747,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public void onProviderCreated(ProviderInfo stubInfo, ProviderInfo targetInfo) throws RemoteException {
-
+        mActivityManagerService.onProviderCreated(Binder.getCallingPid(), Binder.getCallingUid(), stubInfo, targetInfo);
     }
 
     @Override

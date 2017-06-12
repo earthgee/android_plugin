@@ -43,6 +43,13 @@ public class RunningProcessList {
         }
     };
 
+    private static Comparator sProviderInfoComparator = new Comparator<ProviderInfo>() {
+        @Override
+        public int compare(ProviderInfo lhs, ProviderInfo rhs) {
+            return sCollator.compare(lhs.authority, rhs.authority);
+        }
+    };
+
     //正在运行的进程item
     private class ProcessItem{
         private String stubProcessName;
@@ -147,6 +154,26 @@ public class RunningProcessList {
                 }
             }
             updatePkgs();
+        }
+
+        private void addProviderInfo(String stubAuthority, ProviderInfo info) {
+            if (!targetProviderInfos.containsKey(info.authority)) {
+                targetProviderInfos.put(info.authority, info);
+
+                if (!pkgs.contains(info.packageName)) {
+                    pkgs.add(info.packageName);
+                }
+
+                //stub map to activity info
+                Set<ProviderInfo> list = providerInfosMap.get(stubAuthority);
+                if (list == null) {
+                    list = new TreeSet<ProviderInfo>(sProviderInfoComparator);
+                    list.add(info);
+                    providerInfosMap.put(stubAuthority, list);
+                } else {
+                    list.add(info);
+                }
+            }
         }
     }
 
@@ -385,6 +412,25 @@ public class RunningProcessList {
         item.addServiceInfo(stubInfo.name,targetInfo);
     }
 
+    void addProviderInfo(int pid,int uid,ProviderInfo stubInfo,ProviderInfo targetInfo){
+        ProcessItem item=items.get(pid);
+        if(TextUtils.isEmpty(targetInfo.processName)){
+            targetInfo.processName=targetInfo.packageName;
+        }
+        if(item==null){
+            item=new ProcessItem();
+            item.pid=pid;
+            item.uid=uid;
+            items.put(pid,item);
+        }
+        item.stubProcessName=stubInfo.processName;
+        if(!item.pkgs.contains(targetInfo.packageName)){
+            item.pkgs.add(targetInfo.packageName);
+        }
+        item.targetProcessName=targetInfo.processName;
+        item.addProviderInfo(stubInfo.authority,targetInfo);
+    }
+
     void removeServiceInfo(int pid,int uid,ServiceInfo stubInfo,ServiceInfo targetInfo){
         ProcessItem item=items.get(pid);
         if(TextUtils.isEmpty(targetInfo.processName)){
@@ -402,6 +448,11 @@ public class RunningProcessList {
     String getTargetProcessNameByPid(int pid){
         ProcessItem item=items.get(pid);
         return item!=null?item.targetProcessName:null;
+    }
+
+    boolean isStubInfoUsed(ProviderInfo stubInfo) {
+        //TODO
+        return false;
     }
 
 }

@@ -205,6 +205,13 @@ public class StaticProcessList {
         return serviceInfos;
     }
 
+    List<ProviderInfo> getProviderInfoForProcessName(String processName) {
+        ProcessItem item = items.get(processName);
+        ArrayList<ProviderInfo> providerInfos = new ArrayList<ProviderInfo>(item.providerInfos.values());
+        Collections.sort(providerInfos, sComponentInfoComparator);
+        return providerInfos;
+    }
+
     List<String> getProcessNames(){
         return new ArrayList<>(items.keySet());
     }

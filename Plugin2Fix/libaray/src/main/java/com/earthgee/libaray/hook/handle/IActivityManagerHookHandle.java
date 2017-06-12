@@ -1,5 +1,6 @@
 package com.earthgee.libaray.hook.handle;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.IServiceConnection;
@@ -8,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ProviderInfo;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import com.earthgee.libaray.PluginPatchManager;
 import com.earthgee.libaray.am.RunningActivities;
 import com.earthgee.libaray.core.Env;
 import com.earthgee.libaray.core.PluginProcessManager;
+import com.earthgee.libaray.helper.ContentProviderHolderCompat;
 import com.earthgee.libaray.hook.BaseHookHandle;
 import com.earthgee.libaray.hook.HookedMethodHandler;
 import com.earthgee.libaray.pm.PluginManager;
@@ -49,6 +52,7 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
         sHookedMethodHandlers.put("stopService",new stopService(mHostContext));
         sHookedMethodHandlers.put("bindService",new bindService(mHostContext));
         sHookedMethodHandlers.put("registerReceiver",new registerReceiver(mHostContext));
+        sHookedMethodHandlers.put("getContentProvider",new getContentProvider(mHostContext));
     }
 
     //todo replace pacakge name
@@ -386,6 +390,73 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
                 }
             }
             return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private static class getContentProvider extends HookedMethodHandler{
+
+        public getContentProvider(Context hostContext) {
+            super(hostContext);
+        }
+
+        private ProviderInfo mStubProvider=null;
+        private ProviderInfo mTargetProvider=null;
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            if(args!=null){
+                final int index=1;
+                if(args.length>index&&args[index] instanceof String){
+                    String name= (String) args[index];
+                    mStubProvider=null;
+                    mTargetProvider=null;
+
+                    //狗屁逻辑
+                    ProviderInfo info=mHostContext.getPackageManager().resolveContentProvider(name,0);
+                    mTargetProvider=PluginManager.getInstance().resolveContentProvider(name,0);
+                    if(mTargetProvider!=null&&info!=null&&TextUtils.equals(mTargetProvider.packageName,info.packageName)){
+                        mStubProvider=PluginManager.getInstance().selectStubProviderInfo(name);
+                        if(mStubProvider!=null){
+                            args[index]=mStubProvider.authority;
+                        }
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
+        }
+
+        @Override
+        protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
+            if(invokeResult!=null){
+                ProviderInfo stubProvider2= (ProviderInfo) FieldUtils.readField(invokeResult,"info");
+                if(mStubProvider!=null&&mTargetProvider!=null&&TextUtils.equals(stubProvider2.authority,mStubProvider.authority)){
+                    Object fromObj=invokeResult;
+                    Object toObj= ContentProviderHolderCompat.newInstance(mTargetProvider);
+                    copyField(fromObj,toObj,"provider");
+
+                    if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.JELLY_BEAN){
+                        copyConnection(fromObj,toObj);
+                    }
+
+                    copyField(fromObj, toObj, "noReleaseNeeded");
+
+                    Object provider=FieldUtils.readField(invokeResult,"provider");
+                    if(provider!=null){
+                        boolean localProvider=FieldUtils.readField(toObj,"provider")==null;
+                        IContentProviderHook invocationHandler=new IContentProviderHook(mHostContext,provider,mStubProvider,mTargetProvider,localProvider);
+                    }
+                }
+            }
+            super.afterInvoke(receiver, method, args, invokeResult);
+        }
+
+        private void copyField(Object fromObj, Object toObj, String fieldName) throws IllegalAccessException {
+            FieldUtils.writeField(toObj, fieldName, FieldUtils.readField(fromObj, fieldName));
+        }
+
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+        private void copyConnection(Object fromObj, Object toObj) throws IllegalAccessException {
+            copyField(fromObj, toObj, "connection");
         }
     }
 

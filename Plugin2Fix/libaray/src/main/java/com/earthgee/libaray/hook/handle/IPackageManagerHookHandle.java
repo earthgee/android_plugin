@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
+import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
 
@@ -32,6 +33,7 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
         sHookedMethodHandlers.put("queryIntentActivities",new queryIntentActivities(mHostContext));
         sHookedMethodHandlers.put("resolveIntent",new resolveIntent(mHostContext));
         sHookedMethodHandlers.put("getActivityInfo",new getActivityInfo(mHostContext));
+        sHookedMethodHandlers.put("resolveContentProvider",new resolveContentProvider(mHostContext));
     }
 
     private class getPackageInfo extends HookedMethodHandler{
@@ -195,6 +197,31 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
                 }
             }
             return super.beforeInvoke(receiver, method, args);
+        }
+    }
+
+    private class resolveContentProvider extends HookedMethodHandler{
+
+        public resolveContentProvider(Context hostContext) {
+            super(hostContext);
+        }
+
+        @Override
+        protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
+            if(args!=null){
+                if(invokeResult==null){
+                    final int index0=0,index1=1;
+                    if(args.length>=2&&args[index0] instanceof String&&args[index1] instanceof Integer){
+                        String name= (String) args[index0];
+                        Integer flags= (Integer) args[index1];
+                        ProviderInfo info=PluginManager.getInstance().resolveContentProvider(name,flags);
+                        if(info!=null){
+                            setFakedResult(info);
+                        }
+                    }
+                }
+            }
+            super.afterInvoke(receiver, method, args, invokeResult);
         }
     }
 

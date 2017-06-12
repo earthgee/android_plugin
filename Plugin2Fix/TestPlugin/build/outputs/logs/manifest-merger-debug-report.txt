@@ -1522,7 +1522,7 @@ ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2
 provider#com.earthgee.libaray.stub.ContentProviderStub$StubP00
 ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:673:9-677:57
 	android:authorities
-		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:675:13-66
+		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:675:13-68
 	android:label
 		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:677:13-54
 	android:exported
@@ -2062,7 +2062,7 @@ ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2
 provider#com.earthgee.libaray.stub.ContentProviderStub$StubP01
 ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:1213:9-1218:44
 	android:authorities
-		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:1215:13-66
+		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:1215:13-68
 	android:process
 		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:1218:13-41
 	android:label
@@ -2604,7 +2604,7 @@ ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2
 provider#com.earthgee.libaray.stub.ContentProviderStub$StubP02
 ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:1754:9-1759:44
 	android:authorities
-		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:1756:13-66
+		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:1756:13-68
 	android:process
 		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:1759:13-41
 	android:label
@@ -3146,7 +3146,7 @@ ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2
 provider#com.earthgee.libaray.stub.ContentProviderStub$StubP03
 ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:2295:9-2300:44
 	android:authorities
-		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:2297:13-66
+		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:2297:13-68
 	android:process
 		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:2300:13-41
 	android:label
@@ -3688,7 +3688,7 @@ ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2
 provider#com.earthgee.libaray.stub.ContentProviderStub$StubP04
 ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:2836:9-2841:44
 	android:authorities
-		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:2838:13-66
+		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:2838:13-68
 	android:process
 		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:2841:13-41
 	android:label
@@ -4230,7 +4230,7 @@ ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2
 provider#com.earthgee.libaray.stub.ContentProviderStub$StubP05
 ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:3377:9-3382:44
 	android:authorities
-		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:3379:13-66
+		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:3379:13-68
 	android:process
 		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:3382:13-41
 	android:label
@@ -4772,7 +4772,7 @@ ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2
 provider#com.earthgee.libaray.stub.ContentProviderStub$StubP06
 ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:3918:9-3923:44
 	android:authorities
-		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:3920:13-66
+		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:3920:13-68
 	android:process
 		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:3923:13-41
 	android:label
@@ -5314,7 +5314,7 @@ ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2
 provider#com.earthgee.libaray.stub.ContentProviderStub$StubP07
 ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:4463:9-4468:44
 	android:authorities
-		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:4465:13-66
+		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:4465:13-68
 	android:process
 		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:4468:13-41
 	android:label
@@ -5856,7 +5856,7 @@ ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2
 provider#com.earthgee.libaray.stub.ContentProviderStub$StubP08
 ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:5004:9-5009:44
 	android:authorities
-		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:5006:13-66
+		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:5006:13-68
 	android:process
 		ADDED from [Plugin2Fix:libaray:unspecified] C:\android_wp\android_plugin\Plugin2Fix\TestPlugin\build\intermediates\exploded-aar\Plugin2Fix\libaray\unspecified\AndroidManifest.xml:5009:13-41
 	android:label
