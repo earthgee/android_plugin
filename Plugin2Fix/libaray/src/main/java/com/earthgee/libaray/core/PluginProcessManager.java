@@ -298,7 +298,6 @@ PluginProcessManager {
             }catch (Exception e){
             }
             for(ActivityInfo info:infos){
-                Log.d("earthgee2","processName="+info.processName+",mypname="+myPname);
                 if(TextUtils.equals(info.processName,myPname)){
                     List<IntentFilter> filters=PluginManager.getInstance().getReceiverIntentFilter(info);
                     for(IntentFilter filter:filters){
