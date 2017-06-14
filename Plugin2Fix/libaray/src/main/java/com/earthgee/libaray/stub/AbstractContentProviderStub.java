@@ -15,6 +15,7 @@ import android.os.Looper;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.earthgee.libaray.core.Env;
 import com.earthgee.libaray.core.PluginProcessManager;
@@ -98,13 +99,14 @@ public class AbstractContentProviderStub extends ContentProvider{
 
     @Override
     public boolean onCreate() {
+        Log.d("earthgee1","stub content provider onCreate");
         mContentResolver=getContext().getContentResolver();
         return true;
     }
 
     @Nullable
     @Override
-    public Cursor query(Uri uri, String[] strings, String s, String[] strings1, String s1) {
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         String targetAuthority=uri.getQueryParameter(Env.EXTRA_TARGET_AUTHORITY);
         if(!TextUtils.isEmpty(targetAuthority)&&!TextUtils.equals(targetAuthority,uri.getAuthority())){
             ContentProviderClient client=getContentProviderClient(targetAuthority);

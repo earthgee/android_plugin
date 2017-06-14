@@ -11,7 +11,7 @@
                     "endOffset": 119
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
                     "position": {
                         "startLine": 2,
                         "startColumn": 4,
@@ -26,17 +26,17 @@
                     "startLine": 3,
                     "startColumn": 4,
                     "startOffset": 124,
-                    "endColumn": 68,
-                    "endOffset": 188
+                    "endColumn": 69,
+                    "endOffset": 189
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
                     "position": {
                         "startLine": 3,
                         "startColumn": 4,
                         "startOffset": 124,
-                        "endColumn": 68,
-                        "endOffset": 188
+                        "endColumn": 69,
+                        "endOffset": 189
                     }
                 }
             },
@@ -44,18 +44,18 @@
                 "to": {
                     "startLine": 4,
                     "startColumn": 4,
-                    "startOffset": 193,
-                    "endColumn": 69,
-                    "endOffset": 258
+                    "startOffset": 194,
+                    "endColumn": 73,
+                    "endOffset": 263
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
                     "position": {
                         "startLine": 4,
                         "startColumn": 4,
-                        "startOffset": 193,
-                        "endColumn": 69,
-                        "endOffset": 258
+                        "startOffset": 194,
+                        "endColumn": 73,
+                        "endOffset": 263
                     }
                 }
             },
@@ -63,18 +63,18 @@
                 "to": {
                     "startLine": 5,
                     "startColumn": 4,
-                    "startOffset": 263,
-                    "endColumn": 73,
-                    "endOffset": 332
+                    "startOffset": 268,
+                    "endColumn": 75,
+                    "endOffset": 339
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
                     "position": {
                         "startLine": 5,
                         "startColumn": 4,
-                        "startOffset": 263,
-                        "endColumn": 73,
-                        "endOffset": 332
+                        "startOffset": 268,
+                        "endColumn": 75,
+                        "endOffset": 339
                     }
                 }
             },
@@ -82,18 +82,18 @@
                 "to": {
                     "startLine": 6,
                     "startColumn": 4,
-                    "startOffset": 337,
-                    "endColumn": 75,
-                    "endOffset": 408
+                    "startOffset": 344,
+                    "endColumn": 58,
+                    "endOffset": 398
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
                     "position": {
                         "startLine": 6,
                         "startColumn": 4,
-                        "startOffset": 337,
-                        "endColumn": 75,
-                        "endOffset": 408
+                        "startOffset": 344,
+                        "endColumn": 58,
+                        "endOffset": 398
                     }
                 }
             },
@@ -101,18 +101,18 @@
                 "to": {
                     "startLine": 7,
                     "startColumn": 4,
-                    "startOffset": 413,
-                    "endColumn": 58,
-                    "endOffset": 467
+                    "startOffset": 403,
+                    "endColumn": 70,
+                    "endOffset": 469
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
                     "position": {
                         "startLine": 7,
                         "startColumn": 4,
-                        "startOffset": 413,
-                        "endColumn": 58,
-                        "endOffset": 467
+                        "startOffset": 403,
+                        "endColumn": 70,
+                        "endOffset": 469
                     }
                 }
             },
@@ -120,18 +120,18 @@
                 "to": {
                     "startLine": 8,
                     "startColumn": 4,
-                    "startOffset": 472,
-                    "endColumn": 70,
-                    "endOffset": 538
+                    "startOffset": 474,
+                    "endColumn": 67,
+                    "endOffset": 537
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
                     "position": {
                         "startLine": 8,
                         "startColumn": 4,
-                        "startOffset": 472,
-                        "endColumn": 70,
-                        "endOffset": 538
+                        "startOffset": 474,
+                        "endColumn": 67,
+                        "endOffset": 537
                     }
                 }
             },
@@ -139,28 +139,9 @@
                 "to": {
                     "startLine": 9,
                     "startColumn": 4,
-                    "startOffset": 543,
-                    "endColumn": 67,
-                    "endOffset": 606
-                },
-                "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
-                    "position": {
-                        "startLine": 9,
-                        "startColumn": 4,
-                        "startOffset": 543,
-                        "endColumn": 67,
-                        "endOffset": 606
-                    }
-                }
-            },
-            {
-                "to": {
-                    "startLine": 10,
-                    "startColumn": 4,
-                    "startOffset": 611,
+                    "startOffset": 542,
                     "endColumn": 69,
-                    "endOffset": 676
+                    "endOffset": 607
                 },
                 "from": {
                     "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\design\\23.1.1\\res\\values-sw600dp\\values-sw600dp.xml",
@@ -175,11 +156,11 @@
             },
             {
                 "to": {
-                    "startLine": 11,
+                    "startLine": 10,
                     "startColumn": 4,
-                    "startOffset": 681,
+                    "startOffset": 612,
                     "endColumn": 70,
-                    "endOffset": 747
+                    "endOffset": 678
                 },
                 "from": {
                     "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\design\\23.1.1\\res\\values-sw600dp\\values-sw600dp.xml",
@@ -194,11 +175,11 @@
             },
             {
                 "to": {
-                    "startLine": 12,
+                    "startLine": 11,
                     "startColumn": 4,
-                    "startOffset": 752,
+                    "startOffset": 683,
                     "endColumn": 71,
-                    "endOffset": 819
+                    "endOffset": 750
                 },
                 "from": {
                     "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\design\\23.1.1\\res\\values-sw600dp\\values-sw600dp.xml",
@@ -213,11 +194,11 @@
             },
             {
                 "to": {
-                    "startLine": 13,
+                    "startLine": 12,
                     "startColumn": 4,
-                    "startOffset": 824,
+                    "startOffset": 755,
                     "endColumn": 57,
-                    "endOffset": 877
+                    "endOffset": 808
                 },
                 "from": {
                     "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\design\\23.1.1\\res\\values-sw600dp\\values-sw600dp.xml",
@@ -232,11 +213,11 @@
             },
             {
                 "to": {
-                    "startLine": 14,
+                    "startLine": 13,
                     "startColumn": 4,
-                    "startOffset": 882,
+                    "startOffset": 813,
                     "endColumn": 57,
-                    "endOffset": 935
+                    "endOffset": 866
                 },
                 "from": {
                     "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\design\\23.1.1\\res\\values-sw600dp\\values-sw600dp.xml",
@@ -251,11 +232,11 @@
             },
             {
                 "to": {
-                    "startLine": 15,
+                    "startLine": 14,
                     "startColumn": 4,
-                    "startOffset": 940,
+                    "startOffset": 871,
                     "endColumn": 105,
-                    "endOffset": 1041
+                    "endOffset": 972
                 },
                 "from": {
                     "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\design\\23.1.1\\res\\values-sw600dp\\values-sw600dp.xml",
@@ -270,11 +251,11 @@
             },
             {
                 "to": {
-                    "startLine": 16,
+                    "startLine": 15,
                     "startColumn": 4,
-                    "startOffset": 1046,
+                    "startOffset": 977,
                     "endColumn": 63,
-                    "endOffset": 1105
+                    "endOffset": 1036
                 },
                 "from": {
                     "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\design\\23.1.1\\res\\values-sw600dp\\values-sw600dp.xml",
@@ -289,11 +270,30 @@
             },
             {
                 "to": {
+                    "startLine": 16,
+                    "startColumn": 4,
+                    "startOffset": 1041,
+                    "endColumn": 54,
+                    "endOffset": 1091
+                },
+                "from": {
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
+                    "position": {
+                        "startLine": 9,
+                        "startColumn": 4,
+                        "startOffset": 542,
+                        "endColumn": 54,
+                        "endOffset": 592
+                    }
+                }
+            },
+            {
+                "to": {
                     "startLine": 17,
                     "startColumn": 4,
-                    "startOffset": 1110,
+                    "startOffset": 1096,
                     "endColumn": 62,
-                    "endOffset": 1168
+                    "endOffset": 1154
                 },
                 "from": {
                     "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\design\\23.1.1\\res\\values-sw600dp\\values-sw600dp.xml",
@@ -310,10 +310,10 @@
                 "to": {
                     "startLine": 18,
                     "startColumn": 4,
-                    "startOffset": 1173,
+                    "startOffset": 1159,
                     "endLine": 21,
                     "endColumn": 12,
-                    "endOffset": 1350
+                    "endOffset": 1336
                 },
                 "from": {
                     "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\design\\23.1.1\\res\\values-sw600dp\\values-sw600dp.xml",

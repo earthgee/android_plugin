@@ -409,6 +409,19 @@ public class IPluginManagerImpl extends IPluginManager.Stub{
 
     @Override
     public ApplicationInfo getApplicationInfo(String packageName, int flags) throws RemoteException {
+        waitForReadyInner();
+        try {
+            if (TextUtils.equals(packageName, mContext.getPackageName())) {
+                return null;
+            }
+            PluginPackageParser parser = mPluginCache.get(packageName);
+            if (parser != null) {
+                return parser.getApplicationInfo(flags);
+            }
+        } catch (Exception e) {
+            handleException(e);
+        }
+
         return null;
     }
 

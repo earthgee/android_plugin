@@ -7,11 +7,7 @@
     <uses-sdk
         android:minSdkVersion="9"
         android:targetSdkVersion="23" />
-
-    <meta-data
-        android:name="android.support.VERSION"
-        android:value="25.3.0" />
- <!-- 预申请很多权限。也是为了插件使用 -->
+    <!-- 预申请很多权限。也是为了插件使用 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />

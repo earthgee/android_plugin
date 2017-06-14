@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
@@ -34,6 +35,7 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
         sHookedMethodHandlers.put("resolveIntent",new resolveIntent(mHostContext));
         sHookedMethodHandlers.put("getActivityInfo",new getActivityInfo(mHostContext));
         sHookedMethodHandlers.put("resolveContentProvider",new resolveContentProvider(mHostContext));
+        sHookedMethodHandlers.put("getApplicationInfo",new getApplicationInfo(mHostContext));
     }
 
     private class getPackageInfo extends HookedMethodHandler{
@@ -222,6 +224,33 @@ public class IPackageManagerHookHandle extends BaseHookHandle{
                 }
             }
             super.afterInvoke(receiver, method, args, invokeResult);
+        }
+    }
+
+    private class getApplicationInfo extends HookedMethodHandler {
+        public getApplicationInfo(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            //API 2.3, 4.01, 4.0.3_r1
+        /* public ApplicationInfo getApplicationInfo(String packageName, int flags) throws RemoteException;*/
+            //API 4.1.1_r1, 4.2_r1, 4.3_r1, 4.4_r1, 5.0.2_r1
+        /* public ApplicationInfo getApplicationInfo(String packageName, int flags, int userId) throws RemoteException;*/
+            if (args != null) {
+                final int index0 = 0, index1 = 1;
+                if (args.length >= 2 && args[index0] instanceof String && args[index1] instanceof Integer) {
+                    String packageName = (String) args[index0];
+                    int flags = (Integer) args[index1];
+                    ApplicationInfo info = PluginManager.getInstance().getApplicationInfo(packageName, flags);
+                    if (info != null) {
+                        setFakedResult(info);
+                        return true;
+                    }
+                }
+            }
+            return super.beforeInvoke(receiver, method, args);
         }
     }
 

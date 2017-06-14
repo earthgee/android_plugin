@@ -33,7 +33,7 @@
                     "endOffset": 467
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-v14\\values-v14.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-v14\\values-v14.xml",
                     "position": {
                         "startLine": 2,
                         "startColumn": 4,
@@ -53,7 +53,7 @@
                     "endOffset": 538
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-v14\\values-v14.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-v14\\values-v14.xml",
                     "position": {
                         "startLine": 7,
                         "startColumn": 4,
@@ -72,7 +72,7 @@
                     "endOffset": 621
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-v14\\values-v14.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-v14\\values-v14.xml",
                     "position": {
                         "startLine": 8,
                         "startColumn": 4,
@@ -92,7 +92,7 @@
                     "endOffset": 1031
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-v14\\values-v14.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-v14\\values-v14.xml",
                     "position": {
                         "startLine": 9,
                         "startColumn": 4,
@@ -113,7 +113,7 @@
                     "endOffset": 1453
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-v14\\values-v14.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-v14\\values-v14.xml",
                     "position": {
                         "startLine": 15,
                         "startColumn": 4,
@@ -133,7 +133,7 @@
                     "endOffset": 1573
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-v14\\values-v14.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-v14\\values-v14.xml",
                     "position": {
                         "startLine": 21,
                         "startColumn": 4,
@@ -148,17 +148,17 @@
                     "startLine": 25,
                     "startColumn": 4,
                     "startOffset": 1578,
-                    "endColumn": 131,
-                    "endOffset": 1705
+                    "endColumn": 62,
+                    "endOffset": 1636
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-v14\\values-v14.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-v14\\values-v14.xml",
                     "position": {
                         "startLine": 22,
                         "startColumn": 4,
                         "startOffset": 1437,
-                        "endColumn": 131,
-                        "endOffset": 1564
+                        "endColumn": 62,
+                        "endOffset": 1495
                     }
                 }
             },
@@ -166,96 +166,58 @@
                 "to": {
                     "startLine": 26,
                     "startColumn": 4,
-                    "startOffset": 1710,
-                    "endColumn": 119,
-                    "endOffset": 1825
+                    "startOffset": 1641,
+                    "endLine": 28,
+                    "endColumn": 12,
+                    "endOffset": 1790
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-v14\\values-v14.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-v14\\values-v14.xml",
                     "position": {
                         "startLine": 23,
                         "startColumn": 4,
-                        "startOffset": 1569,
-                        "endColumn": 119,
-                        "endOffset": 1684
-                    }
-                }
-            },
-            {
-                "to": {
-                    "startLine": 27,
-                    "startColumn": 4,
-                    "startOffset": 1830,
-                    "endColumn": 62,
-                    "endOffset": 1888
-                },
-                "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-v14\\values-v14.xml",
-                    "position": {
-                        "startLine": 24,
-                        "startColumn": 4,
-                        "startOffset": 1689,
-                        "endColumn": 62,
-                        "endOffset": 1747
-                    }
-                }
-            },
-            {
-                "to": {
-                    "startLine": 28,
-                    "startColumn": 4,
-                    "startOffset": 1893,
-                    "endLine": 30,
-                    "endColumn": 12,
-                    "endOffset": 2042
-                },
-                "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-v14\\values-v14.xml",
-                    "position": {
-                        "startLine": 25,
-                        "startColumn": 4,
-                        "startOffset": 1752,
-                        "endLine": 27,
+                        "startOffset": 1500,
+                        "endLine": 25,
                         "endColumn": 12,
-                        "endOffset": 1901
+                        "endOffset": 1649
                     }
                 }
             },
             {
                 "to": {
-                    "startLine": 31,
+                    "startLine": 29,
                     "startColumn": 4,
-                    "startOffset": 2047,
+                    "startOffset": 1795,
                     "endColumn": 62,
-                    "endOffset": 2105
+                    "endOffset": 1853
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-v14\\values-v14.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-v14\\values-v14.xml",
                     "position": {
-                        "startLine": 28,
+                        "startLine": 26,
                         "startColumn": 4,
-                        "startOffset": 1906,
+                        "startOffset": 1654,
                         "endColumn": 62,
-                        "endOffset": 1964
+                        "endOffset": 1712
                     }
                 }
             },
             {
                 "to": {
-                    "startLine": 32,
+                    "startLine": 30,
                     "startColumn": 4,
-                    "startOffset": 2110,
+                    "startOffset": 1858,
                     "endColumn": 131,
-                    "endOffset": 2237
+                    "endOffset": 1985
                 },
                 "from": {
-                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\25.3.0\\res\\values-v14\\values-v14.xml",
+                    "file": "C:\\android_wp\\android_plugin\\Plugin2Fix\\TestPlugin\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\values-v14\\values-v14.xml",
                     "position": {
-                        "startLine": 29,
+                        "startLine": 27,
                         "startColumn": 4,
-                        "startOffset": 1969,
+                        "startOffset": 1717,
                         "endColumn": 131,
-                        "endOffset": 2096
+                        "endOffset": 1844
                     }
                 }
             }

@@ -38,13 +38,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.IntUnaryOperator;
 
 /**
  * Created by zhaoruixuan on 2017/5/26.
  */
-public class
-PluginProcessManager {
+public class PluginProcessManager {
 
     private static Map<String, ClassLoader> sPluginClassLoaderCache = new WeakHashMap<>();
     private static Object sGetCurrentProcessNameLock = new Object();

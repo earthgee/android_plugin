@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
@@ -519,6 +520,18 @@ public class PluginManager implements ServiceConnection{
             throw e;
         } catch (Exception e) {
         }
+    }
+
+    public ApplicationInfo getApplicationInfo(String packageName, int flags) throws RemoteException {
+        try {
+            if (mPluginManager != null && packageName != null) {
+                return mPluginManager.getApplicationInfo(packageName, flags);
+            } else {
+            }
+        } catch (RemoteException e) {
+        } catch (Exception e) {
+        }
+        return null;
     }
 
 }

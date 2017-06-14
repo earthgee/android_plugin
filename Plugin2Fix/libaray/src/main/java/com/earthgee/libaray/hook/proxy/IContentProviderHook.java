@@ -26,18 +26,16 @@ import android.content.Context;
 import android.content.pm.ProviderInfo;
 
 import com.earthgee.libaray.hook.BaseHookHandle;
+import com.earthgee.libaray.hook.handle.IContentProviderInvokeHandle;
 
 
 /**
  * Created by Andy Zhang(zhangyong232@gmail.com) on 2015/3/6.
  */
 public class IContentProviderHook extends ProxyHook {
-
-
     private final ProviderInfo mStubProvider;
     private final ProviderInfo mTargetProvider;
     private final boolean mLocalProvider;
-
 
     public IContentProviderHook(Context context, Object oldObj, ProviderInfo stubProvider, ProviderInfo targetProvider, boolean localProvider) {
         super(context);
@@ -46,7 +44,6 @@ public class IContentProviderHook extends ProxyHook {
         mTargetProvider = targetProvider;
         mLocalProvider = localProvider;
         mHookHandles = createHookHandle();
-
     }
 
     @Override
