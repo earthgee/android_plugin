@@ -493,7 +493,17 @@ public class IActivityManagerHookHandle extends BaseHookHandle{
                     copyField(fromObj, toObj, "noReleaseNeeded");
                     Object provider = FieldUtils.readField(invokeResult, "provider");
                     if(provider!=null){
-                        //todo
+                        boolean localProvider=FieldUtils.readField(toObj,"provider")==null;
+                        IContentProviderHook invocationHandler=new IContentProviderHook
+                                (mHostContext,provider,mStubProvider,mTargetProvider,localProvider);
+                        invocationHandler.setEnable(true);
+                        Class<?> clazz=provider.getClass();
+                        List<Class<?>> interfaces=Utils.getAllInterfaces(clazz);
+                        Class[] ifs=interfaces!=null&&interfaces.size()>0?
+                                interfaces.toArray(new Class[interfaces.size()]):new Class[0];
+                        Object proxyprovider=MyProxy.newProxyInstance(clazz.getClassLoader(),ifs,invocationHandler);
+                        FieldUtils.writeField(invokeResult,"provider",proxyprovider);
+                        FieldUtils.writeField(toObj,"provider",proxyprovider);
                     }
                     setFakedResult(toObj);
                 }

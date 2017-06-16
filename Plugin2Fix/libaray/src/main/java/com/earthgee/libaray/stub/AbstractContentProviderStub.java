@@ -110,6 +110,7 @@ public class AbstractContentProviderStub extends ContentProvider{
         String targetAuthority=uri.getQueryParameter(Env.EXTRA_TARGET_AUTHORITY);
         if(!TextUtils.isEmpty(targetAuthority)&&!TextUtils.equals(targetAuthority,uri.getAuthority())){
             ContentProviderClient client=getContentProviderClient(targetAuthority);
+
         }
         return null;
     }
