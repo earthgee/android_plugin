@@ -10,7 +10,7 @@ android组件化，插件化，热发布学习
 此插件参考https://github.com/DroidPluginTeam/DroidPlugin  
 无侵入式框架，实现为对系统进行hook来实现插件的运行  
 1.activity插件化:对ActivtyManagerProxy startActivity进行hook，将intent target信息替换为stub占坑的activity信息，在ActiivtyThread处理启动信息时再替换回来   
-2.service插件化:对startService进行hook，导致实际启动的是stub service，stub service每进程提供一个占坑，在其中进行动态分发(进程内进程间逻辑一致)
-3.broadcast receiver插件化:hook registerReceiver,欺骗系统使得插件注册的广播系统认为host注册，对于插件中静态广播,在插件进程application onCreate中将静态广播全部转变为动态广播
+2.service插件化:对startService进行hook，导致实际启动的是stub service，stub service每进程提供一个占坑，在其中进行动态分发(进程内进程间逻辑一致)  
+3.broadcast receiver插件化:hook registerReceiver,欺骗系统使得插件注册的广播系统认为host注册，对于插件中静态广播,在插件进程application onCreate中将静态广播全部转变为动态广播  
 4.content provider:hook getContentProvider,分两种情况:  
 
