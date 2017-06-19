@@ -13,4 +13,6 @@ android组件化，插件化，热发布学习
 2.service插件化:对startService进行hook，导致实际启动的是stub service，stub service每进程提供一个占坑，在其中进行动态分发(进程内进程间逻辑一致)  
 3.broadcast receiver插件化:hook registerReceiver,欺骗系统使得插件注册的广播系统认为host注册，对于插件中静态广播,在插件进程application onCreate中将静态广播全部转变为动态广播  
 4.content provider:hook getContentProvider,分两种情况:  
+  (1)进程内直接启动content provider
+  (2)进程间先启动stub content provider，在其中做代理分发，在新启动的进程中new target content provider
 
