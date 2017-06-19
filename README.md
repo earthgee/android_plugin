@@ -8,6 +8,9 @@ android组件化，插件化，热发布学习
 
 ## plugin2  
 此插件参考https://github.com/DroidPluginTeam/DroidPlugin  
-原理:原理较为复杂,大致分为几部分  
-1.binder hook.通过反射获取到系统service binder的proxy,并进行动态代理,拦截关键方法使得插件可以使用系统服务  
-2.通过一个service来加载已经安装到host内部的插件并管理application信息
+无侵入式框架，实现为对系统进行hook来实现插件的运行  
+1.activity插件化:对ActivtyManagerProxy startActivity进行hook，将intent target信息替换为stub占坑的activity信息，在ActiivtyThread处理启动信息时再替换回来
+2.service插件化:对startService进行hook，导致实际启动的是stub service，stub service每进程提供一个占坑，在其中进行动态分发(进程内进程间逻辑一致)
+3.broadcast receiver插件化:hook registerReceiver,欺骗系统使得插件注册的广播系统认为host注册，对于插件中静态广播,在插件进程application onCreate中将静态广播全部转变为动态广播
+4.content provider:hook getContentProvider,分两种情况:  
+
