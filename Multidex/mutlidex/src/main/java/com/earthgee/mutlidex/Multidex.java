@@ -3,11 +3,16 @@ package com.earthgee.mutlidex;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -59,6 +64,9 @@ public class Multidex {
                 File dexDir=getDexDir(context,applicationInfo);
                 Log.d("earthgee1","new dexdir="+dexDir.getAbsolutePath());
                 List<File> files=MultiDexExtractor.load(context,applicationInfo,dexDir,false);
+                if(checkValidZipFiles(files)){
+                    installSecondaryDexes(loader,dexDir,files);
+                }
             }
         }catch (Exception e){
 
@@ -117,4 +125,81 @@ public class Multidex {
         //...
     }
 
+    private static void installSecondaryDexes(ClassLoader loader,File dexDir,List<File> files) throws Exception{
+        if(!files.isEmpty()){
+            if(Build.VERSION.SDK_INT>=19){
+                V19.install(loader,files,dexDir);
+            }else if(Build.VERSION.SDK_INT>=14){
+                V14.install(loader,files,dexDir);
+            }else{
+                V4.install(loader,files);
+            }
+        }
+    }
+
+    private static boolean checkValidZipFiles(List<File> files){
+        for(File file:files){
+            if(!MultiDexExtractor.verifyZipFile(file)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static Field findField(Object instance,String name) throws NoSuchFieldException{
+        for(Class<?> clazz=instance.getClass();clazz!=null;clazz=clazz.getSuperclass()){
+            try{
+                Field field=clazz.getDeclaredField(name);
+
+                if(!field.isAccessible()){
+                    field.setAccessible(true);
+                }
+
+                return field;
+            }catch (NoSuchFieldException e){
+            }
+        }
+
+        throw new NoSuchFieldException("Field "+name+" not found in "+instance.getClass());
+    }
+
+    private static Method findMethod(Object instance,String name,Class<?>... parameterTypes) throws NoSuchMethodException{
+        for(Class<?> clazz=instance.getClass();clazz!=null;clazz=clazz.getSuperclass()){
+            try{
+                Method method=clazz.getDeclaredMethod(name,parameterTypes);
+
+                if(!method.isAccessible()){
+                    method.setAccessible(true);
+                }
+                return method;
+            }catch (NoSuchMethodException e){
+            }
+        }
+
+        throw new NoSuchMethodException("Method "+name+" with parameters "+
+                Arrays.asList(parameterTypes)+" not found in "+instance.getClass());
+    }
+
+    private static final class V19{
+        private static void install(ClassLoader loader,List<File> additionalClassPathEntries,File optimizedDirectory) throws Exception{
+                        
+        }
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
