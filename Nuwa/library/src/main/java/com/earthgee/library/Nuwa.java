@@ -11,6 +11,9 @@ import java.io.IOException;
 public class Nuwa {
 
     private static final String DEX_DIR="nuwa";
+    private static final String HACK_DEX="hack.apk";
+
+    private static final String DEX_OPT_DIR="nuwaopt";
 
     public static void init(Context context){
         File dexDir=new File(context.getFilesDir(),DEX_DIR);
@@ -18,10 +21,43 @@ public class Nuwa {
 
         String dexPath=null;
         try{
-
+            dexPath=AssetUtils.copyAsset(context,HACK_DEX,dexDir);
         }catch (IOException e){
-            
+        }
+
+        loadPatch(context,dexPath);
+    }
+
+    public static void loadPatch(Context context,String dexPath){
+        if(context==null){
+            return;
+        }
+
+        if(!new File(dexPath).exists()){
+            return;
+        }
+
+        File dexOptDir=new File(context.getFilesDir(),DEX_OPT_DIR);
+        dexOptDir.mkdir();
+        try{
+            DexUtils.injectDexAtFirst(dexPath,dexOptDir.getAbsolutePath());
+        }catch (Exception e){
         }
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
