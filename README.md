@@ -16,3 +16,7 @@ android组件化，插件化，热发布学习
   (1)进程内直接启动content provider
   (2)进程间先启动stub content provider，在其中做代理分发，在新启动的进程中new target content provider
 
+## Multidex  
+google 5.0以下使用非ART运行时65536问题分dex解决方案，Multidex主要是合包时的一个阶段.  
+打包时分成classesX.dex,运行时只load第一个dex,在application attachBaseContext时将apk中的其他dex包解析出来,PathClassLoader-->dexPathList-->dexElements数组中去,这样后续类都可顺利加载.  
+此框架加在这里是因为一类热修复使用此类似特性实现
