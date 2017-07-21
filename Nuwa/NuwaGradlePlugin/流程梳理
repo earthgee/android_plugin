@@ -1,0 +1,38 @@
+【1】正常打包阶段（注入字节码）:
+1.nuwa中自定义配置
+对于每一个变体创建不同的任务(作用都是一样的)
+2.创建出nuwa/{variant.name}(后面mapping.txt和hash.txt做准备)
+3.执行nuwaPrepareClosure(拿到application加入excludeClass中,创建hashFile)
+4.走到一个分支
+（1）没开启multidex的在打包流程中会有一个predex 
+	会将所有库工程和第三方文件打包并执行preDexTask
+	而dexTask的输入文件是class文件
+	在这两个任务前各插一个任务:
+	nuwaJarBeforePreDex{variant.name} 对classes.jar进行注入Hack类
+	nuwaClassBeforeDex{variant.name} 对class文件进行注入Hack类
+	执行copyMappingClosure copy proguard的mapping文件
+
+	这种逻辑执行的顺序是nuwaJarBeforePreDex-->PreDex-->nuwaClassBeforeDex-->Dex
+（2）开启multidex的没有predex
+	在proguardtask和dextask之间插入nuwaJarBeforeDex{variant.name}
+	对所有jar包进行注入Hack类
+	闭包的执行顺序和前一个任务分支一致
+
+	这种逻辑执行的顺序是Proguard-->nuwaJarBeforeDex-->Dex
+
+执行此流程后，在output中可得到mapping和hash
+
+进行修改后，执行nuwaQihooDebugPatch任务,进入第二个阶段
+
+【2】patch阶段
+1.指定NuwaDir目录
+2.从脚本的配置来看patch执行的任务是
+(1) nuwaJarBeforePreDex-->PreDex-->nuwaClassBeforeDex-->nuwaQihooDebugPatch
+(2) proguard-->nuwaJarBeforeDex-->nuwaQihooDebugPatch
+3.整个流程中和【1】中有区别的地方是:
+	proguard应用的mapping文件还是上一次的
+	hash被取出来用(判断两次文件是否一致用来决定是否加在patch里)
+	在注入字节码之后会判断是否需要patch,最终所有需要patch的问价都再patch_dir中
+4.最终执行patch任务
+	使用build-tools的dx打出patch.jar包
+5.patch包最终会被nuwa加载,修复成功
