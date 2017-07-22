@@ -20,3 +20,7 @@ android组件化，插件化，热发布学习
 google 5.0以下使用非ART运行时65536问题分dex解决方案，Multidex主要是合包时的一个阶段.  
 打包时分成classesX.dex,运行时只load第一个dex,在application attachBaseContext时将apk中的其他dex包解析出来,PathClassLoader-->dexPathList-->dexElements数组中去,这样后续类都可顺利加载.  
 此框架加在这里是因为一类热修复使用此类似特性实现
+
+## nuwa  
+手q空间提出的热修复方案，核心思想和multidex类似，将补丁打为一个dex包插到pathclassloader的dex数组最前面，利用findclass先拿到先用的原则，实现热修复  
+但此方案引发的问题是有CLASS_ISPREVERIFIED标记的类在用另一个dex里的类时会报错，这时需要防止这些类打上CLASS_ISPREVERIFIED标记,采用gradle插件的形式，为这些类提前注入另一个dex中类的内容，打patch包时采用hash来diff，实现增量patch
