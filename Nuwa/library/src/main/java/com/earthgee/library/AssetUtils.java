@@ -19,7 +19,7 @@ public class AssetUtils {
         if(!outFile.exists()){
             AssetManager assetManager=context.getAssets();
             InputStream in=assetManager.open(assetName);
-            OutputStream out=new FileOutputStream(assetName);
+            OutputStream out=new FileOutputStream(outFile);
             copyFile(in,out);
             in.close();
             out.close();
