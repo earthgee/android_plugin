@@ -1,6 +1,7 @@
 package com.earthgee.corelibrary.internal;
 
 import android.app.Application;
+import android.app.Instrumentation;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -615,9 +616,29 @@ public class LoadedPlugin {
 
             @Override
             public void run() {
-
+                mApplication=makeApplication(false,mPluginManager.getInstrumentation());
             }
-        });
+        },true);
+    }
+
+    private Application makeApplication(boolean forceDefaultAppClass, Instrumentation instrumentation){
+        if(null!=this.mApplication){
+            return mApplication;
+        }
+
+        String appClass=this.mPackage.applicationInfo.className;
+        if(forceDefaultAppClass||null==appClass){
+            appClass="android.app.Application";
+        }
+
+        try{
+            mApplication=instrumentation.newApplication(mClassLoader,appClass,getPluginContext());
+            instrumentation.callApplicationOnCreate(this.mApplication);
+            return mApplication;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public PluginManager getPluginManager(){
@@ -634,6 +655,10 @@ public class LoadedPlugin {
 
     public String getPackageName(){
         return mPackage.packageName;
+    }
+
+    public Context getPluginContext(){
+        return mPluginContext;
     }
 
 }

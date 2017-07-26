@@ -132,6 +132,10 @@ public class PluginManager {
         return list;
     }
 
+    public Instrumentation getInstrumentation(){
+        return this.mInstrumentation;
+    }
+
 
 }
 

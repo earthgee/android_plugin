@@ -29,7 +29,16 @@ public class ActivityManagerProxy implements InvocationHandler{
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        return null;
+        try{
+            return method.invoke(mActivityManager,args);
+        }catch (Throwable th){
+            Throwable c=th.getCause();
+            //todo
+
+            Throwable cause=th;
+
+            throw c!=null?c:th;
+        }
     }
 }
 

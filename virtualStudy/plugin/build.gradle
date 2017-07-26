@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.3"
 
     defaultConfig {
-        applicationId "com.earthgee.virtualstudy"
+        applicationId "com.earthgee.plugin"
         minSdkVersion 15
         targetSdkVersion 22
         versionCode 1
@@ -22,6 +22,5 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile project(':corelibrary')
     compile 'com.android.support:appcompat-v7:23.3.0'
 }

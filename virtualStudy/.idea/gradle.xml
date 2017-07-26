@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/AndroidStub" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/corelibrary" />
+            <option value="$PROJECT_DIR$/plugin" />
           </set>
         </option>
         <option name="myModules">
@@ -20,6 +21,7 @@
             <option value="$PROJECT_DIR$/AndroidStub" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/corelibrary" />
+            <option value="$PROJECT_DIR$/plugin" />
           </set>
         </option>
       </GradleProjectSettings>

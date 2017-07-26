@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/AndroidStub/AndroidStub.iml" filepath="$PROJECT_DIR$/AndroidStub/AndroidStub.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/corelibrary/corelibrary.iml" filepath="$PROJECT_DIR$/corelibrary/corelibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugin/plugin.iml" filepath="$PROJECT_DIR$/plugin/plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/virtualStudy.iml" filepath="$PROJECT_DIR$/virtualStudy.iml" />
     </modules>
   </component>
