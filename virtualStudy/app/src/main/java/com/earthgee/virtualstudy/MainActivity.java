@@ -2,6 +2,7 @@ package com.earthgee.virtualstudy;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -37,6 +38,12 @@ public class MainActivity extends Activity{
         if (apk.exists()) {
             try {
                 pluginManager.loadPlugin(apk);
+
+                Intent intent=new Intent();
+                String packageName="com.earthgee.plugin";
+                String className="com.earthgee.plugin.PluginActivity";
+                intent.setClassName(packageName,className);
+                startActivity(intent);
             } catch (Exception e) {
                 e.printStackTrace();
             }

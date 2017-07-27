@@ -2,6 +2,7 @@ package com.earthgee.corelibrary.delegate;
 
 import android.app.ActivityManager;
 import android.app.IActivityManager;
+import android.util.Log;
 
 import com.earthgee.corelibrary.PluginManager;
 

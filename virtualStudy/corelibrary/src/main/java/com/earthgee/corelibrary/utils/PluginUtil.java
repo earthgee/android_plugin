@@ -1,8 +1,12 @@
 package com.earthgee.corelibrary.utils;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Build;
+
+import com.earthgee.corelibrary.internal.Constants;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -85,6 +89,11 @@ public class PluginUtil {
         output.close();
         bufferedInput.close();
         input.close();
+    }
+
+    public static ComponentName getComponent(Intent intent){
+        return new ComponentName(intent.getStringExtra(Constants.KEY_TARGET_PACKAGE),
+                intent.getStringExtra(Constants.KEY_TARGET_ACTIVITY));
     }
 
 }

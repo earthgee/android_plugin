@@ -4,6 +4,7 @@ import android.app.Application;
 import android.app.Instrumentation;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -39,6 +40,7 @@ import com.earthgee.corelibrary.utils.ReflectUtil;
 import com.earthgee.corelibrary.utils.RunUtil;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +53,9 @@ import dalvik.system.DexClassLoader;
  */
 public class LoadedPlugin {
 
+    public static final String TAG="LoadedPlugin";
+
+    //插件相关初始化
     public static LoadedPlugin create(PluginManager pluginManager,
                                       Context host, File apk) throws Exception{
         return new LoadedPlugin(pluginManager, host, apk);
@@ -199,6 +204,46 @@ public class LoadedPlugin {
         if(metaData!=null&&metaData.getBoolean("VA_IS_HAVE_LIB")){
             PluginUtil.copyNativeLib(apk,mHostContext,mPackageInfo,mNativeLibDir);
         }
+    }
+
+    private static ResolveInfo chooseBestActivity(Intent intent,String s,int flags,List<ResolveInfo> query){
+        return query.get(0);
+    }
+
+    //插件处理请求
+    public ResolveInfo resolveActivity(Intent intent,int flags){
+        List<ResolveInfo> query=this.queryIntentActivities(intent,flags);
+        if(null==query||query.isEmpty()){
+            return null;
+        }
+
+        ContentResolver resolver=this.mPluginContext.getContentResolver();
+        return chooseBestActivity(intent,intent.resolveTypeIfNeeded(resolver),flags,query);
+    }
+
+    public List<ResolveInfo> queryIntentActivities(Intent intent,int flags){
+        ComponentName component=intent.getComponent();
+        List<ResolveInfo> resolveInfos=new ArrayList<>();
+        ContentResolver resolver=this.mPluginContext.getContentResolver();
+
+        for(PackageParser.Activity activity:this.mPackage.activities){
+            if(activity.getComponentName().equals(component)){
+                ResolveInfo resolveInfo=new ResolveInfo();
+                resolveInfo.activityInfo=activity.info;
+                resolveInfos.add(resolveInfo);
+            }else if(component==null){
+                for(PackageParser.ActivityIntentInfo intentInfo:activity.intents){
+                    if(intentInfo.match(resolver,intent,true,TAG)>=0){
+                        ResolveInfo resolveInfo=new ResolveInfo();
+                        resolveInfo.activityInfo=activity.info;
+                        resolveInfos.add(resolveInfo);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return resolveInfos;
     }
 
     private class PluginPackageManager extends PackageManager{
@@ -659,6 +704,14 @@ public class LoadedPlugin {
 
     public Context getPluginContext(){
         return mPluginContext;
+    }
+
+    public ActivityInfo getActivityInfo(ComponentName componentName){
+        return mActivityInfos.get(componentName);
+    }
+
+    public Resources getResources(){
+        return mResources;
     }
 
 }

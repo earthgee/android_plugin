@@ -4,13 +4,17 @@ import android.app.ActivityManagerNative;
 import android.app.Application;
 import android.app.IActivityManager;
 import android.app.Instrumentation;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.util.Singleton;
 
 import com.earthgee.corelibrary.delegate.ActivityManagerProxy;
 import com.earthgee.corelibrary.internal.ComponentsHandler;
 import com.earthgee.corelibrary.internal.LoadedPlugin;
 import com.earthgee.corelibrary.internal.VAInstrumentation;
+import com.earthgee.corelibrary.utils.PluginUtil;
 import com.earthgee.corelibrary.utils.ReflectUtil;
 import com.earthgee.corelibrary.utils.RunUtil;
 
@@ -122,6 +126,11 @@ public class PluginManager {
         }
     }
 
+    public LoadedPlugin getLoadedPlugin(Intent intent){
+        ComponentName component= PluginUtil.getComponent(intent);
+        return getLoadedPlugin(component.getPackageName());
+    }
+
     public LoadedPlugin getLoadedPlugin(String packageName){
         return this.mPlugins.get(packageName);
     }
@@ -136,6 +145,24 @@ public class PluginManager {
         return this.mInstrumentation;
     }
 
+    public ComponentsHandler getComponentsHandler(){
+        return mComponentsHandler;
+    }
+
+    public ResolveInfo resolveActivity(Intent intent){
+        return this.resolveActivity(intent,0);
+    }
+
+    public ResolveInfo resolveActivity(Intent intent,int flags){
+        for(LoadedPlugin plugin:this.mPlugins.values()){
+            ResolveInfo resolveInfo=plugin.resolveActivity(intent,flags);
+            if(null!=resolveInfo){
+                return resolveInfo;
+            }
+        }
+
+        return null;
+    }
 
 }
 
