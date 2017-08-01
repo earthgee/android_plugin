@@ -44,6 +44,7 @@ public class MainActivity extends Activity{
                 String className="com.earthgee.plugin.PluginActivity";
                 intent.setClassName(packageName,className);
                 startActivity(intent);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

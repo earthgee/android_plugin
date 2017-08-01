@@ -8,9 +8,15 @@ import android.content.ContextWrapper;
  */
 public class PluginContext extends ContextWrapper{
 
+    private final LoadedPlugin mPlugin;
+
     public PluginContext(LoadedPlugin plugin) {
         super(plugin.getPluginManager().getHostContext());
-
+        this.mPlugin=plugin;
     }
 
+    @Override
+    public String getPackageName() {
+        return mPlugin.getPackageName();
+    }
 }

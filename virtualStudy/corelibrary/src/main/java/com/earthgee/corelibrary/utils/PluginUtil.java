@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.content.pm.ServiceInfo;
 import android.os.Build;
+import android.text.TextUtils;
 
 import com.earthgee.corelibrary.PluginManager;
 import com.earthgee.corelibrary.internal.Constants;
@@ -90,6 +92,10 @@ public class PluginUtil {
         }
 
         return deviceDefault;
+    }
+
+    public static final boolean isLocalService(final ServiceInfo serviceInfo){
+        return TextUtils.isEmpty(serviceInfo.processName)||serviceInfo.applicationInfo.packageName.equals(serviceInfo.processName);
     }
 
     public static void copyNativeLib(File apk, Context context,

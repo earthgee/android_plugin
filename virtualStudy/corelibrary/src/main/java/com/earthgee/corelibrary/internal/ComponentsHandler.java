@@ -1,13 +1,19 @@
 package com.earthgee.corelibrary.internal;
 
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageParser;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.util.ArrayMap;
 
 import com.earthgee.corelibrary.PluginManager;
+
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by zhaoruixuan on 2017/7/24.
@@ -16,6 +22,9 @@ public class ComponentsHandler {
 
     private PluginManager mPluginManager;
     private Context mContext;
+
+    private HashMap<ComponentName,Service> mServices=new HashMap<>();
+    private HashMap<Service,AtomicInteger> mServiceCounters=new HashMap<>();
 
     private StubActivityInfo mStubActivityInfo=new StubActivityInfo();
 
@@ -66,6 +75,21 @@ public class ComponentsHandler {
         themeObj.applyStyle(info.theme,true);
         String stubActivity=mStubActivityInfo.getStubActivity(targetClassName,launchMode,themeObj);
         intent.setClassName(mContext,stubActivity);
+    }
+
+    public Service getService(ComponentName component){
+        return mServices.get(component);
+    }
+
+    public void rememberService(ComponentName componentName,Service service){
+        synchronized (mServices){
+            mServices.put(componentName,service);
+            mServiceCounters.put(service,new AtomicInteger(0));
+        }
+    }
+
+    public boolean isServiceAvailable(ComponentName component){
+        return this.mServices.containsKey(component);
     }
 
 }

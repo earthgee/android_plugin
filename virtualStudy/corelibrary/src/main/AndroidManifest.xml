@@ -41,6 +41,14 @@
         <activity android:name=".D$7" android:launchMode="singleInstance"></activity>
         <activity android:name=".D$8" android:launchMode="singleInstance"></activity>
 
+        <service android:name=".delegate.LocalService"></service>
+
+        <service android:name=".delegate.RemoteService" android:process=":daemon">
+            <intent-filter>
+                <action android:name="${applicationId}.intent.ACTION_DAEMON_SERVICE"></action>
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

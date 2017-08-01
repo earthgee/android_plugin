@@ -153,6 +153,10 @@ public class PluginManager {
         return mComponentsHandler;
     }
 
+    public IActivityManager getActivityManager(){
+        return mActivityManager;
+    }
+
     public ResolveInfo resolveActivity(Intent intent){
         return this.resolveActivity(intent,0);
     }
@@ -160,6 +164,17 @@ public class PluginManager {
     public ResolveInfo resolveActivity(Intent intent,int flags){
         for(LoadedPlugin plugin:this.mPlugins.values()){
             ResolveInfo resolveInfo=plugin.resolveActivity(intent,flags);
+            if(null!=resolveInfo){
+                return resolveInfo;
+            }
+        }
+
+        return null;
+    }
+
+    public ResolveInfo resolveService(Intent intent,int flags){
+        for(LoadedPlugin plugin:this.mPlugins.values()){
+            ResolveInfo resolveInfo=plugin.resolveService(intent,flags);
             if(null!=resolveInfo){
                 return resolveInfo;
             }
