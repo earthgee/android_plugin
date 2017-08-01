@@ -93,9 +93,9 @@ public class LoadedPlugin {
         this.mPackageInfo.applicationInfo.sourceDir=apk.getAbsolutePath();
         this.mPackageInfo.signatures=this.mPackage.mSignatures;
         this.mPackageInfo.packageName=this.mPackage.packageName;
-        if(pluginManager.getLoadedPlugin(mPackageInfo.packageName)!=null){
-            throw new RuntimeException("plugin has already been loaded : "+mPackageInfo.packageName);
-        }
+//        if(pluginManager.getLoadedPlugin(mPackageInfo.packageName)!=null){
+//            throw new RuntimeException("plugin has already been loaded : "+mPackageInfo.packageName);
+//        }
         this.mPackageInfo.versionCode=this.mPackage.mVersionCode;
         this.mPackageInfo.versionName=this.mPackage.mVersionName;
         this.mPackageInfo.permissions=new PermissionInfo[0];
@@ -712,6 +712,10 @@ public class LoadedPlugin {
 
     public Resources getResources(){
         return mResources;
+    }
+
+    public Application getApplication(){
+        return mApplication;
     }
 
 }

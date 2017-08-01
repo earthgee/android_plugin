@@ -131,6 +131,10 @@ public class PluginManager {
         return getLoadedPlugin(component.getPackageName());
     }
 
+    public LoadedPlugin getLoadedPlugin(ComponentName component){
+        return this.getLoadedPlugin(component.getPackageName());
+    }
+
     public LoadedPlugin getLoadedPlugin(String packageName){
         return this.mPlugins.get(packageName);
     }

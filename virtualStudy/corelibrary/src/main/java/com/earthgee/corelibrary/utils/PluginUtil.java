@@ -3,10 +3,14 @@ package com.earthgee.corelibrary.utils;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.os.Build;
 
+import com.earthgee.corelibrary.PluginManager;
 import com.earthgee.corelibrary.internal.Constants;
+import com.earthgee.corelibrary.internal.LoadedPlugin;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -23,6 +27,70 @@ import java.util.zip.ZipFile;
  * Created by zhaoruixuan on 2017/7/25.
  */
 public class PluginUtil {
+
+    public static String getTargetActivity(Intent intent){
+        return intent.getStringExtra(Constants.KEY_TARGET_ACTIVITY);
+    }
+
+    public static boolean isIntentFromPlugin(Intent intent){
+        return intent.getBooleanExtra(Constants.KEY_IS_PLUGIN,false);
+    }
+
+    public static int getTheme(Context context,Intent intent){
+        return PluginUtil.getTheme(context,PluginUtil.getComponent(intent));
+    }
+
+    public static int getTheme(Context context,ComponentName component){
+        LoadedPlugin loadedPlugin= PluginManager.getInstance(context).getLoadedPlugin(component);
+
+        if(null==loadedPlugin){
+            return 0;
+        }
+
+        ActivityInfo info=loadedPlugin.getActivityInfo(component);
+
+        if(null==info){
+            return 0;
+        }
+
+        if(0!=info.theme){
+            return info.theme;
+        }
+
+        ApplicationInfo appInfo=info.applicationInfo;
+        if(null!=appInfo&&appInfo.theme!=0){
+            return appInfo.theme;
+        }
+
+        return PluginUtil.selectDefaultTheme(0, Build.VERSION.SDK_INT);
+    }
+
+
+    public static int selectDefaultTheme(final int curTheme,final int targetSdkVersion){
+        return selectSystemTheme(curTheme,targetSdkVersion,android.R.style.Theme,
+                android.R.style.Theme_Holo,android.R.style.Theme_DeviceDefault,android.R.style.Theme_DeviceDefault_Light_DarkActionBar);
+    }
+
+    private static int selectSystemTheme(final int curTheme,final int targetSdkVersion,final int orig,final int holo,
+                                         final int dark,final int deviceDefault){
+        if(curTheme!=0){
+            return curTheme;
+        }
+
+        if(targetSdkVersion<11){
+            return orig;
+        }
+
+        if(targetSdkVersion<14){
+            return holo;
+        }
+
+        if(targetSdkVersion<24){
+            return dark;
+        }
+
+        return deviceDefault;
+    }
 
     public static void copyNativeLib(File apk, Context context,
                                      PackageInfo packageInfo,File nativeLibDir){
