@@ -88,6 +88,14 @@ public class ComponentsHandler {
         }
     }
 
+    public Service forgetService(ComponentName component){
+        synchronized (this.mServices){
+            Service service=this.mServices.remove(component);
+            this.mServiceCounters.remove(service);
+            return service;
+        }
+    }
+
     public boolean isServiceAvailable(ComponentName component){
         return this.mServices.containsKey(component);
     }

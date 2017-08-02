@@ -44,6 +44,11 @@ public class ActivityManagerProxy implements InvocationHandler{
                 return startService(proxy,method,args);
             }catch (Throwable e){
             }
+        }else if("stopService".equals(method.getName())){
+            try{
+                return stopService(proxy,method,args);
+            }catch (Throwable e){
+            }
         }
 
         try{
@@ -67,6 +72,17 @@ public class ActivityManagerProxy implements InvocationHandler{
         }
 
         return startDelegateServiceForTarget(target,resolveInfo.serviceInfo,null,LocalService.EXTRA_COMMAND_START_SERVICE);
+    }
+
+    private Object stopService(Object proxy,Method method,Object[] args) throws Throwable{
+        Intent target= (Intent) args[1];
+        ResolveInfo resolveInfo=this.mPluginManager.resolveService(target,0);
+        if(null==resolveInfo||null==resolveInfo.serviceInfo){
+            return method.invoke(this.mActivityManager,args);
+        }
+
+        startDelegateServiceForTarget(target,resolveInfo.serviceInfo,null,RemoteService.EXTRA_COMMAND_STOP_SERVICE);
+        return 1;
     }
 
     private ComponentName startDelegateServiceForTarget(Intent target, ServiceInfo serviceInfo, Bundle extras,int command){

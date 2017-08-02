@@ -23,4 +23,9 @@ public class PluginService extends Service{
         Log.d("earthgee2","pluginService onCreate");
     }
 
+    @Override
+    public void onDestroy() {
+        Log.d("earthgee2","pluginService onDestory");
+        super.onDestroy();
+    }
 }

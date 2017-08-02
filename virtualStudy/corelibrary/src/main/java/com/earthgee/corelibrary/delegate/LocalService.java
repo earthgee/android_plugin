@@ -87,6 +87,17 @@ public class LocalService extends Service{
                 }
                 break;
             }
+            case EXTRA_COMMAND_STOP_SERVICE:{
+                Service service=this.mPluginManager.getComponentsHandler().forgetService(component);
+                if(null!=service){
+                    try{
+                        service.onDestroy();
+                    }catch (Exception e){
+                    }
+                }else{
+                }
+                break;
+            }
         }
 
         return START_STICKY;
