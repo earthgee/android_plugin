@@ -3,6 +3,7 @@ package com.earthgee.plugin;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -14,7 +15,14 @@ public class PluginService extends Service{
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        Log.d("earthgee2","pluginService onBind");
+        return new Test();
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.d("earthgee2","pluginService onUnBind");
+        return super.onUnbind(intent);
     }
 
     @Override
@@ -28,4 +36,14 @@ public class PluginService extends Service{
         Log.d("earthgee2","pluginService onDestory");
         super.onDestroy();
     }
+
+    private class Test extends ITest.Stub{
+
+        @Override
+        public void test() throws RemoteException {
+            Log.d("earthgee2","hello world");
+        }
+
+    }
+
 }

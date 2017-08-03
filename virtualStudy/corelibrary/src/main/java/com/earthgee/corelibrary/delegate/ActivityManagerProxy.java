@@ -10,6 +10,7 @@ import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.os.Binder;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 
 import com.earthgee.corelibrary.PluginManager;
@@ -49,6 +50,16 @@ public class ActivityManagerProxy implements InvocationHandler{
                 return stopService(proxy,method,args);
             }catch (Throwable e){
             }
+        }else if("bindService".equals(method.getName())){
+            try{
+                return bindService(proxy,method,args);
+            }catch (Throwable e){
+            }
+        }else if("unbindService".equals(method.getName())){
+            try{
+                return unbindService(proxy,method,args);
+            }catch (Throwable e){
+            }
         }
 
         try{
@@ -81,8 +92,34 @@ public class ActivityManagerProxy implements InvocationHandler{
             return method.invoke(this.mActivityManager,args);
         }
 
-        startDelegateServiceForTarget(target,resolveInfo.serviceInfo,null,RemoteService.EXTRA_COMMAND_STOP_SERVICE);
+        startDelegateServiceForTarget(target,resolveInfo.serviceInfo,null,LocalService.EXTRA_COMMAND_STOP_SERVICE);
         return 1;
+    }
+
+    private Object bindService(Object proxy,Method method,Object[] args) throws Throwable{
+        Intent target= (Intent) args[2];
+        ResolveInfo resolveInfo=this.mPluginManager.resolveService(target,0);
+        if(null==resolveInfo||null==resolveInfo.serviceInfo){
+            return method.invoke(this.mActivityManager,args);
+        }
+
+        Bundle bundle=new Bundle();
+        PluginUtil.putBinder(bundle,"sc",(IBinder)args[4]);
+        startDelegateServiceForTarget(target,resolveInfo.serviceInfo,bundle,LocalService.EXTRA_COMMAND_BIND_SERVICE);
+        mPluginManager.getComponentsHandler().remberIServiceConnection((IBinder)args[4],target);
+        return 1;
+    }
+
+    private Object unbindService(Object proxy,Method method,Object[] args) throws Throwable{
+        IBinder iServiceConnection= (IBinder) args[0];
+        Intent target=mPluginManager.getComponentsHandler().forgetIServiceConnection(iServiceConnection);
+        if(target==null){
+            return method.invoke(this.mActivityManager,args);
+        }
+
+        ResolveInfo resolveInfo=this.mPluginManager.resolveService(target,0);
+        startDelegateServiceForTarget(target,resolveInfo.serviceInfo,null,LocalService.EXTRA_COMMAND_UNBIND_SERVICE);
+        return true;
     }
 
     private ComponentName startDelegateServiceForTarget(Intent target, ServiceInfo serviceInfo, Bundle extras,int command){

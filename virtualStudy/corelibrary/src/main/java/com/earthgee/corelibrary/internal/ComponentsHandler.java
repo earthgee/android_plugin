@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageParser;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.os.IBinder;
 import android.util.ArrayMap;
 
 import com.earthgee.corelibrary.PluginManager;
@@ -25,6 +26,7 @@ public class ComponentsHandler {
 
     private HashMap<ComponentName,Service> mServices=new HashMap<>();
     private HashMap<Service,AtomicInteger> mServiceCounters=new HashMap<>();
+    private HashMap<IBinder,Intent> mBoundServices=new HashMap<>();
 
     private StubActivityInfo mStubActivityInfo=new StubActivityInfo();
 
@@ -93,6 +95,19 @@ public class ComponentsHandler {
             Service service=this.mServices.remove(component);
             this.mServiceCounters.remove(service);
             return service;
+        }
+    }
+
+    public void remberIServiceConnection(IBinder iServiceConnection,Intent intent){
+        synchronized (this.mBoundServices){
+            mBoundServices.put(iServiceConnection, intent);
+        }
+    }
+
+    public Intent forgetIServiceConnection(IBinder iServiceConnection){
+        synchronized (this.mBoundServices){
+            Intent intent=this.mBoundServices.remove(iServiceConnection);
+            return intent;
         }
     }
 

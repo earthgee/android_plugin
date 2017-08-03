@@ -8,6 +8,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.IBinder;
 import android.text.TextUtils;
 
 import com.earthgee.corelibrary.PluginManager;
@@ -96,6 +98,30 @@ public class PluginUtil {
 
     public static final boolean isLocalService(final ServiceInfo serviceInfo){
         return TextUtils.isEmpty(serviceInfo.processName)||serviceInfo.applicationInfo.packageName.equals(serviceInfo.processName);
+    }
+
+    public static void putBinder(Bundle bundle, String key, IBinder value){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            bundle.putBinder(key,value);
+        }else{
+            try{
+                ReflectUtil.invoke(Bundle.class,bundle,"putIBinder",new Class[]{String.class,IBinder.class},key,value);
+            }catch (Exception e){
+            }
+        }
+    }
+
+    public static IBinder getBinder(Bundle bundle,String key){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            return bundle.getBinder(key);
+        }else{
+            try{
+                return (IBinder) ReflectUtil.invoke(Bundle.class,bundle,"getIBinder",key);
+            }catch (Exception e){
+            }
+
+            return null;
+        }
     }
 
     public static void copyNativeLib(File apk, Context context,

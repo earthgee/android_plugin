@@ -4,6 +4,7 @@ import android.app.ActivityThread;
 import android.app.Application;
 import android.app.IActivityManager;
 import android.app.IApplicationThread;
+import android.app.IServiceConnection;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.support.annotation.Nullable;
 
 import com.earthgee.corelibrary.PluginManager;
 import com.earthgee.corelibrary.internal.LoadedPlugin;
+import com.earthgee.corelibrary.utils.PluginUtil;
 import com.earthgee.corelibrary.utils.ReflectUtil;
 
 import java.lang.reflect.Method;
@@ -95,6 +97,51 @@ public class LocalService extends Service{
                     }catch (Exception e){
                     }
                 }else{
+                }
+                break;
+            }
+            case EXTRA_COMMAND_BIND_SERVICE:{
+                ActivityThread mainThread= (ActivityThread) ReflectUtil.getActivityThread(getBaseContext());
+                IApplicationThread appThread=mainThread.getApplicationThread();
+                Service service=null;
+
+                if(this.mPluginManager.getComponentsHandler().isServiceAvailable(component)){
+                    service=this.mPluginManager.getComponentsHandler().getService(component);
+                }else{
+                    try{
+                        service= (Service) plugin.getClassLoader().loadClass(component.getClassName()).newInstance();
+
+                        Application app=plugin.getApplication();
+                        IBinder token=appThread.asBinder();
+                        Method attach=service.getClass().getMethod("attach",Context.class,ActivityThread.class,
+                                String.class,IBinder.class,Application.class,Object.class);
+                        IActivityManager am=mPluginManager.getActivityManager();
+
+                        attach.invoke(service,plugin.getPluginContext(),mainThread,component.getClassName(),token,app,am);
+                        service.onCreate();
+                        this.mPluginManager.getComponentsHandler().rememberService(component,service);
+                    }catch (Throwable t){
+                        t.printStackTrace();
+                    }
+                }
+                try{
+                    IBinder binder=service.onBind(target);
+                    IBinder serviceConnection= PluginUtil.getBinder(intent.getExtras(),"sc");
+                    IServiceConnection iServiceConnection=IServiceConnection.Stub.asInterface(serviceConnection);
+                    iServiceConnection.connected(component,binder);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                break;
+            }
+            case EXTRA_COMMAND_UNBIND_SERVICE:{
+                Service service=this.mPluginManager.getComponentsHandler().forgetService(component);
+                if(null!=service){
+                    try {
+                        service.onUnbind(target);
+                        service.onDestroy();
+                    }catch (Exception e){
+                    }
                 }
                 break;
             }
