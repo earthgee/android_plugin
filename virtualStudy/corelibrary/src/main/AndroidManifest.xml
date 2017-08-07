@@ -49,6 +49,10 @@
             </intent-filter>
         </service>
 
+        <provider
+            android:authorities=""
+            android:name=""></provider>
+
     </application>
 
 </manifest>
