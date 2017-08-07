@@ -33,11 +33,14 @@ public class PluginActivity extends Activity{
         button4.setText("unbind service");
         Button button5=new Button(this);
         button5.setText("send broadcast");
+        Button button6=new Button(this);
+        button6.setText("start RemoteService");
         ll.addView(button);
         ll.addView(button2);
         ll.addView(button3);
         ll.addView(button4);
         ll.addView(button5);
+        ll.addView(button6);
         setContentView(ll);
 
         final TestServiceConnection connection=new TestServiceConnection();
@@ -75,6 +78,13 @@ public class PluginActivity extends Activity{
             public void onClick(View v) {
                 Intent intent=new Intent("com.earthgee.pluginreceiver");
                 sendBroadcast(intent);
+            }
+        });
+        button6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(PluginActivity.this,PluginService2.class);
+                startService(intent);
             }
         });
     }

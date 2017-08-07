@@ -115,6 +115,10 @@ public class ComponentsHandler {
         return this.mServices.containsKey(component);
     }
 
+    public AtomicInteger getServiceCounter(Service service){
+        return this.mServiceCounters.get(service);
+    }
+
 }
 
 

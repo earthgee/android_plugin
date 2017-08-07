@@ -15,6 +15,7 @@
             </intent-filter>
         </activity>
         <service android:name=".PluginService"></service>
+        <service android:name=".PluginService2" android:process=":plugin"></service>
         <receiver android:name=".PluginReceiver">
             <intent-filter>
                 <action android:name="com.earthgee.pluginreceiver"></action>

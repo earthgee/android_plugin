@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.earthgee.corelibrary.PluginManager;
 import com.earthgee.corelibrary.internal.LoadedPlugin;
@@ -87,6 +88,9 @@ public class LocalService extends Service{
                         return START_STICKY;
                     }
                 }
+
+                service.onStartCommand(target,0,this.mPluginManager.
+                        getComponentsHandler().getServiceCounter(service).getAndIncrement());
                 break;
             }
             case EXTRA_COMMAND_STOP_SERVICE:{
