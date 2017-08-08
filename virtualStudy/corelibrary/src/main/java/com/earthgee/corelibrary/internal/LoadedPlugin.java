@@ -281,6 +281,10 @@ public class LoadedPlugin {
         return resolveInfos;
     }
 
+    public ProviderInfo resolveContentProvider(String name,int flags){
+        return this.mProviders.get(name);
+    }
+
     private class PluginPackageManager extends PackageManager{
 
         @Override
@@ -752,6 +756,12 @@ public class LoadedPlugin {
     public Application getApplication(){
         return mApplication;
     }
+
+    public Context getHostContext() {
+        return mHostContext;
+    }
+
+
 
 }
 

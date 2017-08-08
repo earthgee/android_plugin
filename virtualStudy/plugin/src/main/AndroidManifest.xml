@@ -22,6 +22,7 @@
             </intent-filter>
         </receiver>
         <provider
+            android:process=":plugin"
             android:authorities="com.earthgee.plugin_content_provider"
             android:name=".contentProvider.ArticlesProvider"></provider>
         <activity android:name=".provider.ArticlesActivity" android:launchMode="singleTask">

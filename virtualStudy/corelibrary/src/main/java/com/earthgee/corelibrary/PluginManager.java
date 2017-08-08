@@ -7,6 +7,7 @@ import android.app.Instrumentation;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.util.Singleton;
 
@@ -177,6 +178,17 @@ public class PluginManager {
             ResolveInfo resolveInfo=plugin.resolveService(intent,flags);
             if(null!=resolveInfo){
                 return resolveInfo;
+            }
+        }
+
+        return null;
+    }
+
+    public ProviderInfo resolveContentProvider(String name,int flags){
+        for(LoadedPlugin plugin:this.mPlugins.values()){
+            ProviderInfo providerInfo=plugin.resolveContentProvider(name,flags);
+            if(null!=providerInfo){
+                return providerInfo;
             }
         }
 

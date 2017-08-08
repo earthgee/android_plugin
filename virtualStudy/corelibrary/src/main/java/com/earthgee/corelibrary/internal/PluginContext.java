@@ -1,5 +1,6 @@
 package com.earthgee.corelibrary.internal;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -14,6 +15,15 @@ public class PluginContext extends ContextWrapper{
     public PluginContext(LoadedPlugin plugin) {
         super(plugin.getPluginManager().getHostContext());
         this.mPlugin=plugin;
+    }
+
+    private Context getHostContext(){
+        return getBaseContext();
+    }
+
+    @Override
+    public ContentResolver getContentResolver() {
+        return new PluginContentResolver(getHostContext());
     }
 
     @Override
