@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.earthgee.plugin.provider.ArticlesActivity;
+
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -35,12 +37,15 @@ public class PluginActivity extends Activity{
         button5.setText("send broadcast");
         Button button6=new Button(this);
         button6.setText("start RemoteService");
+        Button button7=new Button(this);
+        button7.setText("start provider activity");
         ll.addView(button);
         ll.addView(button2);
         ll.addView(button3);
         ll.addView(button4);
         ll.addView(button5);
         ll.addView(button6);
+        ll.addView(button7);
         setContentView(ll);
 
         final TestServiceConnection connection=new TestServiceConnection();
@@ -85,6 +90,13 @@ public class PluginActivity extends Activity{
             public void onClick(View v) {
                 Intent intent=new Intent(PluginActivity.this,PluginService2.class);
                 startService(intent);
+            }
+        });
+        button7.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(PluginActivity.this, ArticlesActivity.class);
+                startActivity(intent);
             }
         });
     }

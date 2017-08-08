@@ -21,6 +21,12 @@
                 <action android:name="com.earthgee.pluginreceiver"></action>
             </intent-filter>
         </receiver>
+        <provider
+            android:authorities="com.earthgee.plugin_content_provider"
+            android:name=".contentProvider.ArticlesProvider"></provider>
+        <activity android:name=".provider.ArticlesActivity" android:launchMode="singleTask">
+        </activity>
+        <activity android:name=".provider.ArticleActivity"></activity>
     </application>
 
 </manifest>

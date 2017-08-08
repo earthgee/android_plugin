@@ -13,7 +13,7 @@ public class DBHelper extends SQLiteOpenHelper{
     private static final String DB_TABLE="ArticlesTable";
     private static final int DB_VERSION=1;
 
-    private static final String DB_CREATE="create table "+DB_NAME+" ("
+    private static final String DB_CREATE="create table "+DB_TABLE+" ("
             +Articles.ID+" integer primary key autoincrement, "+Articles.TITLE+
             " text not null, "+Articles.ABSTRACT+" text not null, "+
             Articles.URL+" text not null);";

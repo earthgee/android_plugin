@@ -8,7 +8,9 @@ import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -63,7 +65,37 @@ public class ArticlesProvider extends ContentProvider{
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        return null;
+        SQLiteDatabase db=dbHelper.getWritableDatabase();
+
+        SQLiteQueryBuilder sqlBuilder=new SQLiteQueryBuilder();
+        String limit=null;
+
+        switch (uriMatcher.match(uri)){
+            case Articles.ITEM:{
+                sqlBuilder.setTables(DB_TABLE);
+                sqlBuilder.setProjectionMap(articleProjectionMap);
+                break;
+            }
+            case Articles.ITEM_ID:{
+                String id=uri.getPathSegments().get(1);
+                sqlBuilder.setTables(DB_TABLE);
+                sqlBuilder.setProjectionMap(articleProjectionMap);
+                sqlBuilder.appendWhere(Articles.ID+"="+id);
+                break;
+            }
+            case Articles.ITEM_POS:{
+                String pos=uri.getPathSegments().get(1);
+                sqlBuilder.setTables(DB_TABLE);
+                sqlBuilder.setProjectionMap(articleProjectionMap);
+                limit=pos+", 1";
+                break;
+            }
+
+        }
+        Cursor cursor=sqlBuilder.query(db,projection,selection,selectionArgs,null,null,TextUtils.isEmpty(sortOrder)?Articles.DEFAULT_SORT_ORDER:sortOrder,limit);
+        cursor.setNotificationUri(resolver,uri);
+
+        return cursor;
     }
 
     @Nullable
@@ -136,6 +168,35 @@ public class ArticlesProvider extends ContentProvider{
         resolver.notifyChange(uri,null);
         return count;
     }
+
+//    @Nullable
+//    @Override
+//    public Bundle call(String method, String arg, Bundle extras) {
+//        if(method.equals(Articles.METHOD_GET_ITEM_COUNT)){
+//            return getItemCount();
+//        }
+//
+//        return null;
+//    }
+//
+//    private Bundle getItemCount(){
+//        SQLiteDatabase db=dbHelper.getReadableDatabase();
+//        Cursor cursor=db.rawQuery("select count(*) from "+DB_TABLE,null);
+//
+//        int count=0;
+//        if (cursor.moveToFirst()){
+//           count=cursor.getInt(0);
+//        }
+//
+//        Bundle bundle=new Bundle();
+//        bundle.putInt(Articles.KEY_ITEM_COUNT,count);
+//
+//        cursor.close();
+//        db.close();
+//
+//        return bundle;
+//    }
+
 }
 
 
