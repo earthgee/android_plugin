@@ -1,19 +1,23 @@
 package com.earthgee.corelibrary;
 
 import android.app.ActivityManagerNative;
+import android.app.ActivityThread;
 import android.app.Application;
 import android.app.IActivityManager;
 import android.app.Instrumentation;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.IContentProvider;
 import android.content.Intent;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.util.Singleton;
 
 import com.earthgee.corelibrary.delegate.ActivityManagerProxy;
 import com.earthgee.corelibrary.internal.ComponentsHandler;
 import com.earthgee.corelibrary.internal.LoadedPlugin;
+import com.earthgee.corelibrary.internal.PluginContentResolver;
 import com.earthgee.corelibrary.internal.VAInstrumentation;
 import com.earthgee.corelibrary.utils.PluginUtil;
 import com.earthgee.corelibrary.utils.ReflectUtil;
@@ -21,7 +25,9 @@ import com.earthgee.corelibrary.utils.RunUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,6 +45,7 @@ public class PluginManager {
 
     private Instrumentation mInstrumentation;
     private IActivityManager mActivityManager;
+    private IContentProvider mIContentProvider;
 
     public static PluginManager getInstance(Context base){
         if(sInstance==null){
@@ -193,6 +200,55 @@ public class PluginManager {
         }
 
         return null;
+    }
+
+    private void hookIContentProviderAsNeeded(){
+        Uri uri=Uri.parse(PluginContentResolver.getUri(mContext));
+        mContext.getContentResolver().call(uri,"wakeup",null,null);
+        try{
+            Field authority=null;
+            Field mProvider=null;
+            ActivityThread activityThread=
+                    (ActivityThread) ReflectUtil.getActivityThread(mContext);
+            Map mProviderMap= (Map) ReflectUtil.getField
+                    (activityThread.getClass(),activityThread,"mProviderMap");
+            Iterator iter=mProviderMap.entrySet().iterator();
+            while (iter.hasNext()){
+                Map.Entry entry= (Map.Entry) iter.next();
+                Object key=entry.getKey();
+                Object val=entry.getValue();
+                String auth;
+                if(key instanceof String){
+                    auth= (String) key;
+                }else{
+                    if(authority==null){
+                        authority=key.getClass().getDeclaredField("authority");
+                        authority.setAccessible(true);
+                    }
+                    auth= (String) authority.get(key);
+                }
+                if(auth.equals(PluginContentResolver.getAuthority(mContext))){
+                    if(mProvider==null){
+                        mProvider=val.getClass().getDeclaredField("mProvider");
+                        mProvider.setAccessible(true);
+                    }
+                    IContentProvider rawProvider= (IContentProvider) mProvider.get(val);
+                    IContentProvider proxy=IContentProvider.newInstance(mContext,rawProvider);
+                    mIContentProvider=proxy;
+                    break;
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized IContentProvider getIContentProvider(){
+        if(mIContentProvider==null){
+            hookIContentProviderAsNeeded();
+        }
+
+        return mIContentProvider;
     }
 
 }
