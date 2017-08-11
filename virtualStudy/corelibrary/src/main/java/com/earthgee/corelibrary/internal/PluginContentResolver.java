@@ -114,7 +114,7 @@ public class PluginContentResolver extends ContentResolver{
     }
 
     public static String getAuthority(Context context) {
-        return context.getPackageName() + ".VirtualAPK.Provider";
+        return context.getPackageName() + ".VirtualSTUDY.Provider";
     }
 
 }

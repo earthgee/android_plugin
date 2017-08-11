@@ -1,11 +1,14 @@
 package com.earthgee.plugin.provider;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.content.res.XmlResourceParser;
 import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PersistableBundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -32,7 +35,7 @@ public class ArticlesActivity extends Activity implements View.OnClickListener,A
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.articles);
+        setContentView(R.layout.articles_rename);
 
         aa=new ArticlesAdapter(this);
 

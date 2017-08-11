@@ -99,6 +99,18 @@ public class PluginActivity extends Activity{
                 startActivity(intent);
             }
         });
+
+
+//        setContentView(R.layout.test);
+//        Button button= (Button) findViewById(R.id.button);
+//        button.setText("hello world");
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent=new Intent(PluginActivity.this,PluginActivity.class);
+//                startActivity(intent);
+//            }
+//        });
     }
 
     private class TestServiceConnection implements ServiceConnection{

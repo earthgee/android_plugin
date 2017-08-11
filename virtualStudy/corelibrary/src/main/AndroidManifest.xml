@@ -51,7 +51,7 @@
 
         <provider
             android:process=":daemon"
-            android:authorities="{applicationId}.VirtualSTUDY.Provider"
+            android:authorities="${applicationId}.VirtualSTUDY.Provider"
             android:name=".delegate.RemoteContentProvider"></provider>
 
     </application>

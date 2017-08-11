@@ -37,6 +37,7 @@ import com.earthgee.corelibrary.utils.DexUtil;
 import com.earthgee.corelibrary.utils.PackageParserCompat;
 import com.earthgee.corelibrary.utils.PluginUtil;
 import com.earthgee.corelibrary.utils.ReflectUtil;
+import com.earthgee.corelibrary.utils.ResourcesManager2;
 import com.earthgee.corelibrary.utils.RunUtil;
 
 import java.io.File;
@@ -189,8 +190,8 @@ public class LoadedPlugin {
 
     private static Resources createResources(Context context,File apk){
         if(Constants.COMBINE_RESOURCES){
-            Resources resources=new ResourcesManager().createResources(context,apk.getAbsolutePath());
-            ResourcesManager.hookResources(context,resources);
+            Resources resources=new ResourcesManager2().createResources(context,apk.getAbsolutePath());
+            ResourcesManager2.hookResources(context,resources);
             return resources;
         }else{
             Resources hostResources=context.getResources();
@@ -761,6 +762,9 @@ public class LoadedPlugin {
         return mHostContext;
     }
 
+    public AssetManager getAssets(){
+        return this.mAssets;
+    }
 
 
 }

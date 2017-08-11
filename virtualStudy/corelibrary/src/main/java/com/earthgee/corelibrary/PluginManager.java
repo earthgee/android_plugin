@@ -12,9 +12,11 @@ import android.content.Intent;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.util.Log;
 import android.util.Singleton;
 
 import com.earthgee.corelibrary.delegate.ActivityManagerProxy;
+import com.earthgee.corelibrary.delegate.IContentProviderProxy;
 import com.earthgee.corelibrary.internal.ComponentsHandler;
 import com.earthgee.corelibrary.internal.LoadedPlugin;
 import com.earthgee.corelibrary.internal.PluginContentResolver;
@@ -233,7 +235,7 @@ public class PluginManager {
                         mProvider.setAccessible(true);
                     }
                     IContentProvider rawProvider= (IContentProvider) mProvider.get(val);
-                    IContentProvider proxy=IContentProvider.newInstance(mContext,rawProvider);
+                    IContentProvider proxy= IContentProviderProxy.newInstance(mContext,rawProvider);
                     mIContentProvider=proxy;
                     break;
                 }
