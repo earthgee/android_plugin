@@ -24,3 +24,12 @@ google 5.0以下使用非ART运行时65536问题分dex解决方案，Multidex主
 ## nuwa  
 手q空间提出的热修复方案，核心思想和multidex类似，将补丁打为一个dex包插到pathclassloader的dex数组最前面，利用findclass先拿到先用的原则，实现热修复  
 但此方案引发的问题是有CLASS_ISPREVERIFIED标记的类在用另一个dex里的类时会报错，这时需要防止这些类打上CLASS_ISPREVERIFIED标记,采用gradle插件的形式，为这些类提前注入另一个dex中类的内容(字节码注入)，打patch包时采用hash来diff，实现增量patch
+
+## virtualapk  
+didi提出的插件化框架，见https://github.com/didi/VirtualAPK  
+复杂度介于plugin1和plugin2之间，是一个优秀的无侵入式插件化框架。  
+读取apk作为插件，解析apk并构造ContextImpl代理，补充classloader，resource（这个我没有实现宿主插件resource合并，应该需要依赖didi未开源的gradle插件）  
+activity插件化:插桩替换，只hook了Instrumentation，ActivityThread中Hander  
+service插件化:hook ActivityManagerProxy，用站桩service替换请求service，并加载请求service手动回调  
+broadcast recevier插件化:只将静态变动态  
+content provider插件化:hook ContentProviderProxy,将请求uri替换，指到站桩contentprovider上，并手动构建并回调请求contentprovider
