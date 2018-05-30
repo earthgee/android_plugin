@@ -1,0 +1,166 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+project.ext {
+    BUILD_TOOLS_VERSION = '25.0.2'
+    TARGET_SDK_VERSION = 25
+
+    sdk = [:]
+    if(Os.isFamily(Os.FAMILY_WINDOWS)){
+        sdk.aapt="${rootDir}/aapt_win.exe"
+        sdk.dex="$sdkDir/build-tools/$BUILD_TOOLS_VERSION/dx.bat"
+    }else if(Os.isFamily(Os.FAMILY_MAC)){
+        sdk.aapt="${rootDir}/aapt_mac"
+        sdk.dex="$sdkDir/build-tools/$BUILD_TOOLS_VERSION/dx"
+    }else if(Os.isFamily(Os.FAMILY_UNIX)){
+        sdk.aapt="${rootDir}/aapt_linux"
+        sdk.dex="$sdkDir/build-tools/$BUILD_TOOLS_VERSION/dx"
+    }
+    sdk.androidJar="$sdkDir/platforms/android-$TARGET_SDK_VERSION/android.jar"
+}
+
+task init << {
+    new File(rootDir, 'build-outputs').mkdirs()
+    buildDir.mkdirs()
+    new File(buildDir, 'gen/r').mkdirs()
+    new File(buildDir, 'intermediates').mkdirs()
+    new File(buildDir, 'intermediates/classes').mkdirs()
+    new File(buildDir, 'intermediates/classes-obfuscated').mkdirs()
+    new File(buildDir, 'intermediates/res').mkdirs()
+    new File(buildDir, 'intermediates/dex').mkdirs()
+}
+
+task clean (type:Delete){
+    delete buildDir
+    delete "${rootDir}/build-outputs/${apkName}-mapping.txt"
+    delete "${rootDir}/build-outputs/${apkName}.so"
+}
+
+task aaptRelease(type: Exec,dependsOn:'init'){
+    println "$projectDir"
+    inputs.file "$sdk.androidJar"
+    inputs.file "${rootDir}/build-outputs/app-debug.apk"
+    inputs.file "$projectDir/src/main/AndroidManifest.xml"
+    inputs.dir "$projectDir/src/main/res"
+    inputs.dir "$projectDir/src/main/assets"
+    inputs.file "${rootDir}/app/build/generated/source/r/release/com.earthgee.testplugin/R.java"
+
+    outputs.dir "$buildDir/gen/r"
+    outputs.file "$buildDir/intermediates/res/resources.zip"
+    outputs.file "$buildDir/intermediates/res/aapt-rules.txt"
+
+    workingDir buildDir
+    executable sdk.aapt
+
+    def resourceId=''
+    def parseApkXml=(new XmlParser()).parse(new File(rootDir,'apk_module_config.xml'))
+    parseApkXml.Module.each { module ->
+        if(module.@packageName=="${packageName}") {
+            resourceId=module.@resourceId
+            println "find packageName: "+module.@packageName+" ,resourceId:"+resourceId
+        }
+    }
+    def argv=[]
+    argv << 'package'
+    argv << '-v' //输出信息
+    argv << '-f' //强制覆盖已有文件
+    argv << '-I' //资源依赖
+    argv << "$sdk.androidJar"
+    argv << '-I'
+    argv << "${rootDir}/build-outputs/app-debug.apk"
+    argv << '-M' //指定manifest文件
+    argv << "$projectDir/src/main/AndroidManifest.xml"
+    argv << '-S' //res目录
+    argv << "$projectDir/src/main/res"
+    argv << '-A' //assets目录
+    argv << "$projectDir/src/main/assets"
+    argv << '-m' //make package directories under location specified by -J
+    argv << '-J' //输出R.java
+    argv << "$buildDir/gen/r"
+    argv << '-F' //指定apk的输出位置
+    argv << "$buildDir/intermediates/res/resources.zip"
+    argv << '-G' //混淆信息
+    argv << "$buildDir/intermediates/res/aapt-rules.txt"
+    argv << '--custom-package'
+    argv << "${packageName}"
+    argv << '-0'
+    argv << 'apk'
+    argv << '--public-R-path'
+    argv << "${rootDir}/app/build/generated/source/r/release/com.earthgee.testplugin/R.java"
+    argv << '--apk-module'
+    argv << "$resourceId"
+
+    args=argv
+}
+
+task compileRelease(type: JavaCompile,dependsOn:'aaptRelease'){
+    inputs.file "$sdk.androidJar"
+    inputs.files fileTree("${projectDir}/libs").include('*.jar')
+    inputs.dir "${rootDir}/app/build/intermediates/classes/com/earthgee/testplugin"
+    inputs.files fileTree("${projectDir}/src/main/java").include('**/*.java')
+    inputs.files fileTree("${buildDir}/gen/r").include('**/*.java')
+
+    outputs.dir "$buildDir/intermediates/classes"
+    sourceCompatibility='1.6'
+    targetCompatibility='1.6'
+    classpath=files("${sdk.androidJar}",fileTree("${projectDir}/libs").include('*.jar'),
+            fileTree("${rootDir}/app/build/intermediates/classes/com/earthgee/testplugin"))
+
+    destinationDir=file("$buildDir/intermediates/classes")
+    //dependencyCacheDir=file("${buildDir}/dependency-cache")
+    source=files(fileTree("$projectDir/src/main/java").include('**/*.java'),fileTree("$buildDir/gen/r").include('**/*.java'))
+    options.encoding='UTF-8'
+}
+
+//task obfuscateRelease(type:proguard.gradle.ProGuardTask,dependsOn:'compileRelease'){
+//    inputs.file "$buildDir/intermediates/res/aapt-rules.txt"
+//    inputs.dir "$buildDir/intermediates/classes"
+//    inputs.files fileTree("${projectDir}/libs").include('*.jar')
+//    inputs.file "${sdk.androidJar}"
+//    input.file "${rootDir}/sample/build/intermediates/classes-proguard/release/classes.jar"
+//
+//    outputs.file "$buildDir/intermediates/classes-obfuscated/classes-obfuscated.jar"
+//    outputs.file "${rootDir}/build-outputs/${apkName}-mapping.txt"
+//    configuration file ("$buildDir/intermediates/res/aapt-rules.txt")
+//    injars file("$buildDir/intermediates/classes")
+//    injars fileTree("${projectDir}/libs").include('*.jar')
+//
+//    outjars file("$buildDir/intermediates/classes-obfuscated/classes-obfuscated.jar")
+//    printmapping file("${rootDir}/build-outputs/${apkName}-mapping.txt")
+//
+//    libraryjars file("${sdk.androidJar}")
+//    libraryjars file("${rootDir}/sample/build/intermediates/classes-proguard/release/classes.jar")
+//}
+//
+
+task dexRelease(type:Exec){
+    inputs.file "${buildDir}/intermediates/classes"
+    outputs.file "${buildDir}/intermediates/dex/${project.name}_dex.zip"
+    workingDir buildDir
+    executable sdk.dex
+
+    def argv=[]
+    argv << '--dex'
+    argv << "--output=${buildDir}/intermediates/dex/${project.name}_dex.zip"
+    argv << "${buildDir}/intermediates/classes"
+
+    args=argv
+}
+
+task bundleRelease(type:Zip,dependsOn:['compileRelease','aaptRelease','dexRelease']){
+    inputs.file "$buildDir/intermediates/dex/${project.name}_dex.zip"
+    inputs.file "$buildDir/intermediates/res/resources.zip"
+
+    outputs.file "${rootDir}/build-outputs/${apkName}.so"
+    archiveName="${apkName}.so"
+    destinationDir=file("${rootDir}/build-outputs")
+    //dupicatesStrategy='fail'
+    from zipTree("$buildDir/intermediates/dex/${project.name}_dex.zip")
+    from zipTree("$buildDir/intermediates/res/resources.zip")
+}
+
+
+
+
+
+
+
+

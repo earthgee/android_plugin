@@ -1,0 +1,183 @@
+apply plugin: 'com.android.application'
+apply from: '../global_config.gradle'
+
+android {
+
+    signingConfigs{
+        release{
+            keyAlias 'earthgee'
+            keyPassword '123456'
+            storePassword '123456'
+            storeFile file('/Users/earthgee/AndroidStudioProjects/earthgee.jks')
+        }
+    }
+
+    defaultConfig {
+        applicationId "com.earthgee.testplugin"
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile project(':bundle')
+    if(!solidMode){
+        compile project(':demo1')
+    }
+}
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+def getZipAlignPath(){
+    def zipAlignPath="$sdkDir/build-tools/${android.buildToolsVersion}/zipalign"
+    if(Os.isFamily(Os.FAMILY_WINDOWS)){
+        zipAlignPath+='.exe'
+    }
+    assert (new File(zipAlignPath)).exists() : '没有找到zipalign应用程序！'
+
+    return zipAlignPath
+}
+
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
+import java.util.zip.ZipOutputStream
+
+def repackApk(originApk, targetApk){
+    def noCompressExt=[".jpg", ".jpeg", ".png", ".gif",
+        ".wav", ".mp2", ".mp3", ".ogg", ".aac",
+        ".mpg", ".mpeg", ".mid", ".midi", ".smf", ".jet",
+        ".rtttl", ".imy", ".xmf", ".mp4", ".m4a",
+        ".m4v", ".3gp", ".3gpp", ".3g2", ".3gpp2",
+        ".amr", ".awb", ".wma", ".wmv"]
+
+    ZipFile zipFile=new ZipFile(originApk)
+    ZipOutputStream zos=new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(targetApk)))
+    zipFile.entries().each{ entryIn ->
+        if(entryIn.directory){
+            println "${entryIn.name} is a directory"
+        }else{
+            def entryOut=new ZipEntry(entryIn.name)
+            def dotPos=entryIn.name.lastIndexOf('.')
+            def ext=(dotPos>=0)?entryIn.name.substring(dotPos):""
+            def isRes=entryIn.name.startsWith('res/')
+            if(isRes && ext in noCompressExt){
+                entryOut.method=ZipEntry.STORED
+                entryOut.compressedSize=entryIn.size
+                entryOut.crc=entryIn.crc
+            }else{
+                entryOut.method=ZipEntry.DEFLATED
+            }
+            zos.putNextEntry(entryOut)
+            zos << zipFile.getInputStream(entryIn)
+            zos.closeEntry()
+        }
+    }
+    zos.finish()
+    zos.close()
+    zipFile.close()
+}
+
+task reload(type:Zip){
+    inputs.file "$rootDir/build-outputs/app-debug.apk"
+    inputs.files fileTree(new File(rootDir,'build-outputs')).include('*.so')
+    outputs.file "$rootDir/build-outputs/app-debug-reloaded.apk"
+
+    into 'assets/baseres',{
+        from fileTree(new File(rootDir,'build-outputs')).include('*.so')
+    }
+
+    from zipTree("$rootDir/build-outputs/app-debug.apk"),{
+        exclude('**/META-INF/*.SF')
+        exclude('**/META-INF/*.RSA')
+    }
+
+    destinationDir file("$rootDir/build-outputs/")
+    archiveName 'app-debug-reloaded.apk'
+}
+
+task repack(dependsOn: 'reload'){
+    inputs.file "$rootDir/build-outputs/app-debug-reloaded.apk"
+    outputs.file "$rootDir/build-outputs/app-debug-repacked.apk"
+
+    doLast{
+        println "release打包之后，重新压缩一遍，以压缩resources.arsc"
+
+        def oldApkFile=file("$rootDir/build-outputs/app-debug-reloaded.apk")
+        assert oldApkFile != null : "没有找到release包！"
+        def newApkFile=new File(oldApkFile.parentFile, 'app-debug-repacked.apk')
+
+        repackApk(oldApkFile.absolutePath, newApkFile.absolutePath)
+        assert newApkFile.exists() : "没有找到重新压缩的release包！"
+    }
+}
+
+//重签名
+task resign(type:Exec,dependsOn: 'repack'){
+    inputs.file "$rootDir/build-outputs/app-debug-repacked.apk"
+    outputs.file "$rootDir/build-outputs/app-debug-resigned.apk"
+
+    workingDir "$rootDir/build-outputs"
+    executable "/usr/bin/jarsigner"
+
+    def argv=[]
+    argv << '-verbose'
+    argv << '-sigalg'
+    argv << 'SHA1withRSA'
+    argv << '-digestalg'
+    argv << 'SHA1'
+    argv << '-keystore'
+    argv << '/Users/earthgee/AndroidStudioProjects/earthgee.jks'
+    argv << '-storepass'
+    argv << '123456'
+    argv << '-keypass'
+    argv << '123456'
+    argv << '-signedjar'
+    argv << 'app-debug-resigned.apk'
+    argv << 'app-debug-repacked.apk'
+    argv << 'earthgee'
+
+    args=argv
+}
+
+task realign(dependsOn: 'resign'){
+    inputs.file "$rootDir/build-outputs/app-debug-resigned.apk"
+    outputs.file "$rootDir/build-outputs/app-debug-final.apk"
+
+    doLast{
+        println '重新zipalign，还可以加大压缩率!'
+
+        def oldApkFile=file("$rootDir/build-outputs/app-debug-resigned.apk")
+        assert oldApkFile!=null:"没有找到release包！"
+
+        def newApkFile=new File(oldApkFile.parentFile,'app-debug-final.apk')
+
+        def cmdZipAlign=getZipAlignPath()
+        def argv=[]
+        argv << '-f'
+        argv << '-v'
+        argv << '4'
+        argv << oldApkFile.absolutePath
+        argv << newApkFile.absolutePath
+
+        project.exec{
+            commandLine cmdZipAlign
+            args argv
+        }
+
+        assert newApkFile.exists() : "没有找到重新zipalign的release包！"
+    }
+}
+
+
+
