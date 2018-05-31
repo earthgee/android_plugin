@@ -6,16 +6,6 @@ android组件化，插件化，热发布学习
 原理:host项目中插桩作为代理(activity,service都是),实际的插件组件通过运行时动态生成,代理组件收到生命周期回调再回调插件组件,通过hack方式获得插件dex包的AssetManager,Resource来操作插件中的资源  
 优点和不足:原理简单，没有hook任何framework层组件代码，但是通过应用层代理的方式也使得静态注册的BroadcastReceiver和ContentProvider无法运行在插件中
 
-## plugin2  
-此插件参考https://github.com/DroidPluginTeam/DroidPlugin  
-无侵入式框架，实现为对系统进行hook来实现插件的运行  
-1.activity插件化:对ActivtyManagerProxy startActivity进行hook，将intent target信息替换为stub占坑的activity信息，在ActiivtyThread处理启动信息时再替换回来   
-2.service插件化:对startService进行hook，导致实际启动的是stub service，stub service每进程提供一个占坑，在其中进行动态分发(进程内进程间逻辑一致)  
-3.broadcast receiver插件化:hook registerReceiver,欺骗系统使得插件注册的广播系统认为host注册，对于插件中静态广播,在插件进程application onCreate中将静态广播全部转变为动态广播  
-4.content provider:hook getContentProvider,分两种情况:  
-  (1)进程内直接启动content provider
-  (2)进程间先启动stub content provider，在其中做代理分发，在新启动的进程中new target content provider
-
 ## Multidex  
 google 5.0以下使用非ART运行时65536问题分dex解决方案，Multidex主要是合包时的一个阶段.  
 打包时分成classesX.dex,运行时只load第一个dex,在application attachBaseContext时将apk中的其他dex包解析出来,PathClassLoader-->dexPathList-->dexElements数组中去,这样后续类都可顺利加载.  
@@ -25,6 +15,19 @@ google 5.0以下使用非ART运行时65536问题分dex解决方案，Multidex主
 手q空间提出的热修复方案，核心思想和multidex类似，将补丁打为一个dex包插到pathclassloader的dex数组最前面，利用findclass先拿到先用的原则，实现热修复  
 但此方案引发的问题是有CLASS_ISPREVERIFIED标记的类在用另一个dex里的类时会报错，这时需要防止这些类打上CLASS_ISPREVERIFIED标记,采用gradle插件的形式，为这些类提前注入另一个dex中类的内容(字节码注入)，打patch包时采用hash来diff，实现增量patch
 
+## TestPlugin
+携程插件化解决方案，在dynamic-load-apk基础上提供动态运行代码能力，框架分为两部分，代码编译部分通过改动aapt将插件资源id修改，解决了第一个框架可能导致资源重名问题，自定义打包流程将插件作为bundle打包（主要是dex和resource）。代码运行过程，在dynamic-load-apk的基础上进行了更多的hook，资源还是hook AssetManager，dex的加载和Multidex和nuwa的原理类似。此框架特点就是适合加载内部业务插件，因为host和插件耦合度比较高，运行方式也是单进程的方式。
+
+## plugin2  
+此插件参考https://github.com/DroidPluginTeam/DroidPlugin  
+无侵入式框架，实现为对系统进行hook来实现插件的运行  
+1.activity插件化:对ActivtyManagerProxy startActivity进行hook，将intent target信息替换为stub占坑的activity信息，在ActiivtyThread处理启动信息时再替换回来   
+2.service插件化:对startService进行hook，导致实际启动的是stub service，stub service每进程提供一个占坑，在其中进行动态分发(进程内进程间逻辑一致)  
+3.broadcast receiver插件化:hook registerReceiver,欺骗系统使得插件注册的广播系统认为host注册，对于插件中静态广播,在插件进程application onCreate中将静态广播全部转变为动态广播  
+4.content provider:hook getContentProvider,分两种情况:  
+  (1)进程内直接启动content provider
+  (2)进程间先启动stub content provider，在其中做代理分发，在新启动的进程中new target content provider
+  
 ## virtualapk  
 didi提出的插件化框架，见https://github.com/didi/VirtualAPK  
 复杂度介于plugin1和plugin2之间，是一个优秀的无侵入式插件化框架。  
