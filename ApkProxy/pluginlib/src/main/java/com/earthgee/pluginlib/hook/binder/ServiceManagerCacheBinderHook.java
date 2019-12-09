@@ -3,12 +3,16 @@ package com.earthgee.pluginlib.hook.binder;
 import android.content.Context;
 import android.os.IBinder;
 
+import com.earthgee.pluginlib.helper.MyProxy;
+import com.earthgee.pluginlib.helper.compat.MyServiceManager;
 import com.earthgee.pluginlib.helper.compat.ServiceManagerCompat;
 import com.earthgee.pluginlib.hook.BaseHookHandle;
 import com.earthgee.pluginlib.hook.Hook;
 import com.earthgee.pluginlib.reflect.FieldUtils;
+import com.earthgee.pluginlib.reflect.Utils;
 
 import java.lang.reflect.Proxy;
+import java.util.List;
 import java.util.Map;
 
 public class ServiceManagerCacheBinderHook extends Hook {
@@ -40,9 +44,23 @@ public class ServiceManagerCacheBinderHook extends Hook {
                 }
             }
             if(mServiceIBinder!=null){
-                //MyServiceManager.addOriginService(mServiceName,mServiceIBinder);
+                MyServiceManager.addOriginService(mServiceName,mServiceIBinder);
+                Class clazz=mServiceIBinder.getClass();
+                List<Class<?>> interfaces= Utils.getAllInterfaces(clazz);
+                IBinder mProxyServiceIBinder= MyProxy.newProxyInstance(clazz.getClassLoader(),interfaces,this);
+                sCache.put(mServiceName,mProxyServiceIBinder);
+                MyServiceManager.addProxiedServiceCache(mServiceName,mProxyServiceIBinder);
             }
         }
     }
 
 }
+
+
+
+
+
+
+
+
+
