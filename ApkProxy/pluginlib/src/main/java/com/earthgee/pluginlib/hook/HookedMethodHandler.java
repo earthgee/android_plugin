@@ -15,15 +15,30 @@ public class HookedMethodHandler {
         this.mHostContext = hostContext;
     }
 
+    public synchronized Object doHookInner(Object receiver, Method method, Object[] args) throws Exception {
+        mUseFakedResult = false;
+        mFakedResult = null;
+        boolean suc = beforeInvoke(receiver, method, args);
+        Object invokeResult = null;
+        if (!suc) {
+            invokeResult = method.invoke(receiver, args);
+        }
+        afterInvoke(receiver, method, args, invokeResult);
+        if (mUseFakedResult) {
+            return mFakedResult;
+        } else {
+            return invokeResult;
+        }
+    }
 
     /**
      * 在某个方法被调用之前执行，如果返回true，则不执行原始的方法，否则执行原始方法
      */
-    protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+    protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Exception {
         return false;
     }
 
-    protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Throwable {
+    protected void afterInvoke(Object receiver, Method method, Object[] args, Object invokeResult) throws Exception {
     }
 
     public void setFakedResult(Object fakedResult) {

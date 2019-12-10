@@ -27,7 +27,7 @@ public abstract class BaseHookHandle {
 
     public HookedMethodHandler getHookedMethodHandler(Method method) {
         if (method != null) {
-            return sHookedMethodHandlers.get(method.getName());
+            return sHookMethodHandlers.get(method.getName());
         } else {
             return null;
         }
