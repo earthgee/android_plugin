@@ -146,6 +146,205 @@
 
     <application>
 
+        <!--预注册一些Activity，为了插件使用-->
+        <!--第0个进程-->
+        <activity
+            android:name=".stub.ActivityStub$P00$Standard00"
+            android:allowTaskReparenting="true"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="standard"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.morgoo.droidplugin.category.PROXY_STUB" />
+            </intent-filter>
+            <meta-data
+                android:name="com.morgoo.droidplugin.ACTIVITY_STUB_INDEX"
+                android:value="0" />
+        </activity>
+        <activity
+            android:name=".stub.ActivityStub$P00$SingleInstance00"
+            android:allowTaskReparenting="true"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.morgoo.droidplugin.category.PROXY_STUB" />
+            </intent-filter>
+            <meta-data
+                android:name="com.morgoo.droidplugin.ACTIVITY_STUB_INDEX"
+                android:value="0" />
+        </activity>
+        <activity
+            android:name=".stub.ActivityStub$P00$SingleInstance01"
+            android:allowTaskReparenting="true"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.morgoo.droidplugin.category.PROXY_STUB" />
+            </intent-filter>
+            <meta-data
+                android:name="com.morgoo.droidplugin.ACTIVITY_STUB_INDEX"
+                android:value="1" />
+        </activity>
+        <activity
+            android:name=".stub.ActivityStub$P00$SingleInstance02"
+            android:allowTaskReparenting="true"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.morgoo.droidplugin.category.PROXY_STUB" />
+            </intent-filter>
+            <meta-data
+                android:name="com.morgoo.droidplugin.ACTIVITY_STUB_INDEX"
+                android:value="2" />
+        </activity>
+        <activity
+            android:name=".stub.ActivityStub$P00$SingleInstance03"
+            android:allowTaskReparenting="true"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.morgoo.droidplugin.category.PROXY_STUB" />
+            </intent-filter>
+            <meta-data
+                android:name="com.morgoo.droidplugin.ACTIVITY_STUB_INDEX"
+                android:value="3" />
+        </activity>
+        <activity
+            android:name=".stub.ActivityStub$P00$SingleTask00"
+            android:allowTaskReparenting="true"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.morgoo.droidplugin.category.PROXY_STUB" />
+            </intent-filter>
+            <meta-data
+                android:name="com.morgoo.droidplugin.ACTIVITY_STUB_INDEX"
+                android:value="0" />
+        </activity>
+        <activity
+            android:name=".stub.ActivityStub$P00$SingleTask01"
+            android:allowTaskReparenting="true"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.morgoo.droidplugin.category.PROXY_STUB" />
+            </intent-filter>
+            <meta-data
+                android:name="com.morgoo.droidplugin.ACTIVITY_STUB_INDEX"
+                android:value="1" />
+        </activity>
+        <activity
+            android:name=".stub.ActivityStub$P00$SingleTask02"
+            android:allowTaskReparenting="true"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.morgoo.droidplugin.category.PROXY_STUB" />
+            </intent-filter>
+            <meta-data
+                android:name="com.morgoo.droidplugin.ACTIVITY_STUB_INDEX"
+                android:value="2" />
+        </activity>
+        <activity
+            android:name=".stub.ActivityStub$P00$SingleTask03"
+            android:allowTaskReparenting="true"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.morgoo.droidplugin.category.PROXY_STUB" />
+            </intent-filter>
+            <meta-data
+                android:name="com.morgoo.droidplugin.ACTIVITY_STUB_INDEX"
+                android:value="3" />
+        </activity>
+        <activity
+            android:name=".stub.ActivityStub$P00$SingleTop00"
+            android:allowTaskReparenting="true"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.morgoo.droidplugin.category.PROXY_STUB" />
+            </intent-filter>
+            <meta-data
+                android:name="com.morgoo.droidplugin.ACTIVITY_STUB_INDEX"
+                android:value="0" />
+        </activity>
+        <activity
+            android:name=".stub.ActivityStub$P00$SingleTop01"
+            android:allowTaskReparenting="true"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.morgoo.droidplugin.category.PROXY_STUB" />
+            </intent-filter>
+            <meta-data
+                android:name="com.morgoo.droidplugin.ACTIVITY_STUB_INDEX"
+                android:value="1" />
+        </activity>
+        <activity
+            android:name=".stub.ActivityStub$P00$SingleTop02"
+            android:allowTaskReparenting="true"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.morgoo.droidplugin.category.PROXY_STUB" />
+            </intent-filter>
+            <meta-data
+                android:name="com.morgoo.droidplugin.ACTIVITY_STUB_INDEX"
+                android:value="2" />
+        </activity>
+        <activity
+            android:name=".stub.ActivityStub$P00$SingleTop03"
+            android:allowTaskReparenting="true"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.morgoo.droidplugin.category.PROXY_STUB" />
+            </intent-filter>
+            <meta-data
+                android:name="com.morgoo.droidplugin.ACTIVITY_STUB_INDEX"
+                android:value="3" />
+        </activity>
+
     </application>
 
 </manifest>
