@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.earthgee.pluginlib.helper.ProcessUtils;
 import com.earthgee.pluginlib.hook.binder.IClipboardBinderHook;
+import com.earthgee.pluginlib.hook.proxy.IActivityManagerHook;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +41,14 @@ public class HookFactory {
     public final void installHook(Context context,ClassLoader classLoader) throws Exception{
         if(ProcessUtils.isMainProcess(context)){
             //主进程
+            //AMS
+            installHook(new IActivityManagerHook(context),classLoader);
         }else{
             //插件进程
             installHook(new IClipboardBinderHook(context),classLoader);
             //其他服务
+            //AMS
+            installHook(new IActivityManagerHook(context),classLoader);
         }
     }
 
